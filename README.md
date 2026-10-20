@@ -2,7 +2,7 @@
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.5 Alpha**. This release is built from the preserved **0.5.3 Alpha** source baseline. The discarded 0.5.4 regression build is not used as source.
+Current integration version: **0.5.6 Alpha**. This release continues from the preserved **0.5.5 Alpha** source package; the discarded 0.5.4 regression build is not used as source.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
@@ -10,14 +10,14 @@ Current integration version: **0.5.5 Alpha**. This release is built from the pre
 
 - BLE discovery and connection to the Xzense control panel
 - Xzense PIN/session authentication
-- Temporary **Release Bluetooth to app** helper from 0.5.3
+- Temporary **Release Bluetooth to app** helper
 - Live operating state and state timer
 - Chimney, inside and outside temperatures
 - Air pressure
 - Actual fan speed
 - Firmware version from CONNECT ACK (`410` -> `4.10`)
 - Power source (`0x05`: Battery / External power)
-- Boost on/off (`0x08`)
+- Boost on/off (`0x08`) — live verified
 - Sound (`0x32`)
 - Contrast (`0x33`)
 - Brightness (`0x34`)
@@ -30,7 +30,25 @@ Current integration version: **0.5.5 Alpha**. This release is built from the pre
 - Chimney draught setpoint (`0x53`)
 - Minimum fan voltage (`0x54`)
 
-## 0.5.5 live mapping correction
+## New in 0.5.6 — firing and fan-mode controls
+
+Static analysis of the controller firmware bundled with the official Xzense app established the control paths used by the Xzense UI. These controls are now exposed in Home Assistant while retaining controller-side ACK/NACK validation:
+
+| Home Assistant control | Wire action | Availability / meaning |
+|---|---|---|
+| **Start lighting** | BOOST `0x08`, `start=1` | Only when state `2 = Ready for lighting` |
+| **Refuel** | BOOST `0x08`, `start=1` | Only when state `4 = Operation` |
+| **Stop firing** | BOOST `0x08`, `start=0` | In state `3 = Boosting` or `5 = Refueling` |
+| **Stop firing** | GLOBAL `0x19 = 6` | In state `4 = Operation`; starts Afterrun |
+| **Finish firing** | GLOBAL `0x19 = 6` | Explicit Operation -> Afterrun action |
+| **Ventilation** | VENTILATION `0x09`, `start=0/1` | Firmware-derived; first live write on this controller still pending |
+| **System control** | GLOBAL `0x56` | `0=Manual`, `1=eXotelligence`, `2=Pressure controlled` |
+
+BOOST remains the same packet that was already physically verified. The new Refuel and Start-lighting actions deliberately reuse the firmware's state-dependent BOOST command instead of inventing new packet IDs.
+
+The BLE connection/reconnect/session-acquisition methods are regression-locked to the tested 0.5.5 implementation. 0.5.6 changes application-level control handling only.
+
+## 0.5.5 live mapping correction retained
 
 A direct comparison between the physical Xzense controller and GLOBAL values established the following block:
 
@@ -69,15 +87,17 @@ The integration deliberately says *External power*, not *Charging*, because char
 | 5 | Refueling |
 | 6 | Afterrun |
 
+States 3 and 6 are live verified. States 2, 4 and 5 follow the Xzense operating sequence and firmware/UI behavior; they remain less strongly evidenced than the two live-verified states.
+
 ## Setting ranges and scaling
 
 The GLOBAL ID/scaling map comes from live controller correlation. Home Assistant ranges for Sound, Contrast, Brightness, Start/Stop temperature, Boost/Afterrun time, Boost speed, chimney draught and minimum fan voltage follow the published Xzense manual. Temperatures are converted from tenths of a degree and timer values from seconds to minutes.
 
-Boost-stop temperature is live-correlated (`600 = 60.0 °C`), but the manual does not publish an explicit adjustment range; Alpha 0.5.5 therefore uses a conservative HA UI bound while leaving the controller to validate the write.
+Boost-stop temperature is live-correlated (`600 = 60.0 °C`), but the manual does not publish an explicit adjustment range; Alpha 0.5.6 therefore uses a conservative HA UI bound while leaving the controller to validate the write.
 
 ## Still locked / pending
 
-Start Fire, Stop Fire, Refueling and Ventilation remain unavailable until their exact packet payloads are verified. System Control, Temperature sensor, External start and the `0x59`-`0x5B` candidates remain non-writable.
+Temperature sensor `0x57`, External start `0x58`, the `0x59`-`0x5B` candidates, and unidentified `0x35`, `0x36`, `0x50`, `0x51`, `0x55` remain non-writable. Destructive packet types such as factory reset are intentionally not exposed.
 
 ## Installation
 
@@ -104,13 +124,4 @@ Restart Home Assistant and reload/add **Xzense Alpha**.
 
 ## Safety / scope
 
-This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Destructive operations such as factory reset and network reset are intentionally not exposed.
-
-## 0.5.5 release verification
-
-- Baseline: recovered Xzense Alpha 0.5.3 source package
-- Regression suite: **42 passed**
-- `python -m compileall`: passed
-- Source package: `xzense-alpha-0.5.5-source.zip`
-- SHA-256: `0ce25e74b678a7462aefdda2e8ba0218e6271e1e1aaee70a078df9dd33e18ecd`
-- `client.py`, `button.py` and `version.py` are byte-identical to the recovered 0.5.3 baseline; BLE connection/release and firmware-formatting code were not rewritten in 0.5.5.
+This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Controller ACK/NACK remains authoritative for state-dependent commands. Destructive operations such as factory reset and network reset are intentionally not exposed.
