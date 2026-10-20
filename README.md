@@ -2,126 +2,101 @@
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.6 Alpha**. This release continues from the preserved **0.5.5 Alpha** source package; the discarded 0.5.4 regression build is not used as source.
+Current integration version: **0.5.7 Alpha**. This release is built directly from the tested **0.5.6 Alpha** source, which itself continues the preserved 0.5.5/0.5.3 line. The discarded 0.5.4 regression build is not used as source.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
-## Working now
+## 0.5.7 source-of-truth update
 
-- BLE discovery and connection to the Xzense control panel
-- Xzense PIN/session authentication
-- Temporary **Release Bluetooth to app** helper
-- Live operating state and state timer
-- Chimney, inside and outside temperatures
-- Air pressure
-- Actual fan speed
-- Firmware version from CONNECT ACK (`410` -> `4.10`)
-- Power source (`0x05`: Battery / External power)
-- Boost on/off (`0x08`) — live verified
-- Sound (`0x32`)
-- Contrast (`0x33`)
-- Brightness (`0x34`)
-- Start temperature (`0x4B`)
-- Stop temperature (`0x4C`)
-- Boost time (`0x4D`)
-- Afterrun time (`0x4E`)
-- Boost speed (`0x4F`)
-- Boost stop temperature (`0x52`)
-- Chimney draught setpoint (`0x53`)
-- Minimum fan voltage (`0x54`)
+The official **Xzense 5.0.5** app contains controller firmware `assets/flutter_assets/assets/fw/exodraft.gbl`. The image identifies itself as **v4.10_RC2**, matching the 4.10 generation reported by the user's controller. Direct UI/controller-code bindings from that firmware are used together with live 4.10 observations.
 
-## New in 0.5.6 — firing and fan-mode controls
+The firmware also contains an older debug-name lookup whose GLOBAL labels are shifted for several setup values. Alpha 0.5.7 therefore does **not** use that debug table alone as authoritative evidence.
 
-Static analysis of the controller firmware bundled with the official Xzense app established the control paths used by the Xzense UI. These controls are now exposed in Home Assistant while retaining controller-side ACK/NACK validation:
+## Working / mapped controls
 
-| Home Assistant control | Wire action | Availability / meaning |
+| Home Assistant control | Xzense mapping | Confidence / gate |
 |---|---|---|
-| **Start lighting** | BOOST `0x08`, `start=1` | Only when state `2 = Ready for lighting` |
-| **Refuel** | BOOST `0x08`, `start=1` | Only when state `4 = Operation` |
-| **Stop firing** | BOOST `0x08`, `start=0` | In state `3 = Boosting` or `5 = Refueling` |
-| **Stop firing** | GLOBAL `0x19 = 6` | In state `4 = Operation`; starts Afterrun |
-| **Finish firing** | GLOBAL `0x19 = 6` | Explicit Operation -> Afterrun action |
-| **Ventilation** | VENTILATION `0x09`, `start=0/1` | Firmware-derived; first live write on this controller still pending |
-| **System control** | GLOBAL `0x56` | `0=Manual`, `1=eXotelligence`, `2=Pressure controlled` |
+| Boost on/off | packet `0x08`, start `1/0` + inside temperature | **Live verified** |
+| Start lighting | packet `0x08`, start `1` | Firmware-derived; only state `2` |
+| Refuel | packet `0x08`, start `1` | v4.10_RC2-derived; only state `5 = Burnout` |
+| Stop firing | packet `0x08`, start `0` | states `3 = Boosting` and `7 = Refueling/Reheating` |
+| Stop/finish firing | GLOBAL `0x19 = 6` | states `4 = Operation` and `5 = Burnout`; enters Afterrun |
+| Ventilation | packet `0x09`, start `1/0` | Firmware-derived; first live write pending |
+| Operation fan speed | GLOBAL `0x50`, direct % | Firmware + earlier physical write evidence; HA control only in state `4` |
+| System control | GLOBAL `0x55` | Firmware-derived enum: `0=Manual`, `1=eXotelligence`, `2=Pressure controlled` |
 
-BOOST remains the same packet that was already physically verified. The new Refuel and Start-lighting actions deliberately reuse the firmware's state-dependent BOOST command instead of inventing new packet IDs.
+The BLE discovery/reconnect/session-acquisition and **Release Bluetooth to app** methods remain regression-locked to the tested 0.5.5 implementation.
 
-The BLE connection/reconnect/session-acquisition methods are regression-locked to the tested 0.5.5 implementation. 0.5.6 changes application-level control handling only.
+## Current GLOBAL map
 
-## 0.5.5 live mapping correction retained
+| GLOBAL | Meaning | Encoding | Evidence |
+|---:|---|---|---|
+| `0x05` | Power source | `2=Battery`, `3=External power` | Live A/B verified |
+| `0x19` | Device state | enum | Live + firmware |
+| `0x1A` | Time in current state | seconds | Live verified |
+| `0x1B` | Air pressure | hPa | Live verified |
+| `0x1C` | Inside temperature | raw / 10 °C | Strong live mapping |
+| `0x1D` | Outside temperature | raw / 10 °C | Strong live mapping |
+| `0x1E` | Chimney temperature | raw / 10 °C | Live verified |
+| `0x1F` | Actual fan speed | % | Live verified |
+| `0x32` | Sound | direct % | Live A/B + v4.10 code |
+| `0x33` | Contrast | direct % | Live + v4.10 code |
+| `0x34` | Brightness | direct % | Live + v4.10 code |
+| `0x4B` | Start temperature | raw / 10 °C | Live + v4.10 code |
+| `0x4C` | Stop temperature | raw / 10 °C | Live + v4.10 code |
+| `0x4D` | Boost time | seconds | Live + v4.10 code |
+| `0x4E` | Afterrun time | seconds | Live + v4.10 code |
+| `0x4F` | Boost speed | % | Live + v4.10 code |
+| `0x50` | Operation/User fan speed | direct % | v4.10 UI + earlier physical probe |
+| `0x51` | Actual draught | raw, scaling pending | v4.10 firmware; read-only |
+| `0x52` | Boost stop temperature | raw / 10 °C | Live + v4.10 code |
+| `0x53` | Chimney draught setpoint | Pa | Live + v4.10 code |
+| `0x54` | Minimum fan voltage | V | Live + v4.10 code |
+| `0x55` | System control | enum 0/1/2 | v4.10 direct UI binding |
+| `0x56` | Temperature sensor | enum pending | v4.10 direct UI binding; read-only |
+| `0x57` | External start | coding pending | v4.10 code; read-only |
+| `0x58` | Alarm setpoint | scaling pending | v4.10 direct UI binding; read-only |
+| `0x59` | Reboost/refire time | raw | v4.10 ID known/read-only |
+| `0x5A` | External fan speed | raw | v4.10 external-start path; read-only |
+| `0x5B` | Burnout timeout | raw | v4.10 ID known/read-only |
 
-A direct comparison between the physical Xzense controller and GLOBAL values established the following block:
+`0x35`, `0x36` and `0x20` remain unidentified. Candidate/service fields are deliberately not writable until their value coding and safe ranges are established.
 
-| GLOBAL | Setting | Live value example |
-|---:|---|---:|
-| `0x32` | Sound | 24 -> 24 % |
-| `0x33` | Contrast | 75 -> 75 % |
-| `0x34` | Brightness | 68 -> 68 % |
-| `0x4B` | Start temperature | 502 -> 50.2 °C |
-| `0x4C` | Stop temperature | 398 -> 39.8 °C |
-| `0x4D` | Boost time | 900 s -> 15 min |
-| `0x4E` | Afterrun time | 1800 s -> 30 min |
-| `0x4F` | Boost speed | 100 -> 100 % |
-| `0x52` | Boost stop temperature | 600 -> 60.0 °C |
-| `0x53` | Chimney draught setpoint | 26 -> 26 Pa |
-| `0x54` | Minimum fan voltage | 105 -> 105 V |
+## Operating states — v4.10
 
-`0x35`, `0x36`, `0x50`, `0x51` and `0x55` remain unidentified and are exposed only as disabled diagnostic raw sensors. The previous 0.5.3 interpretation of `0x50` as a writable fan-speed setpoint is **not** carried forward.
-
-## Power source
-
-GLOBAL `0x05` was physically A/B tested:
-
-- `2` = **Battery**
-- `3` = **External power**
-
-The integration deliberately says *External power*, not *Charging*, because charge state itself has not been proven.
-
-## Operating-state mapping
+The v4.10_RC2 firmware contains the state-name table in this order, including the inserted `AFTERRUN` state:
 
 | Raw | State |
 |---:|---|
-| 2 | Ready for lighting |
-| 3 | Boosting |
-| 4 | Operation |
-| 5 | Refueling |
-| 6 | Afterrun |
+| `0` | Offline |
+| `1` | Setup |
+| `2` | Ready for lighting / firmware `IDLE` |
+| `3` | Boosting |
+| `4` | Operation |
+| `5` | Burnout |
+| `6` | Afterrun |
+| `7` | Refueling / firmware `REHEATING` |
+| `8` | Ventilation |
+| `9` | Error |
+| `10` | Upgrading |
 
-States 3 and 6 are live verified. States 2, 4 and 5 follow the Xzense operating sequence and firmware/UI behavior; they remain less strongly evidenced than the two live-verified states.
+States `3` and `6` are additionally live verified on the user's controller. The 0.5.6 assumption that state `5` was Refueling is superseded by the v4.10 firmware: state `5` is **Burnout**, while Refueling/Reheating is state `7`.
 
-## Setting ranges and scaling
+## Packet types
 
-The GLOBAL ID/scaling map comes from live controller correlation. Home Assistant ranges for Sound, Contrast, Brightness, Start/Stop temperature, Boost/Afterrun time, Boost speed, chimney draught and minimum fan voltage follow the published Xzense manual. Temperatures are converted from tenths of a degree and timer values from seconds to minutes.
-
-Boost-stop temperature is live-correlated (`600 = 60.0 °C`), but the manual does not publish an explicit adjustment range; Alpha 0.5.6 therefore uses a conservative HA UI bound while leaving the controller to validate the write.
-
-## Still locked / pending
-
-Temperature sensor `0x57`, External start `0x58`, the `0x59`-`0x5B` candidates, and unidentified `0x35`, `0x36`, `0x50`, `0x51`, `0x55` remain non-writable. Destructive packet types such as factory reset are intentionally not exposed.
+Known controller packet types include `0x02 CONNECT`, `0x06 GLOBAL`, `0x07 STATUS`, `0x08 BOOST`, `0x09 VENTILATION`, `0x0A RANGETEST`, `0x0B FACTORY_RESET`, `0x0C FILE_TRANSFER`, `0x0D TIMESYNC` and `0x0E CONNECTED_PEERS`. Destructive/service operations are intentionally not exposed.
 
 ## Installation
 
-Copy:
-
-```text
-custom_components/xzense_full_preview/
-```
-
-into:
-
-```text
-/config/custom_components/xzense_full_preview/
-```
-
-Restart Home Assistant and reload/add **Xzense Alpha**.
+Copy `custom_components/xzense_full_preview/` into `/config/custom_components/xzense_full_preview/`, restart Home Assistant and reload/add **Xzense Alpha**.
 
 ## Repository notes
 
-- `PROTOCOL_NOTES.md` contains packet-level findings and chronology.
-- `PROTOCOL_MANIFEST.md` is the current GLOBAL/packet source of truth.
+- `PROTOCOL_NOTES.md` documents evidence and chronology.
+- `PROTOCOL_MANIFEST.md` is the current ID/packet source of truth.
 - `FEATURE_MATRIX.md` tracks Home Assistant exposure and confidence.
 - `tests/` contains protocol and regression tests that do not require a live Xzense device.
 
 ## Safety / scope
 
-This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Controller ACK/NACK remains authoritative for state-dependent commands. Destructive operations such as factory reset and network reset are intentionally not exposed.
+This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Controller ACK/NACK remains authoritative for state-dependent commands. The new v4.10-derived controls still require live validation where explicitly noted.
