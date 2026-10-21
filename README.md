@@ -1,8 +1,16 @@
 # Xzense Alpha
 
+## Alpha 0.5.13: compatibility correction to 0.5.12b
+
+- Normalized the integration's `manifest.json` version to numeric SemVer `0.5.13` and synchronized `const.py` so Home Assistant and version checks see one release.
+- No changes to BLE protocol, PIN authentication, device controls, entity IDs or runtime behavior compared with 0.5.12b.
+- Retains **Refuel** availability in Operation (state 4) and Burnout (state 5), plus raw **0x05 status** / **0x18 status** sensor names.
+- If Home Assistant reports the integration missing, copy the **whole** `custom_components/xzense_full_preview/` directory into `/config/custom_components/xzense_full_preview/`, replacing the previous files, then restart Home Assistant. Do not delete the existing integration/config entry. Review Settings → System → Logs if it still fails.
+
+
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.12b Alpha**, a small revision of **0.5.12**.
+Current integration version: **0.5.13 Alpha**, a small revision of **0.5.12**.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
