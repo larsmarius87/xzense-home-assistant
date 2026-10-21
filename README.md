@@ -2,9 +2,20 @@
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.7 Alpha**. This release is built directly from the tested **0.5.6 Alpha** source, which itself continues the preserved 0.5.5/0.5.3 line. The discarded 0.5.4 regression build is not used as source.
+Current integration version: **0.5.11 Alpha**. The 0.5.11 source archive is the current installable build; archived 0.5.7 and older versions remain below for reference.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
+
+## Latest: 0.5.11 (2026-10-21)
+
+[Download Xzense Alpha 0.5.11 source](xzense-alpha-0.5.11-source.zip)
+
+- Replaced **Boost on** / **Boost off** with one **Boost switch** (packet `0x08`, 1/0), and removed the redundant **Finish firing** button. **Stop firing** still transitions to Afterrun (`0x19=6`) in Operation or Burnout.
+- **Ventilation switch** (packet `0x09`) and **Boost switch** now follow decoded runtime STATUS: state 8 = Ventilation on, state 3 = Boost on. State 7 remains unresolved for Boost, so the previous Boost value is retained until a conclusive status arrives.
+- Both switches **restore the last-known state** after HA restarts and preserve it during BLE reconnect. After CONNECT/ACK the existing polling loop requests STATUS immediately; controller STATUS is authoritative, not command ACK.
+- **Fan speed** (`0x50`) is available in all connected states. Actual controller behavior outside Operation/Ventilation remains unverified.
+- Removed the non-functional **Release Bluetooth to app** button, configuration number and BLE pause functionality, along with obsolete entities. Mode controls are grouped as normal controls; other settings are CONFIG entities where appropriate (device-page order is controlled by Home Assistant).
+- 67 automated tests passed; physical HA testing still required. GitHub ZIP archive is the actual build; `xzense_full_preview` domain is unchanged.
 
 ## 0.5.7 source-of-truth update
 
@@ -16,13 +27,13 @@ The firmware also contains an older debug-name lookup whose GLOBAL labels are sh
 
 | Home Assistant control | Xzense mapping | Confidence / gate |
 |---|---|---|
-| Boost on/off | packet `0x08`, start `1/0` + inside temperature | **Live verified** |
+| Boost switch | packet `0x08`, start `1/0` + inside temperature | Commands verified; switch reflects decoded STATUS |
 | Start lighting | packet `0x08`, start `1` | Firmware-derived; only state `2` |
 | Refuel | packet `0x08`, start `1` | v4.10_RC2-derived; only state `5 = Burnout` |
 | Stop firing | packet `0x08`, start `0` | states `3 = Boosting` and `7 = Refueling/Reheating` |
-| Stop/finish firing | GLOBAL `0x19 = 6` | states `4 = Operation` and `5 = Burnout`; enters Afterrun |
+| Stop firing (Afterrun branch) | GLOBAL `0x19 = 6` | states `4 = Operation` and `5 = Burnout`; enters Afterrun |
 | Ventilation | packet `0x09`, start `1/0` | Firmware-derived; first live write pending |
-| Operation fan speed | GLOBAL `0x50`, direct % | Firmware + earlier physical write evidence; HA control only in state `4` |
+| Fan speed | GLOBAL `0x50`, direct % | Verified in Operation and Ventilation; HA control only in state `4` |
 | System control | GLOBAL `0x55` | Firmware-derived enum: `0=Manual`, `1=eXotelligence`, `2=Pressure controlled` |
 
 The BLE discovery/reconnect/session-acquisition and **Release Bluetooth to app** methods remain regression-locked to the tested 0.5.5 implementation.
