@@ -2,20 +2,31 @@
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.11 Alpha**. The 0.5.11 source archive is the current installable build; archived 0.5.7 and older versions remain below for reference.
+Current integration version: **0.5.12 Alpha**, built on **0.5.11**.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
-## Latest: 0.5.11 (2026-10-21)
+## 0.5.10 fan-speed availability in Ventilation (no wire-protocol change)
 
-[Download Xzense Alpha 0.5.11 source](xzense-alpha-0.5.11-source.zip)
+The live 2026-10-21 Ventilation (state 8) capture shows GLOBAL `0x50` rising from 10 to 16 in 1% steps; subsequent STATUS reported 16%. The same setpoint is used in Operation (state 4). The Home Assistant number is now named **Fan speed** and available only in state `4` or `8`, with a write-time check for the same states. The separate `0x1F` read-only sensor is now named **Actual fan speed**. Existing feature keys, unique IDs, minimum 10% and maximum 100%, and the GLOBAL write format remain unchanged. Writes in Ventilation from HA have not yet been physically tested.
 
-- Replaced **Boost on** / **Boost off** with one **Boost switch** (packet `0x08`, 1/0), and removed the redundant **Finish firing** button. **Stop firing** still transitions to Afterrun (`0x19=6`) in Operation or Burnout.
-- **Ventilation switch** (packet `0x09`) and **Boost switch** now follow decoded runtime STATUS: state 8 = Ventilation on, state 3 = Boost on. State 7 remains unresolved for Boost, so the previous Boost value is retained until a conclusive status arrives.
-- Both switches **restore the last-known state** after HA restarts and preserve it during BLE reconnect. After CONNECT/ACK the existing polling loop requests STATUS immediately; controller STATUS is authoritative, not command ACK.
-- **Fan speed** (`0x50`) is available in all connected states. Actual controller behavior outside Operation/Ventilation remains unverified.
-- Removed the non-functional **Release Bluetooth to app** button, configuration number and BLE pause functionality, along with obsolete entities. Mode controls are grouped as normal controls; other settings are CONFIG entities where appropriate (device-page order is controlled by Home Assistant).
-- 67 automated tests passed; physical HA testing still required. GitHub ZIP archive is the actual build; `xzense_full_preview` domain is unchanged.
+## 0.5.9 deferred external controls (no wire-protocol change)
+
+External start (GLOBAL `0x57`) and External fan speed (GLOBAL `0x5A`) have been removed from the active feature registry and HA entity exposure at the user's request. The registry cleanup from 0.5.8 still removes any old entities with these IDs. To preserve reverse-engineering evidence, both values remain in raw diagnostic GLOBAL captures and in protocol documentation. The unresolved **Power source (?)** sensor (`0x05`) stays, showing raw values as unknown until verified. Boost, Ventilation, BLE connection and all other controls are unchanged.
+
+## 0.5.8 cleanup (no wire-protocol change)
+
+Removed empty Burn count, Operation time and Error log entities, unmapped Language and Download log placeholders and the duplicate raw GLOBAL 0x51 entity. Candidate settings without verified writing semantics remain documented in the feature matrix and available in diagnostic GLOBAL dumps, but are no longer instantiated as unusable controls. GLOBAL 0x00-0x04 now appear as UNKNOWN rather than misleading legacy firmware debug labels. No BLE connection or control commands changed.
+
+## 0.5.12 — configuration, source ambiguity and ChimneyLog research
+
+- **System control** moved to Configuration. **Alarm temperature** (`0x58`) is a Configuration number with 150–400 °C range and raw-tenths scaling.
+- **Refire / Reboost time** (`0x59`) and **Burnout timeout** (`0x5B`) are now editable Configuration numbers after user confirmation of panel editing. Raw seconds convert to minutes. Home Assistant exposes 0–546.1 minutes in 0.1-minute steps, using only the signed-16-bit GLOBAL transport bound; **these are not verified controller-safe limits**. HA-initiated writes await physical verification.
+- Old read-only sensor entries for `0x59`/`0x5B` are removed on migration. Existing numeric settings retain their feature keys/unique IDs.
+- **Actual chimney draught (raw)** sensor hidden/removed; raw `0x51` retained in the full diagnostics.
+- **Power source (?)** preserves the existing sensor key (`battery`), but reports `Unknown (2)` / `Unknown (3)` instead of asserting Battery/External. The physical controller was wired while sending different raw values in consecutive diagnostics; the precise enum has not been proven. Raw remains present in diagnostics.
+- [ChimneyLog investigation](CHIMNEYLOG_RESEARCH.md): confirms firmware filenames and app-side indicators but no safe request/record layout. No `FILE_TRANSFER` test commands or firmware writes are added.
+
 
 ## 0.5.7 source-of-truth update
 
@@ -27,22 +38,22 @@ The firmware also contains an older debug-name lookup whose GLOBAL labels are sh
 
 | Home Assistant control | Xzense mapping | Confidence / gate |
 |---|---|---|
-| Boost switch | packet `0x08`, start `1/0` + inside temperature | Commands verified; switch reflects decoded STATUS |
+| Boost switch | packet `0x08`, start `1/0` + inside temperature | Command live-verified, status from STATUS |
 | Start lighting | packet `0x08`, start `1` | Firmware-derived; only state `2` |
 | Refuel | packet `0x08`, start `1` | v4.10_RC2-derived; only state `5 = Burnout` |
 | Stop firing | packet `0x08`, start `0` | states `3 = Boosting` and `7 = Refueling/Reheating` |
 | Stop firing (Afterrun branch) | GLOBAL `0x19 = 6` | states `4 = Operation` and `5 = Burnout`; enters Afterrun |
-| Ventilation | packet `0x09`, start `1/0` | Firmware-derived; first live write pending |
-| Fan speed | GLOBAL `0x50`, direct % | Verified in Operation and Ventilation; HA control only in state `4` |
+| Ventilation switch | packet `0x09`, start `1/0` | Live tested; status from STATUS state 8 |
+| Fan speed (setpoint) | GLOBAL `0x50`, direct 10–100 % | Observed in Operation and Ventilation; HA control available in all connected states |
 | System control | GLOBAL `0x55` | Firmware-derived enum: `0=Manual`, `1=eXotelligence`, `2=Pressure controlled` |
 
-The BLE discovery/reconnect/session-acquisition and **Release Bluetooth to app** methods remain regression-locked to the tested 0.5.5 implementation.
+The BLE discovery/reconnect/session-acquisition methods are preserved; the nonfunctional **Release Bluetooth to app** feature was removed in 0.5.11.
 
 ## Current GLOBAL map
 
 | GLOBAL | Meaning | Encoding | Evidence |
 |---:|---|---|---|
-| `0x05` | Power source | `2=Battery`, `3=External power` | Live A/B verified |
+| `0x05` | Power source (?) | raw 2 / raw 3, meaning unverified | Contradictory readings on a wired installation |
 | `0x19` | Device state | enum | Live + firmware |
 | `0x1A` | Time in current state | seconds | Live verified |
 | `0x1B` | Air pressure | hPa | Live verified |
@@ -58,20 +69,18 @@ The BLE discovery/reconnect/session-acquisition and **Release Bluetooth to app**
 | `0x4D` | Boost time | seconds | Live + v4.10 code |
 | `0x4E` | Afterrun time | seconds | Live + v4.10 code |
 | `0x4F` | Boost speed | % | Live + v4.10 code |
-| `0x50` | Operation/User fan speed | direct % | v4.10 UI + earlier physical probe |
+| `0x50` | Fan speed setpoint (Operation + Ventilation) | direct % | v4.10 UI + live 10→16% Ventilation capture |
 | `0x51` | Actual draught | raw, scaling pending | v4.10 firmware; read-only |
 | `0x52` | Boost stop temperature | raw / 10 °C | Live + v4.10 code |
 | `0x53` | Chimney draught setpoint | Pa | Live + v4.10 code |
 | `0x54` | Minimum fan voltage | V | Live + v4.10 code |
 | `0x55` | System control | enum 0/1/2 | v4.10 direct UI binding |
 | `0x56` | Temperature sensor | enum pending | v4.10 direct UI binding; read-only |
-| `0x57` | External start | coding pending | v4.10 code; read-only |
 | `0x58` | Alarm setpoint | scaling pending | v4.10 direct UI binding; read-only |
 | `0x59` | Reboost/refire time | raw | v4.10 ID known/read-only |
-| `0x5A` | External fan speed | raw | v4.10 external-start path; read-only |
 | `0x5B` | Burnout timeout | raw | v4.10 ID known/read-only |
 
-`0x35`, `0x36` and `0x20` remain unidentified. Candidate/service fields are deliberately not writable until their value coding and safe ranges are established.
+`0x57` and `0x5A` are intentionally deferred and visible only in diagnostic raw data and protocol notes. `0x00`–`0x04`, `0x20`, `0x35` and `0x36` remain unidentified. Candidate/service fields are deliberately not writable until their value coding and safe ranges are established.
 
 ## Operating states — v4.10
 
@@ -111,3 +120,13 @@ Copy `custom_components/xzense_full_preview/` into `/config/custom_components/xz
 ## Safety / scope
 
 This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Controller ACK/NACK remains authoritative for state-dependent commands. The new v4.10-derived controls still require live validation where explicitly noted.
+
+## Alpha 0.5.11 update (2026-10-21)
+
+- Removed non-functional Bluetooth release-to-app button, timer and associated BLE pause logic.
+- Combined Boost on/off into one Boost switch; removed redundant Finish firing button. Stop firing retains its Afterrun transition through GLOBAL 0x19=6.
+- Boost and Ventilation switches follow authenticated STATUS state (Boost state 3; Ventilation state 8). Boost state 7 is unresolved and retains last known value.
+- Switch state is restored across HA restarts and retained across BLE reconnects until the first valid fresh STATUS frame. CONNECT/ACK immediately triggers the existing STATUS polling loop; command ACK alone does not determine switch state.
+- Fan speed GLOBAL 0x50 is available in all connected states; firmware may still enforce its own restrictions.
+- Controls are normal entities, configuration settings categorized CONFIG; device-page display ordering remains Home Assistant controlled.
+- GitHub release source zip built from this tree; local tests do not substitute for on-device validation.
