@@ -2,9 +2,16 @@
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.12 Alpha**, built on **0.5.11**.
+Current integration version: **0.5.12b Alpha**, a small revision of **0.5.12**.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
+
+## 0.5.12b — Refuel in Operating and raw GLOBAL status names
+
+- **Refuel** is available in **Operating / Operation (state 4)** as well as **Burnout (state 5)**, when the existing Boost command is available. It still sends the same `BOOST/REQ 0x08 start=1` command; the result in state 4 has **not yet been physically verified**.
+- The existing sensor with unique ID suffix `battery` is renamed **0x05 status** and displays the **raw integer** (e.g. `2` / `3`), without claiming it means battery or external power.
+- The existing sensor with unique ID suffix `signal_strength` is renamed **0x18 status** and still displays the raw `GLOBAL 0x18` integer, without interpreting its units.
+- Sensor unique IDs, BLE transport/authentication, all other controls and diagnostics remain unchanged. Home Assistant may preserve a manually customized entity name until the user resets that customization.
 
 ## 0.5.10 fan-speed availability in Ventilation (no wire-protocol change)
 
