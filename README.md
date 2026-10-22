@@ -20,6 +20,18 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 
 # Xzense Alpha
 
+## Viktig sikkerhetsvarsel — 22. oktober 2026
+
+**Ikke bruk Alpha 0.5.15 eller 0.5.16.** Begge inneholder en bekreftet busy-loop i BLE-gjentilkobling som kan fryse hele Home Assistant. **0.5.17** retter denne spesifikke feilbanen, men er fortsatt kun kode-/regresjonstestet. For rask stabilisering: deaktiver Xzense eller bruk 0.5.14. [Hotfix installasjon](INSTALLASJON_0.5.17.md).
+
+## Alpha 0.5.17 — Event loop hotfix
+
+- Ved BLE-reconnect kan `_wake` allerede være satt. 0.5.15/0.5.16 løp da videre uten `await`, slik at asyncio og alle andre HA-oppgaver stanset.
+- 0.5.17 konsumerer wake-signalet og går til asynkron venting med en ekstra tilkoblingskontroll, fremfor å spinne.
+- 0.5.16 sine proxy-/timerfunksjoner er beholdt uendret og må fortsatt testes fysisk.
+- Regresjonstest simulerer dette konkret, i tillegg til eksisterende testsett.
+
+
 ## Alpha 0.5.16 – Strongest BLE proxy + fire timers (22 October 2026)
 
 **Download:** [xzense-alpha-0.5.16-source.zip](xzense-alpha-0.5.16-source.zip) · [Installation](INSTALLASJON_0.5.16.md) · [Next-chat handoff](OVERLEVERING_NESTE_CHAT_0.5.16.md)
@@ -43,7 +55,7 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.15 Alpha**, based on **0.5.14**.
+Current integration version: **0.5.17 Alpha** (kritisk hotfix på 0.5.16; ikke fysisk verifisert).
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
