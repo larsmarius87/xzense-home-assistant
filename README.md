@@ -1,5 +1,21 @@
 # Xzense Alpha
 
+## Alpha 0.5.14 – dashboard og temperatursensor (22. oktober 2026)
+
+**Nedlasting:** [xzense-alpha-0.5.14-source.zip](xzense-alpha-0.5.14-source.zip) (komplett kildekode, tester og dashboard).
+
+- Refueling («Legg på ved») tilgjengelig i Operation (state 4) og Burnout (state 5), videreført fra 0.5.12b.
+- Temperaturprobe som eksperimentell På/Av-bryter via GLOBAL 0x56; mapping 0/1 er ikke fysisk bekreftet. Ikke endre under aktiv fyring.
+- Dashboardkort med fem norske faner, visuell entitetsvelger og egne visningsnavn.
+- Diagnostikksensorer avkorter teksttilstander til 255 tegn for å unngå Home Assistant-feilmeldinger.
+- BLE-oppkobling, PIN og GATT er uendret fra 0.5.13.
+
+**Slik installeres kortet når integrasjonsmappen heter `xzense`:** Kopier [www/xzense-card.js](www/xzense-card.js) til `/config/www/xzense-card.js`, registrer `/local/xzense-card.js?v=0514` som JavaScript-modul under **Innstillinger → Dashboard → Ressurser**, og legg til manuelt kort med `type: custom:xzense-card`. Se [dashboard/INSTALLASJON.md](dashboard/INSTALLASJON.md).
+
+**OBS:** ZIP-arkivet er utviklingsintegrasjonen `xzense_full_preview` (domenet i manifestet). Dersom den installerte integrasjonen faktisk heter `xzense`, skal du ikke endre mappenavn eller erstatte den med `xzense_full_preview` uten å kontrollere domenet. Det separate Lovelace-kortet fungerer uavhengig av hvilket av disse domenene som brukes, ved at du velger entiteter i redigeringen.
+
+Testet lokalt med 84 Python-tester og dashboardets JavaScript-smoketest; ikke testet på fysisk Xzense-panel.
+
 ## Alpha 0.5.13: compatibility correction to 0.5.12b
 
 - Normalized the integration's `manifest.json` version to numeric SemVer `0.5.13` and synchronized `const.py` so Home Assistant and version checks see one release.
