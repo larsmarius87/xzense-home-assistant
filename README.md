@@ -1,31 +1,37 @@
+## Alpha 0.5.15 — proxyvalg og BLE-sesjonsdiagnostikk (2026-10-22)
+
+- Samler ferske Bluetooth-annonseringer fra flere proxyer i et **3-sekunders vindu** og prioriterer signalstyrke, moderat bonus for sist vellykkede proxy og kortvarig straff etter feil. Ingen MAC-adresse er hardkodet.
+- Logger siste **20 BLE-frakoblinger** med tilkoblet proxy, RSSI ved oppkobling, sesjonsvarighet, tilkoblingsstatus og tid for siste STATUS-forespørsel/-svar.
+- Skiller lokal opprydding fra uventet BLE-callback. **En uventet callback identifiserer ikke hvem som koblet fra.**
+- Beskytter ny tilkobling mot forsinkede callbacks fra eldre klienter og mot en mistet frakoblingshendelse under CONNECT.
+- PIN/CONNECT, STATUS hvert 10. sekund, GLOBAL/BOOST/Ventilation og øvrige kontrollkommandoer er uendret.
+- Dashboard er uendret fra 0.5.14 og bruker `/local/xzense-card.js?v=0514`.
+- Hele integrasjonen leveres fortsatt med domenet `xzense_full_preview`. Verifiser gjeldende integrasjonsdomene før du erstatter en installert mappe med navnet `xzense`.
+
+## Alpha 0.5.14 — nytt Lovelace-dashboard og temperaturprobe
+
+Denne versjonen inkluderer dashboardkortet både i `www/xzense-card.js` (anbefalt: kopier til `/config/www/` og bruk ressursen `/local/xzense-card.js?v=0514`) og under `custom_components/xzense_full_preview/www/xzense-card.js`.
+Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgfritt eget visningsnavn per felt. Se [dashboard/INSTALLASJON.md](dashboard/INSTALLASJON.md) for full oppdatering og ressursregistrering. Ikke gi en eksisterende integrasjonsmappe ved navn `xzense` nytt navn uten å kontrollere integrasjonsdomenet. Fem faner: Hovedskjerm, Driftsinnstillinger, Konfigurasjon, Kontrollpanel og Diagnostikk.
+
+- `Temperature probe` er nå en **eksperimentell På/Av-bryter** for GLOBAL `0x56`. Verdiene `0=Av`, `1=På` må bekreftes på panelet ved første forsiktige test; kontrollen deaktiverer automatisk temperaturbasert start/stopp når den er av. Ikke test under aktiv fyring.
+- Overlange diagnostikk-sensortilstander begrenses til 255 tegn; komplett GLOBAL-oppsett og Bluetooth-feiltekst bevares i attributter og diagnostikk.
+- Alpha 0.5.14: ingen endring i BLE/PIN/STATUS-transport eller kildevalg.
+- Inneholder alt fra 0.5.12b og 0.5.13, inkludert Refuel i tilstand 4 og 5.
+
 # Xzense Alpha
 
-## Alpha 0.5.15 – Bluetooth proxy selection and disconnect diagnostics (22 October 2026)
+## Alpha 0.5.16 – Strongest BLE proxy + fire timers (22 October 2026)
 
-**Download:** [xzense-alpha-0.5.15-source.zip](xzense-alpha-0.5.15-source.zip) – complete source code, dashboard, and tests.
+**Download:** [xzense-alpha-0.5.16-source.zip](xzense-alpha-0.5.16-source.zip) · [Installation](INSTALLASJON_0.5.16.md) · [Next-chat handoff](OVERLEVERING_NESTE_CHAT_0.5.16.md)
 
-- Collect fresh advertisements for 3 seconds before selecting a Bluetooth proxy, and choose using RSSI with a bounded preference for previously successful sources.
-- Record the active proxy, connection RSSI, session duration, last STATUS request/response, and last 20 disconnect events.
-- Separate local shutdown/setup cleanup from unexpected BLE callback, and guard against delayed callbacks from old sessions; the callback does NOT tell us whether the panel, proxy, or RF path caused a disconnect.
-- Keep the same PIN, Xzense commands, 10-second STATUS polling, prior entity IDs and 0.5.14 dashboard.
-- 95 local tests passed, but these BLE changes are not verified with the physical device yet.
-- Read [INSTALLASJON_0.5.15.md](INSTALLASJON_0.5.15.md) to verify the active custom_components folder and domain before installing.
+- Compare BLE discoveries **per proxy** using `async_register_advertisement_callback` and `async_scanner_devices_by_address`. Rank by actual RSSI; no last-success/failure score, and fall back to other candidates on connection failure.
+- Capture candidate sources and origin (`fresh_raw_advertisement` or `per_scanner_cache`) in diagnostics. RSSI is sampled, not continuously measured, and a cached value may be stale.
+- Existing **Time in current state** sensor now reports `HH:MM:SS`, correcting the signed 16-bit display and 65,536-second rollover. Unique ID stays `state_timer`; raw seconds, rollover count and continuity are attributes.
+- New **Fire duration** sensor measures an observed fire cycle from Boosting/Operation/Refueling/Burnout/Afterrun until Ready; Ventilation does not start a cycle. Unknown starting times are conservatively flagged and **never presented as exact**.
+- Store timer checkpoints across HA restarts with the Home Assistant storage helper. Prolonged BLE outages can conceal state changes, so elapsed reconstruction and fire duration have uncertainty indicators.
+- Updated Lovelace card 0.5.16 displays both timers (Norwegian labels), with all device entities still English. Existing commands and 10-second STATUS polling are unchanged.
+- Automated unit/regression tests and JS smoke test pass locally; **physical Bluetooth/controller validation remains outstanding**.
 
-## Alpha 0.5.14 – dashboard og temperatursensor (22. oktober 2026)
-
-**Nedlasting:** [xzense-alpha-0.5.14-source.zip](xzense-alpha-0.5.14-source.zip) (komplett kildekode, tester og dashboard).
-
-- Refueling («Legg på ved») tilgjengelig i Operation (state 4) og Burnout (state 5), videreført fra 0.5.12b.
-- Temperaturprobe som eksperimentell På/Av-bryter via GLOBAL 0x56; mapping 0/1 er ikke fysisk bekreftet. Ikke endre under aktiv fyring.
-- Dashboardkort med fem norske faner, visuell entitetsvelger og egne visningsnavn.
-- Diagnostikksensorer avkorter teksttilstander til 255 tegn for å unngå Home Assistant-feilmeldinger.
-- BLE-oppkobling, PIN og GATT er uendret fra 0.5.13.
-
-**Slik installeres kortet når integrasjonsmappen heter `xzense`:** Kopier [www/xzense-card.js](www/xzense-card.js) til `/config/www/xzense-card.js`, registrer `/local/xzense-card.js?v=0514` som JavaScript-modul under **Innstillinger → Dashboard → Ressurser**, og legg til manuelt kort med `type: custom:xzense-card`. Se [dashboard/INSTALLASJON.md](dashboard/INSTALLASJON.md).
-
-**OBS:** ZIP-arkivet er utviklingsintegrasjonen `xzense_full_preview` (domenet i manifestet). Dersom den installerte integrasjonen faktisk heter `xzense`, skal du ikke endre mappenavn eller erstatte den med `xzense_full_preview` uten å kontrollere domenet. Det separate Lovelace-kortet fungerer uavhengig av hvilket av disse domenene som brukes, ved at du velger entiteter i redigeringen.
-
-Testet lokalt med 84 Python-tester og dashboardets JavaScript-smoketest; ikke testet på fysisk Xzense-panel.
 
 ## Alpha 0.5.13: compatibility correction to 0.5.12b
 
@@ -37,7 +43,7 @@ Testet lokalt med 84 Python-tester og dashboardets JavaScript-smoketest; ikke te
 
 Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
 
-Current integration version: **0.5.13 Alpha**, a small revision of **0.5.12**.
+Current integration version: **0.5.15 Alpha**, based on **0.5.14**.
 
 > The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
 
@@ -82,7 +88,7 @@ The firmware also contains an older debug-name lookup whose GLOBAL labels are sh
 |---|---|---|
 | Boost switch | packet `0x08`, start `1/0` + inside temperature | Command live-verified, status from STATUS |
 | Start lighting | packet `0x08`, start `1` | Firmware-derived; only state `2` |
-| Refuel | packet `0x08`, start `1` | v4.10_RC2-derived; only state `5 = Burnout` |
+| Refuel | packet `0x08`, start `1` | v4.10_RC2-derived; states `4 = Operation` and `5 = Burnout` |
 | Stop firing | packet `0x08`, start `0` | states `3 = Boosting` and `7 = Refueling/Reheating` |
 | Stop firing (Afterrun branch) | GLOBAL `0x19 = 6` | states `4 = Operation` and `5 = Burnout`; enters Afterrun |
 | Ventilation switch | packet `0x09`, start `1/0` | Live tested; status from STATUS state 8 |
@@ -117,10 +123,10 @@ The BLE discovery/reconnect/session-acquisition methods are preserved; the nonfu
 | `0x53` | Chimney draught setpoint | Pa | Live + v4.10 code |
 | `0x54` | Minimum fan voltage | V | Live + v4.10 code |
 | `0x55` | System control | enum 0/1/2 | v4.10 direct UI binding |
-| `0x56` | Temperature sensor | enum pending | v4.10 direct UI binding; read-only |
-| `0x58` | Alarm setpoint | scaling pending | v4.10 direct UI binding; read-only |
-| `0x59` | Reboost/refire time | raw | v4.10 ID known/read-only |
-| `0x5B` | Burnout timeout | raw | v4.10 ID known/read-only |
+| `0x56` | Temperature probe | experimental On/Off (`0/1`, unverified) | v4.10 direct UI binding; write mapping awaits physical confirmation |
+| `0x58` | Alarm setpoint | raw / 10 °C | 150–400 °C number; physical write unverified |
+| `0x59` | Reboost/refire time | seconds → HA minutes | experimental writable configuration |
+| `0x5B` | Burnout timeout | seconds → HA minutes | experimental writable configuration |
 
 `0x57` and `0x5A` are intentionally deferred and visible only in diagnostic raw data and protocol notes. `0x00`–`0x04`, `0x20`, `0x35` and `0x36` remain unidentified. Candidate/service fields are deliberately not writable until their value coding and safe ranges are established.
 
