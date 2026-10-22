@@ -1,0 +1,40 @@
+name: Publish Xzense Alpha 0.5.18
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-xzense-0518.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore complete ZIP created from Alpha 0.5.17
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs/99fad2be35d4bf1021431a209d99e37a192f937c" \
+            | jq -r '.content' | base64 --decode > xzense-alpha-0.5.18-source.zip
+          unzip -tq xzense-alpha-0.5.18-source.zip
+          mkdir -p /tmp/xzense-0518
+          unzip -q xzense-alpha-0.5.18-source.zip -d /tmp/xzense-0518
+          python -m compileall -q /tmp/xzense-0518/custom_components/xzense_full_preview
+          python -m json.tool /tmp/xzense-0518/custom_components/xzense_full_preview/manifest.json >/dev/null
+          python -m pip install -q pytest
+          ( cd /tmp/xzense-0518 && python -m pytest -q tests/test_status_polling_0518.py )
+      - name: Commit tested binary artifact
+        run: |
+          set -euo pipefail
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add xzense-alpha-0.5.18-source.zip
+          git commit -m "Release Xzense Alpha 0.5.18 source ZIP"
+          git push
