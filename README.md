@@ -1,5 +1,16 @@
 # Xzense Alpha
 
+## Alpha 0.5.15 – Bluetooth proxy selection and disconnect diagnostics (22 October 2026)
+
+**Download:** [xzense-alpha-0.5.15-source.zip](xzense-alpha-0.5.15-source.zip) – complete source code, dashboard, and tests.
+
+- Collect fresh advertisements for 3 seconds before selecting a Bluetooth proxy, and choose using RSSI with a bounded preference for previously successful sources.
+- Record the active proxy, connection RSSI, session duration, last STATUS request/response, and last 20 disconnect events.
+- Separate local shutdown/setup cleanup from unexpected BLE callback; the callback does NOT tell us whether the panel, proxy, or RF path caused a disconnect.
+- Keep the same PIN, Xzense commands, 10-second STATUS polling, prior entity IDs and 0.5.14 dashboard.
+- 94 local tests passed, but these BLE changes are not verified with the physical device yet.
+- Read [INSTALLASJON_0.5.15.md](INSTALLASJON_0.5.15.md) to verify the active custom_components folder and domain before installing.
+
 ## Alpha 0.5.14 – dashboard og temperatursensor (22. oktober 2026)
 
 **Nedlasting:** [xzense-alpha-0.5.14-source.zip](xzense-alpha-0.5.14-source.zip) (komplett kildekode, tester og dashboard).
