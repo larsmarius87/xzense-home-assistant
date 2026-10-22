@@ -22,3 +22,5 @@ Dashboardkortet er uendret fra 0.5.14. Ressursen fra /config/www/xzense-card.js 
 Etter restart, bekreft manifest 0.5.15 og adapter_collection_window_seconds = 3.0.
 Sjekk selected_source, active_session_source, preferred_source, last_disconnect_kind og disconnect_history.
 unexpected_ble_callback betyr bare at denne integrasjonen ikke initierte disconnect. Det betyr ikke at Xzense-kontrolleren med sikkerhet avsluttet forbindelsen.
+
+**Revision 0.5.15 (95 tests):** Guards delayed callbacks from a previously closed BLE client so they cannot reset a replacement connection. Also protects against a lost disconnect wake-up during application handshake. No change to the physical Xzense packet encoding.
