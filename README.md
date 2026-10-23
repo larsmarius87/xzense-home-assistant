@@ -2,12 +2,14 @@
 
 Uoffisiell, eksperimentell Home Assistant-integrasjon for **Exodraft Xzense** over Bluetooth LE. Integrasjonsdomenet er `xzense_full_preview` og skal ikke endres ved oppgradering.
 
-**Nyeste pakke: Alpha 0.5.19.3 (23. oktober 2026)** · [Last ned komplett kildekode og dokumentasjon](xzense-alpha-0.5.19.3-slider-seconds-source.zip) · Installasjonsfilen `INSTALLASJON_0.5.19.3.md` ligger i ZIP-arkivet.
+**Nyeste pakke: Alpha 0.5.20 (23. oktober 2026)** · [Last ned komplett kildekode, tester og installasjonsveiledning](xzense-alpha-0.5.20-adaptive-ble-source.zip). Dette er en testversjon, ikke fysisk Bluetooth-verifisert.
 
 ## Kort om gjeldende versjon
 
 | Funksjon | Gjeldende oppførsel |
 |---|---|
+| Diagnoseentiteter | 12 aktive; full rådiagnostikk bevares ved eksport. |
+| Bluetooth proxyvalg | 0,8 s hurtigvindu ved kjent, fersk proxy med godt signal; ellers 3 s. |
 | Bluetooth i Ready (hvile) | Slider **0–120 minutter**, standard 5 min. `0` betyr kontinuerlig tilkobling. |
 | Bluetooth under aktiv drift | Slider **0–600 sekunder**, standard `0` (kontinuerlig). Omfatter Boosting, Operation, Afterrun og Ventilation. |
 | Styringskommandoer | Tilkobling ved behov, kommandokø og normalt 15 sekunders holdetid etter handling. |
@@ -17,7 +19,7 @@ Uoffisiell, eksperimentell Home Assistant-integrasjon for **Exodraft Xzense** ov
 
 ### Viktig om sikkerhet og stabilitet
 
-**Ikke bruk Alpha 0.5.15 eller 0.5.16.** En bekreftet busy-loop i BLE-gjentilkoblingen kunne fryse Home Assistant. 0.5.17 rettet denne feilbanen; nyere versjoner bygger videre på beskyttelsen. 0.5.19.3 har bestått lokale regresjonstester, men den nyeste kombinasjonen av modusbytter og fysisk Bluetooth-forbindelse må fortsatt prøves på anlegget.
+**Ikke bruk Alpha 0.5.15 eller 0.5.16.** En bekreftet busy-loop i BLE-gjentilkoblingen kunne fryse Home Assistant. 0.5.17 rettet denne feilbanen; nyere versjoner bygger videre på beskyttelsen. 0.5.20 har bestått lokale regresjonstester, men den nye adaptive Bluetooth-skanningen må fortsatt testes mot det fysiske kontrollpanelet.
 
 Dette er ikke en sikkerhetskontroller. Når Bluetooth er frakoblet, kan både driftstilstand og temperatur være eldre enn de ser ut. Ikke bruk lagrede verdier som bekreftet sanntidsstatus.
 
@@ -31,6 +33,17 @@ Dette er ikke en sikkerhetskontroller. Når Bluetooth er frakoblet, kan både dr
 De to Bluetooth-intervallene er `number`-entiteter med `NumberMode.SLIDER`. Home Assistant kan fortsatt vise kompakte tallfelter i enkelte lister; åpne entitetsdialogen eller legg entiteten i et Tile-kort for en faktisk slider. Ved oppgradering fra 0.5.19.2 konverteres aktivt intervall fra minutter til sekunder (f.eks. 1 min → 60 sek).
 
 ## Versjonshistorikk (nyeste først)
+
+## Alpha 0.5.20 — lettere diagnostikk og adaptivt proxyvalg (23. oktober 2026)
+
+- **12 diagnostikksensorer beholdes aktive**, mot tidligere 97. Overskytende entiteter deaktiveres i registeret uten å slettes, med de opprinnelige unique ID-ene bevart. Full protokoll-, GLOBAL- og Bluetooth-diagnostikk er fortsatt tilgjengelig ved eksport fra HA.
+- Hver mottatt BLE-annonsering utløser ikke lenger oppdatering av alle Home Assistant-entiteter. Valgt proxy og RSSI publiseres etter skanningen.
+- Når en **fersk annonsering** kommer fra en tidligere fungerende proxy med minst **−75 dBm**, og denne ikke nylig feilet, brukes et forkortet innsamlingsvindu på **0,8 sekunder**. Ved svakere eller ukjent kilde beholdes det opprinnelige **3-sekundersvinduet**.
+- Hvis alle kilder fra hurtigskanningen mislykkes, forsøkes én ny runde med fullt vindu. Proxyrotasjon, autentisering, STATUS, 0.5.17-beskyttelsen mot CPU-løkke og kontrollkommandoene er ellers uendret.
+- Dashboardet viser nå **Sist oppdatert** også via `last_data_at` på en tilordnet vanlig sensor dersom den egne diagnostikksensoren ikke gjenkjennes.
+- Installasjon: oppdater filene i **eksisterende** integrasjonsmappe, uten å endre mappenavnet eller `manifest.json`-domenet. Dashboardressurs: `/api/xzense_full_preview/xzense-card.js?v=0520`.
+- **Testing:** 153 automatiserte Python-tester og 4 JavaScript-tester bestått lokalt; ny Bluetooth-oppførsel ikke testet fysisk.
+
 
 ## Alpha 0.5.19.3 – Bluetooth-slidere i HA og sekunder under aktiv drift
 
