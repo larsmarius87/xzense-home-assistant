@@ -1,0 +1,491 @@
+{
+  "title": "Xzense Alpha",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Velg Xzense",
+        "description": "Velg en oppdaget Xzense-enhet og skriv inn den fire tegn lange PIN-koden som vises på Xzense-kontrollpanelet.",
+        "data": {
+          "address": "Bluetooth-adresse",
+          "pin": "Xzense-PIN"
+        },
+        "data_description": {
+          "pin": "Fire heksadesimale tegn (0-9, A-F), for eksempel B490."
+        }
+      },
+      "bluetooth_confirm": {
+        "title": "Konfigurer Xzense Alpha",
+        "description": "Skriv inn den fire tegn lange PIN-koden som vises under Nettverk → Bluetooth på Xzense-kontrollpanelet.",
+        "data": {
+          "pin": "Xzense-PIN"
+        },
+        "data_description": {
+          "pin": "Fire heksadesimale tegn (0-9, A-F)."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Skriv inn Xzense-PIN",
+        "description": "Denne versjonen av integrasjonen krever den fire tegn lange PIN-koden som vises på Xzense-kontrollpanelet.",
+        "data": {
+          "pin": "Xzense-PIN"
+        }
+      },
+      "reconfigure": {
+        "title": "Endre Xzense-PIN",
+        "description": "Oppdater PIN-koden som er lagret i Home Assistant.",
+        "data": {
+          "pin": "Xzense-PIN"
+        }
+      }
+    },
+    "error": {
+      "invalid_pin": "PIN-koden må bestå av nøyaktig fire heksadesimale tegn (0-9, A-F)."
+    },
+    "abort": {
+      "already_configured": "Denne Xzense-enheten er allerede konfigurert.",
+      "no_devices_found": "Fant ingen Xzense-enhet.",
+      "not_supported": "Bluetooth-enheten som ble funnet støttes ikke.",
+      "reauth_successful": "Xzense-PIN ble oppdatert.",
+      "reconfigure_successful": "Xzense-PIN ble oppdatert."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "active_session_source": {
+        "name": "Aktiv Bluetooth-proxy"
+      },
+      "advertisement_count": {
+        "name": "Nye BLE-annonseringer"
+      },
+      "advertisement_timeouts": {
+        "name": "Tidsavbrudd ved BLE-annonsering"
+      },
+      "advertisement_waits": {
+        "name": "Ventinger på BLE-annonsering"
+      },
+      "application_auth_state": {
+        "name": "Autentiseringsstatus for applikasjon"
+      },
+      "application_auth_success_count": {
+        "name": "Vellykkede applikasjonsautentiseringer"
+      },
+      "application_connect_attempts": {
+        "name": "CONNECT-forsøk fra applikasjon"
+      },
+      "authorization_retries": {
+        "name": "Nye GATT-autoriseringsforsøk"
+      },
+      "battery": {
+        "name": "0x05-status"
+      },
+      "ble_link_connected": {
+        "name": "BLE-forbindelse aktiv"
+      },
+      "boost_ack_count": {
+        "name": "Boost-bekreftelser (ACK)"
+      },
+      "boost_nack_count": {
+        "name": "Boost-avvisninger (NACK)"
+      },
+      "boost_request_count": {
+        "name": "Boost-forespørsler"
+      },
+      "candidate_source_count": {
+        "name": "Antall Bluetooth-kandidater"
+      },
+      "candidate_sources": {
+        "name": "Mulige Bluetooth-kilder"
+      },
+      "chimney_temperature": {
+        "name": "Pipetemperatur"
+      },
+      "connect_ack_flag": {
+        "name": "Flagg i CONNECT ACK"
+      },
+      "connect_ack_version": {
+        "name": "Versjon i CONNECT ACK"
+      },
+      "connection_attempts": {
+        "name": "Bluetooth-tilkoblingsforsøk"
+      },
+      "crc_errors": {
+        "name": "CRC-feil"
+      },
+      "device_state": {
+        "name": "Driftstilstand"
+      },
+      "discarded_bytes": {
+        "name": "Forkastede protokollbyte"
+      },
+      "disconnect_count": {
+        "name": "Bluetooth-frakoblinger"
+      },
+      "fan_speed": {
+        "name": "Faktisk viftehastighet"
+      },
+      "fire_duration": {
+        "name": "Fyringsvarighet"
+      },
+      "firmware_version": {
+        "name": "Fastvareversjon"
+      },
+      "global_0x20_raw": {
+        "name": "GLOBAL 0x20 (råverdi)"
+      },
+      "global_update_count": {
+        "name": "GLOBAL-oppdateringer"
+      },
+      "global_values": {
+        "name": "GLOBAL-verdier"
+      },
+      "global_write_ack_count": {
+        "name": "GLOBAL-skrivinger bekreftet (ACK)"
+      },
+      "global_write_nack_count": {
+        "name": "GLOBAL-skrivinger avvist (NACK)"
+      },
+      "global_write_request_count": {
+        "name": "GLOBAL-skriveforespørsler"
+      },
+      "handshake_last_error": {
+        "name": "Siste håndtrykksfeil"
+      },
+      "handshake_response_at": {
+        "name": "Tid for håndtrykkssvar"
+      },
+      "handshake_sent_at": {
+        "name": "Tid for sendt håndtrykk"
+      },
+      "inside_temperature": {
+        "name": "Innetemperatur"
+      },
+      "invalid_frames": {
+        "name": "Ugyldige protokollrammer"
+      },
+      "last_advertisement_at": {
+        "name": "Tid for siste BLE-annonsering"
+      },
+      "last_advertisement_connectable": {
+        "name": "Siste annonsering kan kobles til"
+      },
+      "last_advertisement_name": {
+        "name": "Navn i siste annonsering"
+      },
+      "last_advertisement_rssi": {
+        "name": "RSSI ved siste annonsering"
+      },
+      "last_advertisement_source": {
+        "name": "Kilde for siste annonsering"
+      },
+      "last_boost_action": {
+        "name": "Siste Boost-handling"
+      },
+      "last_boost_request_at": {
+        "name": "Tid for siste Boost-forespørsel"
+      },
+      "last_boost_response": {
+        "name": "Svar på siste Boost-forespørsel"
+      },
+      "last_boost_response_at": {
+        "name": "Tid for siste Boost-svar"
+      },
+      "last_data_at": {
+        "name": "Sist oppdatert (Bluetooth)"
+      },
+      "last_disconnect_kind": {
+        "name": "Type siste BLE-frakobling"
+      },
+      "last_disconnect_session_seconds": {
+        "name": "Varighet for siste BLE-økt"
+      },
+      "last_disconnect_source": {
+        "name": "Proxy ved siste frakobling"
+      },
+      "last_error": {
+        "name": "Siste Bluetooth-feil"
+      },
+      "last_failed_source": {
+        "name": "Siste proxy med feil"
+      },
+      "last_frame": {
+        "name": "Siste protokollramme"
+      },
+      "last_global_at": {
+        "name": "Tid for siste GLOBAL-oppdatering"
+      },
+      "last_global_id": {
+        "name": "Siste GLOBAL-ID"
+      },
+      "last_global_name": {
+        "name": "Siste GLOBAL-navn"
+      },
+      "last_global_value": {
+        "name": "Siste GLOBAL-verdi"
+      },
+      "last_global_write_id": {
+        "name": "ID ved siste GLOBAL-skriving"
+      },
+      "last_global_write_request_at": {
+        "name": "Tid for siste GLOBAL-skriveforespørsel"
+      },
+      "last_global_write_response": {
+        "name": "Svar på siste GLOBAL-skriving"
+      },
+      "last_global_write_response_at": {
+        "name": "Tid for svar på siste GLOBAL-skriving"
+      },
+      "last_global_write_value": {
+        "name": "Verdi ved siste GLOBAL-skriving"
+      },
+      "last_notification": {
+        "name": "Siste BLE-varsel"
+      },
+      "last_notification_at": {
+        "name": "Tid for siste BLE-varsel"
+      },
+      "last_packet_type": {
+        "name": "Siste applikasjonspakketype"
+      },
+      "last_payload": {
+        "name": "Siste protokolldata"
+      },
+      "last_protocol_type": {
+        "name": "Siste applikasjonsprotokolltype"
+      },
+      "last_status_payload": {
+        "name": "Data i siste STATUS-svar"
+      },
+      "last_status_request_at": {
+        "name": "Tid for siste STATUS-forespørsel"
+      },
+      "last_status_response_at": {
+        "name": "Tid for siste STATUS-svar"
+      },
+      "last_tx": {
+        "name": "Sist sendt fra applikasjonen (TX)"
+      },
+      "last_tx_at": {
+        "name": "Tid for siste sending (TX)"
+      },
+      "last_tx_kind": {
+        "name": "Type siste sendte melding (TX)"
+      },
+      "next_poll_at": {
+        "name": "Neste Bluetooth-oppdatering"
+      },
+      "notification_count": {
+        "name": "Antall BLE-varsler"
+      },
+      "notifications_active": {
+        "name": "BLE-varsler aktive"
+      },
+      "outside_temperature": {
+        "name": "Utetemperatur"
+      },
+      "packet_count": {
+        "name": "Gyldige protokollrammer"
+      },
+      "pairing_attempts": {
+        "name": "Bluetooth-paringsforsøk"
+      },
+      "pairing_last_error": {
+        "name": "Siste Bluetooth-paringsfeil"
+      },
+      "pairing_success": {
+        "name": "Bluetooth-paring vellykket"
+      },
+      "phase": {
+        "name": "Bluetooth-tilkoblingsfase"
+      },
+      "preferred_source": {
+        "name": "Foretrukket Bluetooth-proxy"
+      },
+      "pressure": {
+        "name": "Lufttrykk"
+      },
+      "raw_global_35": {
+        "name": "GLOBAL 0x35 (råverdi)"
+      },
+      "raw_global_36": {
+        "name": "GLOBAL 0x36 (råverdi)"
+      },
+      "selected_source": {
+        "name": "Valgt Bluetooth-proxy"
+      },
+      "selected_source_rssi": {
+        "name": "RSSI for valgt proxy"
+      },
+      "session_id": {
+        "name": "Økt-ID"
+      },
+      "signal_strength": {
+        "name": "0x18-status"
+      },
+      "source_connection_attempts": {
+        "name": "Proxy-tilkoblingsforsøk"
+      },
+      "source_fallbacks": {
+        "name": "Bytter til alternativ proxy"
+      },
+      "state_timer": {
+        "name": "Tid i gjeldende tilstand"
+      },
+      "status_air_pressure_hpa": {
+        "name": "Lufttrykk (STATUS)"
+      },
+      "status_chimney_temperature_raw": {
+        "name": "Rå pipetemperatur (STATUS)"
+      },
+      "status_device_state": {
+        "name": "Driftstilstand (STATUS)"
+      },
+      "status_fan_speed": {
+        "name": "Viftehastighet (STATUS)"
+      },
+      "status_flags": {
+        "name": "Statusflagg"
+      },
+      "status_inside_temperature_raw": {
+        "name": "Rå innetemperatur (STATUS)"
+      },
+      "status_nack_count": {
+        "name": "Antall STATUS NACK"
+      },
+      "status_outside_temperature_raw": {
+        "name": "Rå utetemperatur (STATUS)"
+      },
+      "status_polling_active": {
+        "name": "STATUS-spørring aktiv"
+      },
+      "status_request_count": {
+        "name": "Antall STATUS-forespørsler"
+      },
+      "status_request_errors": {
+        "name": "Feil ved STATUS-forespørsler"
+      },
+      "status_response_count": {
+        "name": "Antall STATUS-svar"
+      },
+      "status_state_timer": {
+        "name": "Tid i tilstand (STATUS)"
+      },
+      "tx_chunk_count": {
+        "name": "Sendte datablokker (TX)"
+      },
+      "tx_chunk_size": {
+        "name": "Datablokkstørrelse (TX)"
+      },
+      "tx_count": {
+        "name": "Sendte applikasjonsrammer (TX)"
+      },
+      "tx_write_mode": {
+        "name": "Skrivemodus (TX)"
+      },
+      "device_state_localized": {
+        "name": "Driftstilstand (norsk)",
+        "state": {
+          "offline": "Frakoblet",
+          "setup": "Oppsett",
+          "ready_for_lighting": "Klar for fyring",
+          "boosting": "Boost",
+          "operation": "Normal drift",
+          "burnout": "Utbrenning",
+          "afterrun": "Ettergang",
+          "refueling": "Legg på ved",
+          "ventilation": "Ventilasjon",
+          "error": "Feil",
+          "upgrading": "Oppdatering",
+          "unknown_state": "Ukjent tilstand"
+        }
+      }
+    },
+    "number": {
+      "afterrun_time": {
+        "name": "Ettergangstid"
+      },
+      "alarm_setpoint": {
+        "name": "Alarmtemperatur"
+      },
+      "auto_start_temperature": {
+        "name": "Starttemperatur"
+      },
+      "auto_stop_temperature": {
+        "name": "Stopptemperatur"
+      },
+      "bluetooth_active_update_interval": {
+        "name": "Bluetooth-intervall under drift"
+      },
+      "bluetooth_update_interval": {
+        "name": "Bluetooth-intervall i hvile"
+      },
+      "boost_fan_speed": {
+        "name": "Boost-hastighet"
+      },
+      "boost_stop_temperature": {
+        "name": "Temperatur for stopp av Boost"
+      },
+      "boost_time": {
+        "name": "Boost-tid"
+      },
+      "brightness_raw": {
+        "name": "Lysstyrke"
+      },
+      "burnout_time": {
+        "name": "Tidsgrense for utbrenning"
+      },
+      "contrast_raw": {
+        "name": "Kontrast"
+      },
+      "minimum_fan_voltage": {
+        "name": "Minste viftespenning"
+      },
+      "refire_time": {
+        "name": "Gjenfyrings-tid"
+      },
+      "user_fan_speed": {
+        "name": "Viftehastighet"
+      },
+      "volume_raw": {
+        "name": "Lyd"
+      },
+      "wanted_draft": {
+        "name": "Ønsket skorsteinstrekk"
+      }
+    },
+    "button": {
+      "refuel": {
+        "name": "Legg på ved"
+      },
+      "start_fire": {
+        "name": "Start opptenning"
+      },
+      "stop_fire": {
+        "name": "Avslutt fyring"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "temperature_sensor": {
+        "name": "Temperaturføler"
+      },
+      "ventilation": {
+        "name": "Ventilasjon"
+      }
+    },
+    "select": {
+      "system_control": {
+        "name": "Systemstyring"
+      }
+    },
+    "binary_sensor": {
+      "ble_connection": {
+        "name": "BLE-forbindelse"
+      },
+      "connection": {
+        "name": "Tilkobling"
+      }
+    }
+  }
+}

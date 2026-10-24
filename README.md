@@ -2,7 +2,7 @@
 
 Uoffisiell, eksperimentell Home Assistant-integrasjon for **Exodraft Xzense** over Bluetooth LE. Integrasjonsdomenet er `xzense_full_preview` og skal ikke endres ved oppgradering.
 
-**Nyeste pakke: Alpha 0.5.20 (23. oktober 2026)** · [Last ned komplett kildekode, tester og installasjonsveiledning](xzense-alpha-0.5.20-adaptive-ble-source.zip). Dette er en testversjon, ikke fysisk Bluetooth-verifisert.
+**Nyeste pakke: Alpha 0.5.20.2 (24. oktober 2026)** · [Komplett kildekode og dokumentasjon](xzense-alpha-0.5.20.2-norske-driftstilstander-source.zip) · [Kun oppdateringsfiler](xzense-alpha-0.5.20.2-norske-driftstilstander-tillegg.zip) · [Redigerbar norsk språkfil](xzense_nb_oversettelser_0.5.20.2.json). Dette er fortsatt en testversjon; siste Bluetooth-optimalisering er ikke bekreftet fysisk.
 
 ## Kort om gjeldende versjon
 
@@ -33,6 +33,22 @@ Dette er ikke en sikkerhetskontroller. Når Bluetooth er frakoblet, kan både dr
 De to Bluetooth-intervallene er `number`-entiteter med `NumberMode.SLIDER`. Home Assistant kan fortsatt vise kompakte tallfelter i enkelte lister; åpne entitetsdialogen eller legg entiteten i et Tile-kort for en faktisk slider. Ved oppgradering fra 0.5.19.2 konverteres aktivt intervall fra minutter til sekunder (f.eks. 1 min → 60 sek).
 
 ## Versjonshistorikk (nyeste først)
+
+## Alpha 0.5.20.2 — norske driftstilstander (24. oktober 2026)
+
+- **Ready for lighting → Klar for fyring** i dashboardet og den nye lokaliserte sensoren.
+- Norske driftstilstander kan redigeres via `entity.sensor.device_state_localized.state` i `translations/nb.json`. Tilstandene inkluderer Frakoblet, Oppsett, Klar for fyring, Boost, Normal drift, Utbrenning, Ettergang, Legg på ved, Ventilasjon, Feil og Oppdatering.
+- Eksisterende `device_state` beholder de engelske protokollverdiene og samme `unique_id` for å bevare automasjoner. Ny `device_state_localized` eksponerer oversettbar status med stabile interne koder.
+- Xzense-kortet bruker HA-oversettelser med norsk reserveordliste. Oppdatert ressursadresse: `/api/xzense_full_preview/xzense-card.js?v=05202`.
+- Beholder dine reviderte entitetsnavn **Ettergangstid** og **Gjenfyrings-tid**.
+- Bluetooth, PIN, datainnhenting og skrivekommandoer er uendret fra 0.5.20.1. [Dokumentasjon](NORSKE_DRIFTSTILSTANDER_0.5.20.2.md).
+
+## Alpha 0.5.20.1 — norske entitetsnavn (23. oktober 2026)
+
+- Norsk bokmål for samtlige 136 entitetsnavn via Home Assistants oversettelsessystem.
+- Oversettelsene ligger i `strings.json` og `translations/nb.json`; tidligere hardkodede navn er tilpasset slik at HA kan bruke oversettelsene.
+- Oversettelsen endrer ikke `unique_id`, protokoll eller intern kontrollverdi. Eksisterende egendefinerte entitetsnavn i HA blir ikke tvangsoverskrevet.
+
 
 ## Alpha 0.5.20 — lettere diagnostikk og adaptivt proxyvalg (23. oktober 2026)
 
