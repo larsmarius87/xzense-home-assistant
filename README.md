@@ -1,3 +1,15 @@
+# Xzense Alpha – status 26. oktober 2026
+
+**Siste kildepakke:** [0.5.24 multi-proxy](xzense-alpha-0.5.24-multi-proxy-relaxed-source.zip) · [Alle revisjoner og kilde-ZIP-er](REVISJONER.md) · [Endringslogg](CHANGELOG.md) · [Installasjon 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md)
+
+0.5.24 kan velge mellom flere Home Assistant Bluetooth-proxyer etter RSSI, bruke adapterspesifikk cache og prøve neste kilde ved BLE-tilkoblingsfeil. Ingen MAC er hardkodet. **Viktig:** 0.5.15 og 0.5.16 har en bekreftet asyncio busy-loop som kan fryse HA; behold dem kun som historikk.
+
+**Fysisk verifikasjon per 26.10.2026:** Diagnostikk viste 8/8 vellykkede autentiseringer, 8/8 STATUS-svar, 2/2 GLOBAL skrive-ACK, 0 CRC-feil og 3 proxy-fallback-hendelser. Ved periodisk polling er `connected: false` mellom avlesningene normalt. Ny nærmeste Stue-proxy (ATOM Lite, kilde `90:15:06:FA:DF:FA`) har i vellykkede økter vist cirka −65 dBm, den gamle cirka −78 dBm. Langvarig drift og alle kommandoer er ikke ferdig verifisert.
+
+**Neste planlagte forbedring – ikke del av 0.5.24:** En egen alltid aktiv sensor for sist vellykkede Bluetooth/STATUS-oppdatering i norsk lokal dato og klokkeslett (`dd.mm.åååå kl. HH:MM:SS`), som beholder tidspunktet ved frakobling.
+
+---
+
 # Xzense Alpha – Home Assistant-integrasjon for Exodraft Xzense
 
 Eksperimentell, lokal **Bluetooth Low Energy (BLE)**-integrasjon for Exodraft Xzense-kontrollpanelet. Prosjektet ble utviklet og testet gjennom samtalene *Exodraft Xzense styring* 1–3, med analyse av kontrollerdiagnostikk, app og firmware. **Nåværende kildeversjon: 0.5.24 Alpha (26. oktober 2026).**
