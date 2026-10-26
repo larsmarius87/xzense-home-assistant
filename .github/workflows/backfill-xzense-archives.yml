@@ -1,0 +1,36 @@
+name: Backfill missing Xzense archives
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/backfill_xzense_archives.py
+      - tools/xzense_brotli_patch.b64
+      - .github/workflows/backfill-xzense-archives.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xzense-archive-backfill
+  cancel-in-progress: false
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'brotli==1.1.0'
+      - name: Rebuild and validate archives
+        run: python tools/backfill_xzense_archives.py
+      - name: Commit generated source releases
+        run: |
+          git add -- 'xzense-alpha-*.zip'
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit'
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'archive: restore missing Xzense release ZIPs'
+          git push origin HEAD:main
