@@ -1,6 +1,6 @@
 # Historisk CHANGELOG – original før sortering 26.10.2026
 
-> Beholdt ordrett for sporbarhet. Enkelte eldre formuleringer ble senere korrigert etter nye målinger; se oppdatert [CHANGELOG](../CHANGELOG.md).
+> Beholdt ordrett for sporbarhet. Enkelte eldre formuleringer ble senere korrigert etter nye målinger; se oppdatert [CHANGELOG](../../CHANGELOG.md).
 
 ---
 
