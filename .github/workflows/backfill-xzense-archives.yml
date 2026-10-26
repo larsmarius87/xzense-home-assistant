@@ -1,11 +1,5 @@
-name: Backfill missing Xzense archives
+name: Restore missing Xzense archives (manual)
 on:
-  push:
-    branches: [main]
-    paths:
-      - tools/backfill_xzense_archives.py
-      - tools/xzense_brotli_patch.b64
-      - .github/workflows/backfill-xzense-archives.yml
   workflow_dispatch:
 permissions:
   contents: write
