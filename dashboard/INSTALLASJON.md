@@ -2,7 +2,7 @@
 
 ## Anbefalt: kortet som separat Lovelace-ressurs
 
-1. Last ned [xzense-alpha-0.5.14-source.zip](../xzense-alpha-0.5.14-source.zip) og pakk den ut.
+1. Last ned [xzense-alpha-0.5.14-source.zip](../arkiv/versjoner/xzense-alpha-0.5.14-source.zip) og pakk den ut.
 2. Kopier `www/xzense-card.js` til `/config/www/xzense-card.js` i Home Assistant. Opprett `www` om nødvendig.
 3. Gå til **Innstillinger → Dashboard → Ressurser** og registrer URL `/local/xzense-card.js?v=0514` med typen **JavaScript-modul**.
 4. Fjern eventuelle gamle ressurser som `/api/xzense_full_preview/xzense-card.js?v=0514` for å unngå dobbeltregistrering.
