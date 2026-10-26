@@ -1,6 +1,6 @@
 # Xzense Alpha 0.5.15 – Bluetooth-oppdatering
 
-**[Last ned ZIP](xzense-alpha-0.5.15-source.zip)**
+**[Last ned ZIP](../versjoner/xzense-alpha-0.5.15-source.zip)**
 
 ## Integrasjonsmappe
 

@@ -10,7 +10,7 @@
 
 # Xzense Alpha 0.5.21 – varsling ved utbrenning (24. oktober 2026)
 
-Ny funksjon: Velg en telefon i Home Assistant og få et pushvarsel når Xzense går **fra Normal drift (Operation / 4) til Utbrenning (Burnout / 5)**. Dette er en valgfri funksjon som er **avslått som standard**. Se [installasjonsveiledningen](INSTALLASJON_0.5.21.md).
+Ny funksjon: Velg en telefon i Home Assistant og få et pushvarsel når Xzense går **fra Normal drift (Operation / 4) til Utbrenning (Burnout / 5)**. Dette er en valgfri funksjon som er **avslått som standard**. Se [installasjonsveiledningen](../installasjon/INSTALLASJON_0.5.21.md).
 
 - Finn valget via **Innstillinger → Enheter og tjenester → Xzense Alpha → Konfigurer**.
 - Slå på *Send varsel ved utbrenning*, og velg telefonen som skal få meldingen.
@@ -37,7 +37,7 @@ Ny funksjon: Velg en telefon i Home Assistant og få et pushvarsel når Xzense g
 - Engelsk er fortsatt fallback. Eksisterende unique IDs og styringsverdier forblir uendret.
 - Integrert via Home Assistants `translation_key`, `strings.json` og `translations/nb.json`.
 - Ingen endring av Bluetooth, protokoll, ytelsesoptimering eller dashboard-JavaScript.
-- Se [språkpakkeveiledningen](NORSK_SPRAKPAKKE_0.5.20.1.md).
+- Se [språkpakkeveiledningen](../installasjon/NORSK_SPRAKPAKKE_0.5.20.1.md).
 
 ## Alpha 0.5.20 – lett diagnostikk og adaptivt proxyvalg (23. oktober 2026)
 
@@ -109,7 +109,7 @@ Se `INSTALLASJON_0.5.19.2.md` for oppgradering og tilbakeføring.
 ## Alpha 0.5.14 — nytt Lovelace-dashboard og temperaturprobe
 
 Denne versjonen inkluderer dashboardkortet både i `www/xzense-card.js` (anbefalt: kopier til `/config/www/` og bruk ressursen `/local/xzense-card.js?v=0514`) og under `custom_components/xzense_full_preview/www/xzense-card.js`.
-Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgfritt eget visningsnavn per felt. Se [dashboard/INSTALLASJON.md](dashboard/INSTALLASJON.md) for full oppdatering og ressursregistrering. Ikke gi en eksisterende integrasjonsmappe ved navn `xzense` nytt navn uten å kontrollere integrasjonsdomenet. Fem faner: Hovedskjerm, Driftsinnstillinger, Konfigurasjon, Kontrollpanel og Diagnostikk.
+Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgfritt eget visningsnavn per felt. Se [dashboard/INSTALLASJON.md](../../dashboard/INSTALLASJON.md) for full oppdatering og ressursregistrering. Ikke gi en eksisterende integrasjonsmappe ved navn `xzense` nytt navn uten å kontrollere integrasjonsdomenet. Fem faner: Hovedskjerm, Driftsinnstillinger, Konfigurasjon, Kontrollpanel og Diagnostikk.
 
 - `Temperature probe` er nå en **eksperimentell På/Av-bryter** for GLOBAL `0x56`. Verdiene `0=Av`, `1=På` må bekreftes på panelet ved første forsiktige test; kontrollen deaktiverer automatisk temperaturbasert start/stopp når den er av. Ikke test under aktiv fyring.
 - Overlange diagnostikk-sensortilstander begrenses til 255 tegn; komplett GLOBAL-oppsett og Bluetooth-feiltekst bevares i attributter og diagnostikk.
@@ -120,7 +120,7 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 
 ## Viktig sikkerhetsvarsel — 22. oktober 2026
 
-**Ikke bruk Alpha 0.5.15 eller 0.5.16.** Begge inneholder en bekreftet busy-loop i BLE-gjentilkobling som kan fryse hele Home Assistant. **0.5.17** retter denne spesifikke feilbanen, men er fortsatt kun kode-/regresjonstestet. For rask stabilisering: deaktiver Xzense eller bruk 0.5.14. [Hotfix installasjon](INSTALLASJON_0.5.17.md).
+**Ikke bruk Alpha 0.5.15 eller 0.5.16.** Begge inneholder en bekreftet busy-loop i BLE-gjentilkobling som kan fryse hele Home Assistant. **0.5.17** retter denne spesifikke feilbanen, men er fortsatt kun kode-/regresjonstestet. For rask stabilisering: deaktiver Xzense eller bruk 0.5.14. [Hotfix installasjon](../installasjon/INSTALLASJON_0.5.17.md).
 
 ## Alpha 0.5.17 — Event loop hotfix
 
@@ -132,7 +132,7 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 
 ## Alpha 0.5.16 – Strongest BLE proxy + fire timers (22 October 2026)
 
-**Download:** [xzense-alpha-0.5.16-source.zip](xzense-alpha-0.5.16-source.zip) · [Installation](INSTALLASJON_0.5.16.md) · [Next-chat handoff](OVERLEVERING_NESTE_CHAT_0.5.16.md)
+**Download:** [xzense-alpha-0.5.16-source.zip](../versjoner/xzense-alpha-0.5.16-source.zip) · [Installation](../installasjon/INSTALLASJON_0.5.16.md) · [Next-chat handoff](../overleveringer/OVERLEVERING_NESTE_CHAT_0.5.16.md)
 
 - Compare BLE discoveries **per proxy** using `async_register_advertisement_callback` and `async_scanner_devices_by_address`. Rank by actual RSSI; no last-success/failure score, and fall back to other candidates on connection failure.
 - Capture candidate sources and origin (`fresh_raw_advertisement` or `per_scanner_cache`) in diagnostics. RSSI is sampled, not continuously measured, and a cached value may be stale.
@@ -183,7 +183,7 @@ Removed empty Burn count, Operation time and Error log entities, unmapped Langua
 - Old read-only sensor entries for `0x59`/`0x5B` are removed on migration. Existing numeric settings retain their feature keys/unique IDs.
 - **Actual chimney draught (raw)** sensor hidden/removed; raw `0x51` retained in the full diagnostics.
 - **Power source (?)** preserves the existing sensor key (`battery`), but reports `Unknown (2)` / `Unknown (3)` instead of asserting Battery/External. The physical controller was wired while sending different raw values in consecutive diagnostics; the precise enum has not been proven. Raw remains present in diagnostics.
-- [ChimneyLog investigation](CHIMNEYLOG_RESEARCH.md): confirms firmware filenames and app-side indicators but no safe request/record layout. No `FILE_TRANSFER` test commands or firmware writes are added.
+- [ChimneyLog investigation](../../docs/CHIMNEYLOG_RESEARCH.md): confirms firmware filenames and app-side indicators but no safe request/record layout. No `FILE_TRANSFER` test commands or firmware writes are added.
 
 
 ## 0.5.7 source-of-truth update
