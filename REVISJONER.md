@@ -1,6 +1,6 @@
 # Xzense – versjonsarkiv og revisjonsoversikt
 
-Oppdatert 26. oktober 2026. **Nyeste tilgjengelige bygg: 0.5.24 Alpha.**
+Oppdatert 26. oktober 2026. **Nyeste tilgjengelige bygg: 0.5.24 Alpha.** Arkivet omfatter også 20 kildepakker fra 0.1.0–0.4.4.
 
 Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, ikke en liste over generelt støttede eller anbefalte installasjoner. ZIP-ene er kildearkiver som inneholder komplette integrasjonsfiler for aktuell revisjon. Se også [README](README.md), [CHANGELOG](CHANGELOG.md) og [installasjon for 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md).
 
@@ -10,8 +10,8 @@ Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, 
 
 | Revisjon | Komplett kilde-ZIP | Viktigste endring | Dokumentasjon |
 |---|---|---|---|
-| 0.5.2 | [Last ned](xzense-alpha-0.5.2-source.zip) | Tidlig BLE-integrasjon | – |
-| 0.5.5 | [Last ned](xzense-alpha-0.5.5-source.zip) | Tidlig utvidelse av Xzense-kontroller | – |
+| 0.5.2 | [Last ned](xzense-alpha-0.5.2-source.zip) | Xzense Alpha-navn, GLOBAL 0x50 og 0x54 mapping | – |
+| 0.5.5 | [Last ned](xzense-alpha-0.5.5-source.zip) | Kalibrering av skjerm-/temperatur-/tid-innstillinger | – |
 | 0.5.6 | [Last ned](xzense-alpha-0.5.6-source.zip) | Protokollutvikling og diagnose | – |
 | 0.5.7 | [Last ned](xzense-alpha-0.5.7-source.zip) | Firmwarebasert mapping av v4.10-kontroller | – |
 | 0.5.11 | [Last ned](xzense-alpha-0.5.11-source.zip) | Styringsopprydding, Boost/Ventilation | – |
@@ -45,9 +45,51 @@ Disse brukes bare til å sammenligne eller hente enkeltfiler. For vanlig install
 - [0.5.20.2 norske driftstilstander – tillegg](xzense-alpha-0.5.20.2-norske-driftstilstander-tillegg.zip)
 - [0.5.21 varslinger – tillegg](xzense-alpha-0.5.21-burnout-notifications-tillegg.zip)
 
-## Dokumenterte endringer uten eget arkiv
+## Originale historiske ZIP-er fra de første prosjektchattene
 
-README og eldre protokolldokumentasjon beskriver blant annet revisjonene **0.5.8, 0.5.9 og 0.5.10**. De har **ikke separate kilde-ZIP-er i repoet** per denne oversikten. Vi viser derfor ikke oppdiktede nedlastingslenker. Heller ikke 0.5.3 eller 0.5.4 finnes som egne ZIP-er i det gjennomgåtte repoet.
+Disse **20 originale binære ZIP-filene** er bevart byte-for-byte under [`historisk/`](historisk/README.md) og lastet opp med kontrollert Git blob-SHA. Dette er **historiske prototyper**, ikke anbefalte HA-installasjoner. Versjon 0.3.1 inneholder en hardkodet test-PIN, og 0.3.2 er en no-auth-probe. Begge ligger derfor i `historisk/IKKE_INSTALLER/`.
+
+| Revisjon | Arkiv | Hva ble utviklet? |
+|---|---|---|
+| 0.1.0-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.1.0.zip) | Første BLE-diagnostikk |
+| 0.2.0-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.0.zip) | PIN-konfigurasjon |
+| 0.2.1-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.1.zip) | BLE-pairing ved connect |
+| 0.2.2-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.2.zip) | Pairing bare ved GATT status 8 |
+| 0.2.3-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.3.zip) | Pairing etter GATT |
+| 0.2.4-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.4.zip) | Uten pairing, aktiv diagnostikk |
+| 0.2.5-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.5.zip) | Fersk annonsering kreves |
+| 0.2.6-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.6.zip) | 6 sek RSSI-valg fra proxyer |
+| 0.2.7-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.7.zip) | Xzense PIN/CONNECT/ACK |
+| 0.2.8-alpha.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_alpha_0.2.8.zip) | Umiddelbar connect etter annonsering |
+| 0.3.0-beta.1 | [ZIP](historisk/kildearkiver/xzense_home_assistant_0.3.0-beta.1.zip) | STATUS/REQ og fire live sensorer |
+| 0.3.0-beta.1 (lab) | [ZIP](historisk/kildearkiver/xzense_lab_0.3.0-beta.1.zip) | Separat read-only Bluetooth-lab |
+| 0.3.0 (preview) | [ZIP](historisk/kildearkiver/xzense_preview_0.3.0.zip) | Eget domene for parallell protokolltest |
+| 0.3.1 (preview) | [ZIP](historisk/IKKE_INSTALLER/xzense_preview_0.3.1_hardcoded_B490.zip) | **IKKE INSTALLER:** hardkodet PIN-test |
+| 0.3.2 (preview) | [ZIP](historisk/IKKE_INSTALLER/xzense_preview_0.3.2_noauth_probe.zip) | **IKKE INSTALLER:** no-auth probe |
+| 0.4.0 | [ZIP](historisk/kildearkiver/xzense_full_preview_0.4.0.zip) | Full Preview-domene og funksjonsskjelett, skriving sperret |
+| 0.4.1 | [ZIP](historisk/kildearkiver/xzense_full_preview_0.4.1.zip) | 14-byte STATUS/ACK fra fysisk panel |
+| 0.4.2 | [ZIP](historisk/kildearkiver/xzense_full_preview_0.4.2.zip) | Kalibrert 0x1E skorsteinstemperatur og 0x1F vifte |
+| 0.4.3 | [ZIP](historisk/kildearkiver/xzense_full_preview_0.4.3.zip) | Afterrun, 0x1A timer og 0x1B lufttrykk |
+| 0.4.4 | [ZIP](historisk/kildearkiver/xzense_full_preview_0.4.4.zip) | BOOST-pakker og dedikerte knappetester |
+
+## Dokumenterte revisjoner der original-ZIP ikke er i GitHub
+
+Enkelte versjoner ble laget i de tidligere samtalene og kan fortsatt finnes i det private filbiblioteket, men **det eksakte originalarkivet har ikke kunnet overføres til GitHub**. Vi lager derfor ikke nye ZIP-er som utgir seg for å være identiske med disse.
+
+| Revisjon | Dokumentert status |
+|---|---|
+| 0.4.5 | Boost-skriving åpnet kontrollert; originalfil kjent fra tidligere samtale |
+| 0.4.6 | Ikonressurser lagt til; ingen separat verifisert original-ZIP |
+| 0.4.7 | State-etiketter og firmwareversjon; originalfil kjent |
+| 0.5.0 | Eksperimentell raw GLOBAL-write; originalfil kjent |
+| 0.5.1 | Endret råmapping for skjermkontroller; originalfil kjent |
+| 0.5.3 | «Release Bluetooth to app»; originalfil kjent |
+| 0.5.4 | **Forkastet feilbygg fra 0.4.6; skal ikke installeres** |
+| 0.5.8 | Opprydding i uferdige entiteter; originalfil kjent |
+| 0.5.9 | Eksterne kontroller skjult; originalfil kjent |
+| 0.5.10 | Viftehastighet i Ventilation; originalfil kjent |
+
+Detaljer finnes i [kronologisk CHANGELOG](CHANGELOG.md). Dette skillet mellom en **dokumentert versjon** og en **tilgjengelig GitHub-kildefil** er bevisst.
 
 ## Installasjon, kompatibilitet og sikkerhet
 
