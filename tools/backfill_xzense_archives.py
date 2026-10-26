@@ -3,6 +3,8 @@ import base64, hashlib, json, pathlib, zipfile
 import brotli
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+ARCHIVE = ROOT / 'arkiv' / 'versjoner'
+SUPPLEMENT_ARCHIVE = ROOT / 'arkiv' / 'tillegg'
 BUNDLE = pathlib.Path(__file__).with_name("xzense_brotli_patch.b64")
 NAMES = {
 "19":"xzense-alpha-0.5.19-hybrid-source.zip",
@@ -43,7 +45,7 @@ def digest(files):
         d.update(body)
     return d.hexdigest()
 def load(version):
-    with zipfile.ZipFile(ROOT/NAMES[version]) as z:
+    with zipfile.ZipFile(ARCHIVE/NAMES[version]) as z:
         return {x.filename:z.read(x) for x in z.infolist() if not x.is_dir()}
 def patch_files(files, diff):
     files=dict(files)
@@ -71,6 +73,8 @@ def save(path,files,ordered=None):
             z.writestr(key,files[key])
     print("Created:",path.name)
 def main():
+    ARCHIVE.mkdir(parents=True,exist_ok=True)
+    SUPPLEMENT_ARCHIVE.mkdir(parents=True,exist_ok=True)
     changes=json.loads(brotli.decompress(base64.b64decode(BUNDLE.read_text())).decode())
     states={}
     for version,diff in changes.items():
@@ -82,9 +86,9 @@ def main():
         if actual!=EXPECTED[version]:
             raise RuntimeError(f"Integrity check failed on {version}: {actual}")
         states[version]=files
-        save(ROOT/NAMES[version],files)
+        save(ARCHIVE/NAMES[version],files)
         if version in SUPPLEMENT:
             contents=SUPPLEMENT_PATHS["20.1" if version=="20.1r" else version]
-            save(ROOT/SUPPLEMENT[version],files,contents)
+            save(SUPPLEMENT_ARCHIVE/SUPPLEMENT[version],files,contents)
 if __name__=="__main__":
     main()

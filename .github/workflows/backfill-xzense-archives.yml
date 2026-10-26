@@ -21,7 +21,7 @@ jobs:
         run: python tools/backfill_xzense_archives.py
       - name: Commit generated source releases
         run: |
-          git add -- 'xzense-alpha-*.zip'
+          git add -- arkiv/versjoner/ arkiv/tillegg/
           if git diff --cached --quiet; then
             echo 'Nothing to commit'
             exit 0

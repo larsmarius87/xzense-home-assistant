@@ -24,7 +24,7 @@ Se [full installasjonsveiledning for 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md)
 - Inneholder norsk språkpakke og et panelinspirert Lovelace-kort.
 - Kan valgfritt sende pushvarsel ved observert overgang **Operation (4) → Burnout (5)**; dette er av som standard.
 
-Se [funksjonsmatrisen](FEATURE_MATRIX.md), [protokollnotatene](PROTOCOL_NOTES.md) og [dashboardveiledningen](dashboard/INSTALLASJON.md) for detaljer og begrensninger.
+Se [funksjonsmatrisen](docs/FEATURE_MATRIX.md), [protokollnotatene](docs/PROTOCOL_NOTES.md) og [dashboardveiledningen](dashboard/INSTALLASJON.md) for detaljer og begrensninger.
 
 ## Bluetooth i 0.5.24
 
@@ -46,9 +46,9 @@ Testen med ny Stue-proxy (M5Stack ATOM Lite) og gammel Stue viste **8/8 applikas
 |---|---|
 | **[Endringslogg](CHANGELOG.md)** | Kronologiske endringer og verifiserte funn |
 | **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.24, med nedlastingslenker |
-| [Historiske prototyper](historisk/README.md) | Opprinnelige 0.1–0.4-arkiver, inkludert isolerte testbygg |
-| [Tidligere README](docs/README_HISTORISK_TIL_0.5.24.md) | Arkivert dokumentasjon før opprydding |
-| [Tidligere CHANGELOG](docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md) | Original endringslogg bevart for sammenligning |
+| [Historiske prototyper](arkiv/tidlige-versjoner/README.md) | Opprinnelige 0.1–0.4-arkiver, inkludert isolerte testbygg |
+| [Tidligere README](arkiv/dokumenter/README_HISTORISK_TIL_0.5.24.md) | Arkivert dokumentasjon før opprydding |
+| [Tidligere CHANGELOG](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md) | Original endringslogg bevart for sammenligning |
 | [Installasjon 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md) | Oppdatering og diagnose av ny multi-proxy-strategi |
 
 **Viktig om historiske versjoner:** 0.5.15 og 0.5.16 har en dokumentert asyncio busy-loop som kan fryse Home Assistant. Ikke installer disse i et fungerende system. Versjon 0.5.22 og 0.5.23 var midlertidige **Stue-only**-tester, mens 0.5.24 støtter flere proxyer.

@@ -1,6 +1,6 @@
 # Xzense Alpha – komplett endringslogg
 
-**Nyeste dokumenterte kildepakke: 0.5.24 Alpha (26. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
+**Nyeste dokumenterte kildepakke: 0.5.24 Alpha (26. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
 
@@ -135,7 +135,7 @@
 - Periodisk STATUS/REQ ble **avslått som standard**; etter autentisert oppkobling ble én STATUS/REQ sendt.
 - Valgbart intervall via «Konfigurer»: Av / 10 sek / 60 sek / 5 minutter. Kommandoer kunne også utløse STATUS.
 - `last_observed_at`, `sample_age_seconds` og `sample_stale` for sentrale sensorer; etter 120 sekunder uten nye målinger ble data markert som gamle. Passive GLOBAL-meldinger ble fortsatt lest.
-- BLE-proxyvalg, PIN og tidligere styringsfunksjoner ble beholdt. **Ikke fysisk verifisert i denne versjonen.** Se [installasjonsnotatet](INSTALLASJON_0.5.18.md).
+- BLE-proxyvalg, PIN og tidligere styringsfunksjoner ble beholdt. **Ikke fysisk verifisert i denne versjonen.** Se [installasjonsnotatet](arkiv/installasjon/INSTALLASJON_0.5.18.md).
 
 ## 0.5.17 Alpha — CRITICAL asyncio event-loop hotfix (2026-10-22)
 
@@ -372,7 +372,7 @@
 
 ## Tidlige prototyper 0.1.0–0.4.1 (2026)
 
-De tidlige filene stammer fra de første Xzense-samtalene. Arkivene og revisjonsetikettene er dokumentert i [REVISJONER.md](REVISJONER.md), med originalfiler under [historisk/](historisk/README.md).
+De tidlige filene stammer fra de første Xzense-samtalene. Arkivene og revisjonsetikettene er dokumentert i [REVISJONER.md](REVISJONER.md), med originalfiler under [historisk/](arkiv/tidlige-versjoner/README.md).
 
 - **0.1.0:** Første lesende BLE-diagnostikk uten styringskommandoer.
 - **0.2.0–0.2.8:** PIN-konfigurasjon, forskjellige GATT-/pairing-forsøk, ferske annonseringer og deretter CONNECT/ACK.
