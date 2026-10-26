@@ -1,65 +1,54 @@
-# Xzense Alpha
+**0.5.24:** Automatisk valg mellom alle Home Assistant Bluetooth-proxyer. Kildespesifikk cache-fallback (uten krav om fersk annonsering), maks seks kilder per runde, én tilkobling per kilde, ingen lås til gammel Stue. Se `INSTALLASJON_0.5.24_MULTI_PROXY.md`.
 
-Uoffisiell, eksperimentell Home Assistant-integrasjon for **Exodraft Xzense** over Bluetooth LE. Integrasjonsdomenet er `xzense_full_preview` og skal ikke endres ved oppgradering.
+**Midlertidig testversjon 0.5.24:** Stue-only kildevalg med Stue-spesifikk cachefallback; se `INSTALLASJON_0.5.24_STUE_RELAXED.md`.
 
-**Nyeste pakke: Alpha 0.5.20.2 (24. oktober 2026)** · [Komplett kildekode og dokumentasjon](xzense-alpha-0.5.20.2-norske-driftstilstander-source.zip) · [Kun oppdateringsfiler](xzense-alpha-0.5.20.2-norske-driftstilstander-tillegg.zip) · [Redigerbar norsk språkfil](xzense_nb_oversettelser_0.5.20.2.json). Dette er fortsatt en testversjon; siste Bluetooth-optimalisering er ikke bekreftet fysisk.
+# Xzense Alpha 0.5.21 – varsling ved utbrenning (24. oktober 2026)
 
-## Kort om gjeldende versjon
+Ny funksjon: Velg en telefon i Home Assistant og få et pushvarsel når Xzense går **fra Normal drift (Operation / 4) til Utbrenning (Burnout / 5)**. Dette er en valgfri funksjon som er **avslått som standard**. Se [installasjonsveiledningen](INSTALLASJON_0.5.21.md).
 
-| Funksjon | Gjeldende oppførsel |
-|---|---|
-| Diagnoseentiteter | 12 aktive; full rådiagnostikk bevares ved eksport. |
-| Bluetooth proxyvalg | 0,8 s hurtigvindu ved kjent, fersk proxy med godt signal; ellers 3 s. |
-| Bluetooth i Ready (hvile) | Slider **0–120 minutter**, standard 5 min. `0` betyr kontinuerlig tilkobling. |
-| Bluetooth under aktiv drift | Slider **0–600 sekunder**, standard `0` (kontinuerlig). Omfatter Boosting, Operation, Afterrun og Ventilation. |
-| Styringskommandoer | Tilkobling ved behov, kommandokø og normalt 15 sekunders holdetid etter handling. |
-| Sensorverdier uten Bluetooth | Siste kjente verdier beholdes, men kan være utdaterte. **Sist oppdatert (Bluetooth)** viser siste mottatte gyldige data. |
-| Fyringsvarighet | Ny økt fra observert Ready; tilbakeberegning med `Time in State` når plausibel. Start fra Afterrun **fortsetter samme økt**, uten nullstilling. |
-| Start fra Afterrun | Støttes via eksisterende startkommando; Afterrun → Boosting/Operation er observert i diagnostikk. |
+- Finn valget via **Innstillinger → Enheter og tjenester → Xzense Alpha → Konfigurer**.
+- Slå på *Send varsel ved utbrenning*, og velg telefonen som skal få meldingen.
+- Krever at telefonen er registrert i **Home Assistant Companion** og har aktivert pushvarsler.
+- Støtter nyere `notify`-entiteter og eldre `notify.mobile_app_*`-handlinger.
+- Varslet sendes ved ny, gyldig STATUS-overgang `4 → 5`, ikke ved oppstart, gjentatte STATUS-svar eller bare fordi en cachet tilstand ble gjenopprettet.
+- Oppdateringene følger eksisterende BLE-polling. Frakoblet Bluetooth kan varslingen bli forsinket til neste vellykkede STATUS.
+- Selve BLE-transporten, driftstilstander og øvrige entiteter er uendret fra 0.5.20.2.
 
-### Viktig om sikkerhet og stabilitet
+**Teststatus:** Automatiserte lokale tester er gjennomført, men pushvarsling mot en reell telefon er ennå ikke fysisk testet. Behold 0.5.20.2 som tilbakerullingsversjon.
 
-**Ikke bruk Alpha 0.5.15 eller 0.5.16.** En bekreftet busy-loop i BLE-gjentilkoblingen kunne fryse Home Assistant. 0.5.17 rettet denne feilbanen; nyere versjoner bygger videre på beskyttelsen. 0.5.20 har bestått lokale regresjonstester, men den nye adaptive Bluetooth-skanningen må fortsatt testes mot det fysiske kontrollpanelet.
+# Xzense Alpha 0.5.20.2 – norske driftstilstander (2026-10-23)
 
-Dette er ikke en sikkerhetskontroller. Når Bluetooth er frakoblet, kan både driftstilstand og temperatur være eldre enn de ser ut. Ikke bruk lagrede verdier som bekreftet sanntidsstatus.
+- Norsk statusoversettelse med redigerbare `state`-nøkler i `translations/nb.json`.
+- «Ready for lighting» vises på norsk som «Klar for fyring» i Xzense-kortet og i ny oversatt status-sensor.
+- Eksisterende `device_state`-sensor og dens engelske råstatus beholdes for automatiseringskompatibilitet.
+- Oppdatert Xzense-dashboardressurs: `/api/xzense_full_preview/xzense-card.js?v=05202`.
+- Bluetooth, protokoll, eksisterende entitets-ID-er og dine reviderte navn er beholdt.
+- Se `NORSKE_DRIFTSTILSTANDER_0.5.20.2.md`.
 
-### Installere eller oppgradere
+# Xzense Alpha 0.5.20.1 – norsk språkpakke for entiteter (2026-10-23)
 
-1. Ta backup av `/config/custom_components/xzense_full_preview/`.
-2. Pakk ut `custom_components/xzense_full_preview/` fra ZIP-en og erstatt hele den eksisterende mappen; behold den eksisterende konfigurasjonsoppføringen.
-3. Start Home Assistant på nytt og kontroller versjon **0.5.19.3**.
-4. Bruker du det separate dashboardkortet, kopier `www/xzense-card.js` til `/config/www/` og oppdater ressursen til `/local/xzense-card.js?v=05193b`. Se installasjonsfilen i arkivet for andre oppsett.
+- Norske bokmålsnavn for alle registrerte entiteter, inkludert valgfri og deaktivert diagnostikk.
+- Engelsk er fortsatt fallback. Eksisterende unique IDs og styringsverdier forblir uendret.
+- Integrert via Home Assistants `translation_key`, `strings.json` og `translations/nb.json`.
+- Ingen endring av Bluetooth, protokoll, ytelsesoptimering eller dashboard-JavaScript.
+- Se [språkpakkeveiledningen](NORSK_SPRAKPAKKE_0.5.20.1.md).
 
-De to Bluetooth-intervallene er `number`-entiteter med `NumberMode.SLIDER`. Home Assistant kan fortsatt vise kompakte tallfelter i enkelte lister; åpne entitetsdialogen eller legg entiteten i et Tile-kort for en faktisk slider. Ved oppgradering fra 0.5.19.2 konverteres aktivt intervall fra minutter til sekunder (f.eks. 1 min → 60 sek).
+## Alpha 0.5.20 – lett diagnostikk og adaptivt proxyvalg (23. oktober 2026)
 
-## Versjonshistorikk (nyeste først)
+**Historisk versjon: 0.5.20 Alpha.** Basert direkte på 0.5.19.3. Dette er en **testversjon** – den forbedrede Bluetooth-oppkoblingen er ikke fysisk verifisert.
 
-## Alpha 0.5.20.2 — norske driftstilstander (24. oktober 2026)
+- **12 aktive diagnostikksensorer**, resten deaktivert i HA-entitetsregisteret uten å slette unike ID-er. Full diagnostikk, GLOBAL-data og pakkehistorikk er fortsatt tilgjengelig gjennom **Last ned diagnostikk** i Home Assistant.
+- Eksisterende 0.5.19.3-entiteter beholdes med samme ID; gammel diagnostikk kan stå som deaktivert. Tilbakeføring til 0.5.19.3 aktiverer tidligere integrasjonsdeaktiverte entiteter igjen.
+- **Adaptiv Bluetooth-skanning:** 0,8 sekunders proxyvindu bare når samme kilde som sist vellykket tilkobling blir observert ferskt med minst −75 dBm og ingen nylig tilkoblingsfeil. Ellers beholdes originalt 3-sekundersvindu. Mislykkes alle kilder fra hurtigvinduet, gjøres ett nytt forsøk med fullt 3-sekundersvindu.
+- **Mindre HA-arbeid ved annonseringer:** hver enkelt Bluetooth-annonsering utløser ikke lenger oppdatering av alle HA-entiteter.
+- **Dashboard:** «Sist oppdatert» kan nå også leses fra `last_data_at`-attributtet på en tilordnet driftssensor hvis den egne diagnostikksensoren ikke gjenkjennes. Ingen ny knapp eller manuell entitetskonfigurasjon nødvendig.
+- Beholder PIN/CONNECT, GLOBAL, STATUS, Boost, Afterrun, Ventilation, 10 sekunders kontinuerlig polling, 0.5.17 busy-loop-fiks og intervallsliderne fra 0.5.19.3.
 
-- **Ready for lighting → Klar for fyring** i dashboardet og den nye lokaliserte sensoren.
-- Norske driftstilstander kan redigeres via `entity.sensor.device_state_localized.state` i `translations/nb.json`. Tilstandene inkluderer Frakoblet, Oppsett, Klar for fyring, Boost, Normal drift, Utbrenning, Ettergang, Legg på ved, Ventilasjon, Feil og Oppdatering.
-- Eksisterende `device_state` beholder de engelske protokollverdiene og samme `unique_id` for å bevare automasjoner. Ny `device_state_localized` eksponerer oversettbar status med stabile interne koder.
-- Xzense-kortet bruker HA-oversettelser med norsk reserveordliste. Oppdatert ressursadresse: `/api/xzense_full_preview/xzense-card.js?v=05202`.
-- Beholder dine reviderte entitetsnavn **Ettergangstid** og **Gjenfyrings-tid**.
-- Bluetooth, PIN, datainnhenting og skrivekommandoer er uendret fra 0.5.20.1. [Dokumentasjon](NORSKE_DRIFTSTILSTANDER_0.5.20.2.md).
+**Bruk versjonert Lovelace-ressurs:** `/api/xzense_full_preview/xzense-card.js?v=0520` dersom kortet serveres av integrasjonen. Alternativ `/local/xzense-card.js?v=0520` krever filkopi til `/config/www/`.
 
-## Alpha 0.5.20.1 — norske entitetsnavn (23. oktober 2026)
+**Før testing:** Ta backup av fungerende 0.5.19.3. Ikke bytt mappenavn eller integrasjonsdomene i et fungerende oppsett. Kopier oppdaterte filer til samme integrasjonsmappe som brukes av din eksisterende installasjon, og start Home Assistant på nytt. Se `INSTALLASJON_0.5.20.md`.
 
-- Norsk bokmål for samtlige 136 entitetsnavn via Home Assistants oversettelsessystem.
-- Oversettelsene ligger i `strings.json` og `translations/nb.json`; tidligere hardkodede navn er tilpasset slik at HA kan bruke oversettelsene.
-- Oversettelsen endrer ikke `unique_id`, protokoll eller intern kontrollverdi. Eksisterende egendefinerte entitetsnavn i HA blir ikke tvangsoverskrevet.
-
-
-## Alpha 0.5.20 — lettere diagnostikk og adaptivt proxyvalg (23. oktober 2026)
-
-- **12 diagnostikksensorer beholdes aktive**, mot tidligere 97. Overskytende entiteter deaktiveres i registeret uten å slettes, med de opprinnelige unique ID-ene bevart. Full protokoll-, GLOBAL- og Bluetooth-diagnostikk er fortsatt tilgjengelig ved eksport fra HA.
-- Hver mottatt BLE-annonsering utløser ikke lenger oppdatering av alle Home Assistant-entiteter. Valgt proxy og RSSI publiseres etter skanningen.
-- Når en **fersk annonsering** kommer fra en tidligere fungerende proxy med minst **−75 dBm**, og denne ikke nylig feilet, brukes et forkortet innsamlingsvindu på **0,8 sekunder**. Ved svakere eller ukjent kilde beholdes det opprinnelige **3-sekundersvinduet**.
-- Hvis alle kilder fra hurtigskanningen mislykkes, forsøkes én ny runde med fullt vindu. Proxyrotasjon, autentisering, STATUS, 0.5.17-beskyttelsen mot CPU-løkke og kontrollkommandoene er ellers uendret.
-- Dashboardet viser nå **Sist oppdatert** også via `last_data_at` på en tilordnet vanlig sensor dersom den egne diagnostikksensoren ikke gjenkjennes.
-- Installasjon: oppdater filene i **eksisterende** integrasjonsmappe, uten å endre mappenavnet eller `manifest.json`-domenet. Dashboardressurs: `/api/xzense_full_preview/xzense-card.js?v=0520`.
-- **Testing:** 153 automatiserte Python-tester og 4 JavaScript-tester bestått lokalt; ny Bluetooth-oppførsel ikke testet fysisk.
-
+---
 
 ## Alpha 0.5.19.3 – Bluetooth-slidere i HA og sekunder under aktiv drift
 
@@ -87,7 +76,7 @@ Se `INSTALLASJON_0.5.19.2.md` for oppgradering og tilbakeføring.
 ## Alpha 0.5.19.1 – Start ny fyring i Afterrun
 
 - `Start lighting` kan trykkes i Ready (2) og Afterrun (6). Ved Afterrun bruker den samme BOOST/REQ start=1 som tidligere; panelet bestemmer om kommandoen blir akseptert.
-- **Historisk oppførsel i 0.5.19.1:** En ny økt ble registrert ved Afterrun → Boosting/Operation/Reheating. **Dette ble endret i 0.5.19.2:** Start fra Afterrun fortsetter nåværende fyringsøkt uten nullstilling.
+- Ny fyringsøkt registreres **først** når en fersk STATUS viser Afterrun → Boosting/Operation/Reheating, ikke bare ved knappetrykk.
 - Periodisk BLE, kommandokø, slider og beholdte sensorverdier er identiske med 0.5.19.
 - Testversjon: test forsiktig på det fysiske panelet. Ikke anta at utestet restart i Afterrun fungerer.
 
@@ -100,31 +89,6 @@ Se `INSTALLASJON_0.5.19.2.md` for oppgradering og tilbakeføring.
 - Kontrollpanelets normale kommunikasjonsrammer er uendret. Aktiv fyring gir ikke automatisk hyppigere polling; velg 0 min hvis sanntid er viktig.
 - Innebygd dashboardkort viser intervallet i **Konfigurasjon**, og oppdateringstidspunkter i **Diagnostikk**.
 - Rent lokalt 117 tester og JS-smoke; **ikke validert mot fysisk Exodraft Xzense**. Ta backup av 0.5.17 før testing.
-
-## Alpha 0.5.18 — eksperimentell STATUS-polling (historisk)
-
-- Testet justerbar STATUS-polling, inkludert av, 10, 60 og 300 sekunder.
-- Flere sesjoner ble brutt etter omtrent 30–40 sekunder. Årsaken er ikke endelig fastslått, og denne varianten anbefales ikke som stabil referanse.
-- Hybridversjonene 0.5.19 og nyere ble i stedet videreutviklet fra 0.5.17 sin kjente kommunikasjonsflyt.
-
-## Alpha 0.5.17 — Event loop hotfix
-
-- Ved BLE-reconnect kan `_wake` allerede være satt. 0.5.15/0.5.16 løp da videre uten `await`, slik at asyncio og alle andre HA-oppgaver stanset.
-- 0.5.17 konsumerer wake-signalet og går til asynkron venting med en ekstra tilkoblingskontroll, fremfor å spinne.
-- 0.5.16 sine proxy-/timerfunksjoner er beholdt uendret og må fortsatt testes fysisk.
-- Regresjonstest simulerer dette konkret, i tillegg til eksisterende testsett.
-
-## Alpha 0.5.16 – Strongest BLE proxy + fire timers (22 October 2026)
-
-**Download:** [xzense-alpha-0.5.16-source.zip](xzense-alpha-0.5.16-source.zip) · [Installation](INSTALLASJON_0.5.16.md) · [Next-chat handoff](OVERLEVERING_NESTE_CHAT_0.5.16.md)
-
-- Compare BLE discoveries **per proxy** using `async_register_advertisement_callback` and `async_scanner_devices_by_address`. Rank by actual RSSI; no last-success/failure score, and fall back to other candidates on connection failure.
-- Capture candidate sources and origin (`fresh_raw_advertisement` or `per_scanner_cache`) in diagnostics. RSSI is sampled, not continuously measured, and a cached value may be stale.
-- Existing **Time in current state** sensor now reports `HH:MM:SS`, correcting the signed 16-bit display and 65,536-second rollover. Unique ID stays `state_timer`; raw seconds, rollover count and continuity are attributes.
-- New **Fire duration** sensor measures an observed fire cycle from Boosting/Operation/Refueling/Burnout/Afterrun until Ready; Ventilation does not start a cycle. Unknown starting times are conservatively flagged and **never presented as exact**.
-- Store timer checkpoints across HA restarts with the Home Assistant storage helper. Prolonged BLE outages can conceal state changes, so elapsed reconstruction and fire duration have uncertainty indicators.
-- Updated Lovelace card 0.5.16 displays both timers (Norwegian labels), with all device entities still English. Existing commands and 10-second STATUS polling are unchanged.
-- Automated unit/regression tests and JS smoke test pass locally; **physical Bluetooth/controller validation remains outstanding**.
 
 ## Alpha 0.5.15 — proxyvalg og BLE-sesjonsdiagnostikk (2026-10-22)
 
@@ -146,6 +110,33 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 - Alpha 0.5.14: ingen endring i BLE/PIN/STATUS-transport eller kildevalg.
 - Inneholder alt fra 0.5.12b og 0.5.13, inkludert Refuel i tilstand 4 og 5.
 
+# Xzense Alpha
+
+## Viktig sikkerhetsvarsel — 22. oktober 2026
+
+**Ikke bruk Alpha 0.5.15 eller 0.5.16.** Begge inneholder en bekreftet busy-loop i BLE-gjentilkobling som kan fryse hele Home Assistant. **0.5.17** retter denne spesifikke feilbanen, men er fortsatt kun kode-/regresjonstestet. For rask stabilisering: deaktiver Xzense eller bruk 0.5.14. [Hotfix installasjon](INSTALLASJON_0.5.17.md).
+
+## Alpha 0.5.17 — Event loop hotfix
+
+- Ved BLE-reconnect kan `_wake` allerede være satt. 0.5.15/0.5.16 løp da videre uten `await`, slik at asyncio og alle andre HA-oppgaver stanset.
+- 0.5.17 konsumerer wake-signalet og går til asynkron venting med en ekstra tilkoblingskontroll, fremfor å spinne.
+- 0.5.16 sine proxy-/timerfunksjoner er beholdt uendret og må fortsatt testes fysisk.
+- Regresjonstest simulerer dette konkret, i tillegg til eksisterende testsett.
+
+
+## Alpha 0.5.16 – Strongest BLE proxy + fire timers (22 October 2026)
+
+**Download:** [xzense-alpha-0.5.16-source.zip](xzense-alpha-0.5.16-source.zip) · [Installation](INSTALLASJON_0.5.16.md) · [Next-chat handoff](OVERLEVERING_NESTE_CHAT_0.5.16.md)
+
+- Compare BLE discoveries **per proxy** using `async_register_advertisement_callback` and `async_scanner_devices_by_address`. Rank by actual RSSI; no last-success/failure score, and fall back to other candidates on connection failure.
+- Capture candidate sources and origin (`fresh_raw_advertisement` or `per_scanner_cache`) in diagnostics. RSSI is sampled, not continuously measured, and a cached value may be stale.
+- Existing **Time in current state** sensor now reports `HH:MM:SS`, correcting the signed 16-bit display and 65,536-second rollover. Unique ID stays `state_timer`; raw seconds, rollover count and continuity are attributes.
+- New **Fire duration** sensor measures an observed fire cycle from Boosting/Operation/Refueling/Burnout/Afterrun until Ready; Ventilation does not start a cycle. Unknown starting times are conservatively flagged and **never presented as exact**.
+- Store timer checkpoints across HA restarts with the Home Assistant storage helper. Prolonged BLE outages can conceal state changes, so elapsed reconstruction and fire duration have uncertainty indicators.
+- Updated Lovelace card 0.5.16 displays both timers (Norwegian labels), with all device entities still English. Existing commands and 10-second STATUS polling are unchanged.
+- Automated unit/regression tests and JS smoke test pass locally; **physical Bluetooth/controller validation remains outstanding**.
+
+
 ## Alpha 0.5.13: compatibility correction to 0.5.12b
 
 - Normalized the integration's `manifest.json` version to numeric SemVer `0.5.13` and synchronized `const.py` so Home Assistant and version checks see one release.
@@ -153,31 +144,19 @@ Kortet har **egen visuell redigerer** for å velge riktige HA-entiteter og valgf
 - Retains **Refuel** availability in Operation (state 4) and Burnout (state 5), plus raw **0x05 status** / **0x18 status** sensor names.
 - If Home Assistant reports the integration missing, copy the **whole** `custom_components/xzense_full_preview/` directory into `/config/custom_components/xzense_full_preview/`, replacing the previous files, then restart Home Assistant. Do not delete the existing integration/config entry. Review Settings → System → Logs if it still fails.
 
+
+Experimental Home Assistant custom integration for **Exodraft Xzense** over Bluetooth LE.
+
+Current integration version: **0.5.19.3 Alpha** (slider fix / seconds active interval; ikke fysisk verifisert).
+
+> The Home Assistant domain remains `xzense_full_preview` for compatibility with existing installations. The user-facing name remains **Xzense Alpha**.
+
 ## 0.5.12b — Refuel in Operating and raw GLOBAL status names
 
 - **Refuel** is available in **Operating / Operation (state 4)** as well as **Burnout (state 5)**, when the existing Boost command is available. It still sends the same `BOOST/REQ 0x08 start=1` command; the result in state 4 has **not yet been physically verified**.
 - The existing sensor with unique ID suffix `battery` is renamed **0x05 status** and displays the **raw integer** (e.g. `2` / `3`), without claiming it means battery or external power.
 - The existing sensor with unique ID suffix `signal_strength` is renamed **0x18 status** and still displays the raw `GLOBAL 0x18` integer, without interpreting its units.
 - Sensor unique IDs, BLE transport/authentication, all other controls and diagnostics remain unchanged. Home Assistant may preserve a manually customized entity name until the user resets that customization.
-
-## 0.5.12 — configuration, source ambiguity and ChimneyLog research
-
-- **System control** moved to Configuration. **Alarm temperature** (`0x58`) is a Configuration number with 150–400 °C range and raw-tenths scaling.
-- **Refire / Reboost time** (`0x59`) and **Burnout timeout** (`0x5B`) are now editable Configuration numbers after user confirmation of panel editing. Raw seconds convert to minutes. Home Assistant exposes 0–546.1 minutes in 0.1-minute steps, using only the signed-16-bit GLOBAL transport bound; **these are not verified controller-safe limits**. HA-initiated writes await physical verification.
-- Old read-only sensor entries for `0x59`/`0x5B` are removed on migration. Existing numeric settings retain their feature keys/unique IDs.
-- **Actual chimney draught (raw)** sensor hidden/removed; raw `0x51` retained in the full diagnostics.
-- **Power source (?)** preserves the existing sensor key (`battery`), but reports `Unknown (2)` / `Unknown (3)` instead of asserting Battery/External. The physical controller was wired while sending different raw values in consecutive diagnostics; the precise enum has not been proven. Raw remains present in diagnostics.
-- [ChimneyLog investigation](CHIMNEYLOG_RESEARCH.md): confirms firmware filenames and app-side indicators but no safe request/record layout. No `FILE_TRANSFER` test commands or firmware writes are added.
-
-## Alpha 0.5.11 update (2026-10-21)
-
-- Removed non-functional Bluetooth release-to-app button, timer and associated BLE pause logic.
-- Combined Boost on/off into one Boost switch; removed redundant Finish firing button. Stop firing retains its Afterrun transition through GLOBAL 0x19=6.
-- Boost and Ventilation switches follow authenticated STATUS state (Boost state 3; Ventilation state 8). Boost state 7 is unresolved and retains last known value.
-- Switch state is restored across HA restarts and retained across BLE reconnects until the first valid fresh STATUS frame. CONNECT/ACK immediately triggers the existing STATUS polling loop; command ACK alone does not determine switch state.
-- Fan speed GLOBAL 0x50 is available in all connected states; firmware may still enforce its own restrictions.
-- Controls are normal entities, configuration settings categorized CONFIG; device-page display ordering remains Home Assistant controlled.
-- GitHub release source zip built from this tree; local tests do not substitute for on-device validation.
 
 ## 0.5.10 fan-speed availability in Ventilation (no wire-protocol change)
 
@@ -191,17 +170,21 @@ External start (GLOBAL `0x57`) and External fan speed (GLOBAL `0x5A`) have been 
 
 Removed empty Burn count, Operation time and Error log entities, unmapped Language and Download log placeholders and the duplicate raw GLOBAL 0x51 entity. Candidate settings without verified writing semantics remain documented in the feature matrix and available in diagnostic GLOBAL dumps, but are no longer instantiated as unusable controls. GLOBAL 0x00-0x04 now appear as UNKNOWN rather than misleading legacy firmware debug labels. No BLE connection or control commands changed.
 
+## 0.5.12 — configuration, source ambiguity and ChimneyLog research
+
+- **System control** moved to Configuration. **Alarm temperature** (`0x58`) is a Configuration number with 150–400 °C range and raw-tenths scaling.
+- **Refire / Reboost time** (`0x59`) and **Burnout timeout** (`0x5B`) are now editable Configuration numbers after user confirmation of panel editing. Raw seconds convert to minutes. Home Assistant exposes 0–546.1 minutes in 0.1-minute steps, using only the signed-16-bit GLOBAL transport bound; **these are not verified controller-safe limits**. HA-initiated writes await physical verification.
+- Old read-only sensor entries for `0x59`/`0x5B` are removed on migration. Existing numeric settings retain their feature keys/unique IDs.
+- **Actual chimney draught (raw)** sensor hidden/removed; raw `0x51` retained in the full diagnostics.
+- **Power source (?)** preserves the existing sensor key (`battery`), but reports `Unknown (2)` / `Unknown (3)` instead of asserting Battery/External. The physical controller was wired while sending different raw values in consecutive diagnostics; the precise enum has not been proven. Raw remains present in diagnostics.
+- [ChimneyLog investigation](CHIMNEYLOG_RESEARCH.md): confirms firmware filenames and app-side indicators but no safe request/record layout. No `FILE_TRANSFER` test commands or firmware writes are added.
+
+
 ## 0.5.7 source-of-truth update
 
 The official **Xzense 5.0.5** app contains controller firmware `assets/flutter_assets/assets/fw/exodraft.gbl`. The image identifies itself as **v4.10_RC2**, matching the 4.10 generation reported by the user's controller. Direct UI/controller-code bindings from that firmware are used together with live 4.10 observations.
 
 The firmware also contains an older debug-name lookup whose GLOBAL labels are shifted for several setup values. Alpha 0.5.7 therefore does **not** use that debug table alone as authoritative evidence.
-
-## Protokollreferanse
-
-
-Følgende tabeller oppsummerer identifiserte GLOBAL-felt, driftstilstander og kontrollkommandoer. `PROTOCOL_NOTES.md`, `PROTOCOL_MANIFEST.md`, `FEATURE_MATRIX.md` og tester følger med i kildekodearkivet.
-
 
 ## Working / mapped controls
 
@@ -275,6 +258,27 @@ States `3` and `6` are additionally live verified on the user's controller. The 
 
 Known controller packet types include `0x02 CONNECT`, `0x06 GLOBAL`, `0x07 STATUS`, `0x08 BOOST`, `0x09 VENTILATION`, `0x0A RANGETEST`, `0x0B FACTORY_RESET`, `0x0C FILE_TRANSFER`, `0x0D TIMESYNC` and `0x0E CONNECTED_PEERS`. Destructive/service operations are intentionally not exposed.
 
+## Installation
+
+Copy `custom_components/xzense_full_preview/` into `/config/custom_components/xzense_full_preview/`, restart Home Assistant and reload/add **Xzense Alpha**.
+
+## Repository notes
+
+- `PROTOCOL_NOTES.md` documents evidence and chronology.
+- `PROTOCOL_MANIFEST.md` is the current ID/packet source of truth.
+- `FEATURE_MATRIX.md` tracks Home Assistant exposure and confidence.
+- `tests/` contains protocol and regression tests that do not require a live Xzense device.
+
 ## Safety / scope
 
 This is an unofficial reverse-engineered integration and is not affiliated with or endorsed by Exodraft. Controller ACK/NACK remains authoritative for state-dependent commands. The new v4.10-derived controls still require live validation where explicitly noted.
+
+## Alpha 0.5.11 update (2026-10-21)
+
+- Removed non-functional Bluetooth release-to-app button, timer and associated BLE pause logic.
+- Combined Boost on/off into one Boost switch; removed redundant Finish firing button. Stop firing retains its Afterrun transition through GLOBAL 0x19=6.
+- Boost and Ventilation switches follow authenticated STATUS state (Boost state 3; Ventilation state 8). Boost state 7 is unresolved and retains last known value.
+- Switch state is restored across HA restarts and retained across BLE reconnects until the first valid fresh STATUS frame. CONNECT/ACK immediately triggers the existing STATUS polling loop; command ACK alone does not determine switch state.
+- Fan speed GLOBAL 0x50 is available in all connected states; firmware may still enforce its own restrictions.
+- Controls are normal entities, configuration settings categorized CONFIG; device-page display ordering remains Home Assistant controlled.
+- GitHub release source zip built from this tree; local tests do not substitute for on-device validation.
