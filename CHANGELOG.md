@@ -1,15 +1,12 @@
 # Xzense Alpha – komplett endringslogg
 
-**Gjeldende pakke: 0.5.24 Alpha (26. oktober 2026).**
+**Nyeste dokumenterte kildepakke: 0.5.24 Alpha (26. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
-Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkivene. Oppføringene beskriver også historiske testbygg og **betyr ikke at alle revisjoner er trygge å installere**. Se [alle revisjoner og ZIP-er](REVISJONER.md) samt [README](README.md). Original tekst før opprydding er arkivert i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
+> **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
 
-> **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge har en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet dette. Historiske eksperimentelle testbygg har tilsvarende egne advarsler.
+**Planlagt og ikke implementert i 0.5.24:** En egen sensor med sist vellykkede STATUS-oppdatering vist som norsk dato og klokkeslett.
 
-**Planlagt, ikke levert i 0.5.24:** En egen sensor for sist vellykkede STATUS-oppdatering vist som norsk dato og klokkeslett. Det finnes allerede `last_status_response_at` i diagnostikken.
-
-
-## Verifiserte observasjoner (skilt fra endringer i kildekoden)
+## Verifiserte observasjoner (skilt fra kodeendringer)
 
 ### Verifisering på fysisk Xzense – 26.10.2026 (0.5.24)
 
@@ -25,6 +22,8 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 - **0.5.17 / 22.–23.10.2026:** En målt autentisert BLE-økt varte 27 min 17 s via Stue, med 191 STATUS-forespørsler og uten STATUS-NACK eller CRC-feil. Bekreftet videre `10 s` polling; kontrollpanelets timeout og ALIVE-rammer ble fortsatt undersøkt.
 - **0.5.19.1 / 23.10.2026:** Etterfølgende fysisk test bekreftet `Afterrun → Boosting → Operation` ved «Start ny fyring», med BOOST-ACK etter ca. 217 ms og ingen uventede disconnects i testen. Opprinnelige kodenotater sa «ikke fysisk bekreftet» før denne testen og må leses i tidsrekkefølge.
 - **0.5.15–0.5.16:** Bekreftet asyncio busy-loop som kunne fryse hele HA. **Må ikke anbefales for installasjon.** Hotfix kom i 0.5.17.
+
+---
 
 ---
 
@@ -75,13 +74,13 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 - La til norsk lokalisering av status på dashboardkortet; behold engelsk protokoll internt.
 - Beholdt brukerens entitetsnavn «Ettergangstid» og «Gjenfyrings-tid».
 
-### Supplerende originalnotater for 0.5.20
+## 0.5.20.1 – Norwegian entity translations
 
 - Translate every existing entity name through `translation_key` and `strings.json` / `translations/nb.json`.
 - Preserve existing entity unique IDs and raw STATUS/SELECT values. No changes to BLE, controls or dashboard.
 - English translation remains available in `translations/en.json`.
 
-### Supplerende originalnotater for 0.5.20
+## 0.5.20 – 2026-10-23 – diagnostic slim + adaptive proxy fast window
 
 - Reduce enabled HA diagnostic entities to 12; keep full diagnostics export unchanged and preserve unique IDs for rollback.
 - Automatically disable legacy excess diagnostic entities in registry; preserve core dashboard-linked diagnostic entities.
@@ -102,7 +101,7 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 - Scheduler bruker heltallssekunder, og diagnostikken viser både nytt sekundintervall og bakoverkompatibel minuttrapportering. Begge dashboard-kopier er synkronisert.
 - Ingen endringer i BLE-pakker, CONNECT/PIN, STATUS-kommandoer, fyringslogikk eller kontrollskriving.
 
-### Supplerende originalnotater for 0.5.19
+## Alpha 0.5.19.2 – to Bluetooth-intervaller og sammenhengende fyringsøkt (2026-10-23)
 
 - To justerbare HA NumberEntity-slidere: Ready/hvile **0–120 minutter** (standard 5), Boosting/Operation/Afterrun/Ventilation **0–10 minutter** (standard 0 = kontinuerlig). Aktiv profil inkluderer tilstandene 3, 4, 5, 6, 7 og 8. Kontinuerlig drift sender STATUS hvert 10. sekund.
 - Eksisterende entitet `bluetooth_update_interval` og lagret 0.5.19.1-intervall beholdes som hvile-slider. Ny `bluetooth_active_update_interval` legges til. Automatisk profilbytte ved ny STATUS; tilstandsendringer uten BLE oppdages ved neste tilkobling.
@@ -112,7 +111,7 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 - Knappen Start opptenning fra Ready lagrer et *foreløpig* tidspunkt, brukt ved senere bekreftet aktiv STATUS når den er mer informativ enn stadietimer. En avvist/mislykket sendelse forkaster dette tidspunktet. Start fra Afterrun nullstiller ikke perioden.
 - Ingen endringer i Xzense-pakkeformatet eller BLE-protokollbyggere. Ikke testet mot fysisk enhet.
 
-### Supplerende originalnotater for 0.5.19
+## Alpha 0.5.19.1 – ny fyring fra Afterrun (2026-10-23)
 
 - Engangsversjon basert på 0.5.19. `Start lighting` er nå tilgjengelig i både Ready (2) og Afterrun (6).
 - Bruker uendret firmwareavledet `BOOST/REQ start=1`; ved trykk gjennom periodisk BLE kobler integrasjonen til, henter fersk STATUS og sjekker tillatt tilstand før skriving. Xzense avgjør om kommandoen godtas.
@@ -121,7 +120,7 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 - Ingen endringer i Bluetooth-transport, polling, proxyvalg, løkke eller protokollrammer.
 - Overgangen er **ikke fysisk bekreftet**. Ingen garantert ACK eller vellykket overgang fra panelet før den er testet.
 
-### Supplerende originalnotater for 0.5.19
+## 0.5.19 Alpha — behovsstyrt Bluetooth og offline cache (2026-10-23)
 
 - **0–120 minutter** som justerbar HA NumberEntity (slider) og Xzense-kortet (Konfigurasjon). `0` betyr samme kontinuerlige 10 sekunders STATUS polling som i 0.5.17; standard `5` minutter.
 - Periodisk sesjon henter en fersk STATUS, venter 2 sekunder på tilleggsdata, og kobler fra. 15 sekunders oppkoblingsvindu etter styring.
@@ -134,8 +133,8 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 ## 0.5.18 Alpha – 2026-10-22 – justerbar STATUS-polling
 
 - Periodisk STATUS/REQ ble **avslått som standard**; etter autentisert oppkobling ble én STATUS/REQ sendt.
-- Valgbart intervall fra integrasjonens «Konfigurer»: Av / 10 sek / 60 sek / 5 minutter. Kommandoer trigget STATUS også når periodisk polling var av.
-- Sensordatapunkter fikk `last_observed_at`, `sample_age_seconds` og `sample_stale`; 120 sekunder uten ny prøve markerte gamle målinger. Passive GLOBAL-meldinger ble fortsatt lest.
+- Valgbart intervall via «Konfigurer»: Av / 10 sek / 60 sek / 5 minutter. Kommandoer kunne også utløse STATUS.
+- `last_observed_at`, `sample_age_seconds` og `sample_stale` for sentrale sensorer; etter 120 sekunder uten nye målinger ble data markert som gamle. Passive GLOBAL-meldinger ble fortsatt lest.
 - BLE-proxyvalg, PIN og tidligere styringsfunksjoner ble beholdt. **Ikke fysisk verifisert i denne versjonen.** Se [installasjonsnotatet](INSTALLASJON_0.5.18.md).
 
 ## 0.5.17 Alpha — CRITICAL asyncio event-loop hotfix (2026-10-22)
@@ -282,7 +281,7 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 
 ## 0.5.4 – forkastet feilbygg (historisk)
 
-- Denne mellomrevisjonen er dokumentert som et **feilbygg fra 0.4.6** og skal ikke installeres. Ingen verifisert komplett original ZIP finnes i repoet.
+- Denne revisjonen er dokumentert som **feilbygg fra 0.4.6** og skal ikke installeres. Ingen verifisert komplett original ZIP finnes i repoet.
 
 ## 0.5.3 Alpha
 
@@ -373,13 +372,13 @@ Dette dokumentet samler endringer fra Xzense-chattene og de faktiske kildearkive
 
 ## Tidlige prototyper 0.1.0–0.4.1 (2026)
 
-De tidlige filene stammer fra de første Xzense-samtalene. Arkivene og revisjonsetikettene finnes i [REVISJONER.md](REVISJONER.md), med nedlastbare originalfiler i [historisk/](historisk/README.md).
+De tidlige filene stammer fra de første Xzense-samtalene. Arkivene og revisjonsetikettene er dokumentert i [REVISJONER.md](REVISJONER.md), med originalfiler under [historisk/](historisk/README.md).
 
 - **0.1.0:** Første lesende BLE-diagnostikk uten styringskommandoer.
-- **0.2.0–0.2.8:** PIN-konfigurasjon, forskjellige GATT-/pairing-forsøk, færre unødige pairings, ferske annonseringer og deretter CONNECT/ACK.
-- **0.3.0:** STATUS/REQ og de første live-sensorene. Separat lab- og preview-variant ble brukt til kontrollert protokolltesting.
-- **0.3.1 og 0.3.2:** Isolerte tester med hardkodet test-PIN respektive uten autentisering; ligger i `historisk/IKKE_INSTALLER/` og **skal ikke installeres**.
-- **0.4.0:** Full Preview-domene og funksjonsskjelett; skriving sperret.
-- **0.4.1:** 14-byte STATUS/ACK kartlagt fra fysisk kontrollpanel.
+- **0.2.0–0.2.8:** PIN-konfigurasjon, forskjellige GATT-/pairing-forsøk, ferske annonseringer og deretter CONNECT/ACK.
+- **0.3.0:** STATUS/REQ og de første live-sensorene. Separat lab- og preview-variant for protokolltesting.
+- **0.3.1 / 0.3.2:** Eksperimentelle hardkodet-PIN-/no-auth-tester i `historisk/IKKE_INSTALLER/`. **Skal ikke installeres.**
+- **0.4.0:** Full Preview-domene og funksjonsskjelett, skrivekommandoer sperret.
+- **0.4.1:** 14-byte STATUS/ACK fra fysisk panel kartlagt.
 
-Merk: En historisk revisjon er ikke nødvendigvis kompatibel med dagens integrasjonsdomene, og disse prototypene er ikke produksjonsklare.
+Dette er dokumenterte historiske utgaver, ikke anbefalte installasjoner.
