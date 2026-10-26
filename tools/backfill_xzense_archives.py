@@ -44,8 +44,12 @@ def digest(files):
         d.update(len(body).to_bytes(8,"big"))
         d.update(body)
     return d.hexdigest()
+def archive_path(version):
+    """Keep the current installable release at the repository root."""
+    return ROOT / NAMES[version] if version == '24' else ARCHIVE / NAMES[version]
+
 def load(version):
-    with zipfile.ZipFile(ARCHIVE/NAMES[version]) as z:
+    with zipfile.ZipFile(archive_path(version)) as z:
         return {x.filename:z.read(x) for x in z.infolist() if not x.is_dir()}
 def patch_files(files, diff):
     files=dict(files)
@@ -86,7 +90,7 @@ def main():
         if actual!=EXPECTED[version]:
             raise RuntimeError(f"Integrity check failed on {version}: {actual}")
         states[version]=files
-        save(ARCHIVE/NAMES[version],files)
+        save(archive_path(version),files)
         if version in SUPPLEMENT:
             contents=SUPPLEMENT_PATHS["20.1" if version=="20.1r" else version]
             save(SUPPLEMENT_ARCHIVE/SUPPLEMENT[version],files,contents)
