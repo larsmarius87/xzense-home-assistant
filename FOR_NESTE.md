@@ -17,6 +17,7 @@
 - [ ] **Visningsnavn:** Endre «Normal drift» til **«Drift»** hvis endringen ikke allerede ligger i 0.5.24. Endre «Start opptenning» til **«Start fyring»** i norsk integrasjon/dashboard uten å endre handlingen.
 - [ ] **Sist Bluetooth-oppdatering:** Vis **siste vellykkede STATUS-svar** med full norsk dato og klokkeslett, eksempel 27.10.2026 kl. 08:32:45, lokal tid Europe/Oslo. Behold maskinlesbar timestamp for automatisering. 0.5.24 har allerede last_data_at / «Sist oppdatert (Bluetooth)», så gjenbruk/forbedre eksisterende løsning og unngå unødvendig duplikatsensor.
 - [ ] **GLOBAL 0x53:** Vis bare navnet **«Pipetrekk»** under Konfigurasjon, i Pa. Brukerens verdi er **26 Pa**. Dette er en innstilling/setpunkt, **ikke en løpende fysisk måling**. Den brukes ikke aktivt i brukerens oppsett uten XTP.
+- [ ] **Minimum viftespenning (GLOBAL 0x54):** Sett generelle min/maks til **80–120 V**, fabrikkverdi **100 V**. Bekreftet både i Exodrafts norske manual (side 58) og firmware 4.10_RC2 (register 0x54, 80/120). Legg til en vedvarende lokal HA-bryter under Konfigurasjon: **«RS009-41 motor»**. Av: 80–120 V; På: **100–120 V**. Oppdater UI-grensene umiddelbart og valider grensen også før GLOBAL-skriving. Bryteren skal **ikke** sende en egen kommando til Xzense eller endre spenningen automatisk. Hvis registrert spenning er under 100 V ved aktivering, vis behov for manuell justering. Behold eksisterende verdi 105 V og andre gyldige innstillinger. Default bryter Av inntil brukeren velger modell.
 - [ ] **XTP-opprydding:** Ikke eksponer levende trekkmåling (0x20), XTP-relatert 0x51 eller trykkstyrt alternativ (2) av SYSTEM_CONTROL 0x55 som aktive funksjoner. Råfeltene kan beholdes i full diagnostikk. Behold 0x55=0 Manuell og 0x55=1 eXotelligence, og behold 0x1B atmosfærisk lufttrykk (hPa), som **ikke** er XTP-trekkmåling.
 - [ ] **Øvrige tids-/konfigurasjonsgrenser:** Oppdater relevante min/maks i grensesnittet etter verifiserte firmwarefunn, blant annet alarm, gjenfyringstid og utbrenningstid. Ikke åpne nye uprøvde skrivekommandoer bare fordi registeret finnes.
 
@@ -96,7 +97,7 @@
 | 0x51 | DRAFT_FAN_SPEED | Rå 0 observert | Firmware-tabellen navngir trekkrelatert viftehastighet; eldre dokument kalte det «Actual draught». **XTP-relatert/ikke aktivt**, semantikk skal ikke overtolkes |
 | **0x52** | **BOOST_STOP_TEMP** | /10 °C, 600 = 60,0 °C | **Bekreftet**; vårt valgte standardreferansepunkt 60 °C, grenser fra firmware |
 | **0x53** | **WANTED_DRAFT / Pipetrekk** | Pa, brukerens **26 Pa** | **Bekreftet** innstilling/setpunkt i menyen, **ikke målt trekk** |
-| **0x54** | **MIN_FAN_VOLTAGE** | V, 80 → 105 V testet | **Fysisk bekreftet** |
+| **0x54** | **MIN_FAN_VOLTAGE / Minimum viftespenning** | **80–120 V**; fabrikkverdi **100 V**; brukerens verdi **105 V** | **Bekreftet firmware + norsk manual:** 0x54 (84 desimalt) har grensene 80 og 120 i 4.10_RC2 (programområde ca. 0x1CB08–0x1CB34). **Ved RS009-41: minimum 100 V**. Planlagt lokal HA-bryter begrenser til 100–120 V, uten automatisk spenningsendring |
 | **0x55** | **SYSTEM_CONTROL** | 0 Manuell; 1 eXotelligence; 2 trykkstyrt | **Direkte firmwarebinding**; skjul alternativ 2 uten XTP |
 | 0x56 | TEMPERATURE_SENSOR | Rå 1, antatt 0 Av / 1 På | **Firmware-ID bekreftet, 0/1-skriving eksperimentell** |
 | 0x57 | EXTERN_START | Rå 0/1 observert | **Firmware**, bevisst utsatt fra aktive funksjoner |
@@ -148,6 +149,7 @@ Tilstandsmappingen 0–10 kommer fra firmware-tabellen. Ikke tolk 0x18 (MY_STATE
 - [Endringshistorikk](CHANGELOG.md)
 - [Revisjonshistorikk og kildearkiver](REVISJONER.md)
 - [Tidligere protokollmanifest](docs/PROTOCOL_MANIFEST.md) (inneholder eldre uavklarte felt; må samordnes ved neste bygg)
+- [Offisiell norsk Xzense-manual – bruker-/servicemeny, side 58](https://exodraft.dk/wp-content/uploads/2024/07/Manual_Xzense_NO.pdf) (0x54: 80–120 V, fabrikk 100 V, RS009-41 min. 100 V)
 - [Protokollnotater](docs/PROTOCOL_NOTES.md)
 - [ChimneyLog-forskning](docs/CHIMNEYLOG_RESEARCH.md)
 
