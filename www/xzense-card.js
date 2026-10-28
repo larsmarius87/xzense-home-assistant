@@ -1,6 +1,6 @@
-/* Xzense panel card 0.5.16. No external libraries or Home Assistant plugins. */
+/* Xzense panel card 0.5.25. No external libraries or Home Assistant plugins. */
 const XZ_FIELDS = [
-  {key:'device_state',name:'Driftsstatus',domain:'sensor',tab:'main'},
+  {key:'device_state_localized',name:'Driftsstatus',domain:'sensor',tab:'main'},
   {key:'chimney_temperature',name:'Pipetemperatur',domain:'sensor',tab:'main'},
   {key:'fan_speed',name:'Faktisk viftehastighet',domain:'sensor',tab:'main'},
   {key:'inside_temperature',name:'Innetemperatur',domain:'sensor',tab:'main'},
@@ -8,7 +8,9 @@ const XZ_FIELDS = [
   {key:'pressure',name:'Lufttrykk',domain:'sensor',tab:'main'},
   {key:'state_timer',name:'Tid i driftstilstand',domain:'sensor',tab:'main'},
   {key:'fire_duration',name:'Fyringsvarighet',domain:'sensor',tab:'main'},
-  {key:'start_fire',name:'Start opptenning',domain:'button',tab:'main'},
+  {key:'battery',name:'Batteri kontrollpanel',domain:'sensor',tab:'main'},
+  {key:'signal_strength',name:'Radiolink – signalstyrke (0–3)',domain:'sensor',tab:'main'},
+  {key:'start_fire',name:'Start fyring',domain:'button',tab:'main'},
   {key:'refuel',name:'Legg på ved',domain:'button',tab:'main'},
   {key:'stop_fire',name:'Avslutt fyring',domain:'button',tab:'main'},
   {key:'boost',name:'Boost',domain:'switch',tab:'main'},
@@ -18,24 +20,34 @@ const XZ_FIELDS = [
   {key:'auto_start_temperature',name:'Starttemperatur',domain:'number',tab:'operating'},
   {key:'auto_stop_temperature',name:'Stopptemperatur',domain:'number',tab:'operating'},
   {key:'boost_time',name:'Boost-tid',domain:'number',tab:'operating'},
-  {key:'afterrun_time',name:'Etterløpstid',domain:'number',tab:'operating'},
-  {key:'refire_time',name:'Påfyllingstid',domain:'number',tab:'operating'},
+  {key:'afterrun_time',name:'Ettergangstid',domain:'number',tab:'operating'},
+  {key:'refire_time',name:'Gjenfyrings-tid',domain:'number',tab:'operating'},
   {key:'burnout_time',name:'Utbrenningstid',domain:'number',tab:'operating'},
   {key:'alarm_setpoint',name:'Alarmtemperatur',domain:'number',tab:'operating'},
   {key:'boost_stop_temperature',name:'Boost-stopptemperatur',domain:'number',tab:'operating'},
-  {key:'wanted_draft',name:'Ønsket trekk',domain:'number',tab:'operating'},
+  {key:'wanted_draft',name:'Pipetrekk',domain:'number',tab:'configuration'},
   {key:'minimum_fan_voltage',name:'Minimum viftespenning',domain:'number',tab:'operating'},
   {key:'system_control',name:'Systemstyring',domain:'select',tab:'configuration'},
-  {key:'temperature_sensor',name:'Temperaturprobe',domain:'switch',tab:'configuration'},
+  {key:'temperature_sensor',name:'Temperaturføler',domain:'switch',tab:'configuration'},
+  {key:'rs009_41_motor',name:'Viftetype RS009-41',domain:'switch',tab:'configuration'},
   {key:'brightness_raw',name:'Lysstyrke',domain:'number',tab:'display'},
   {key:'contrast_raw',name:'Kontrast',domain:'number',tab:'display'},
   {key:'volume_raw',name:'Lydstyrke',domain:'number',tab:'display'},
+  {key:'bluetooth_update_interval',name:'Bluetooth i hvile (Ready)',domain:'number',tab:'configuration'},
+  {key:'bluetooth_active_update_interval',name:'Bluetooth under aktiv drift',domain:'number',tab:'configuration'},
   {key:'ble_link_connected',name:'Bluetooth-link',domain:'sensor',tab:'diagnostics'},
   {key:'phase',name:'Tilkoblingsfase',domain:'sensor',tab:'diagnostics'},
   {key:'last_advertisement_rssi',name:'RSSI',domain:'sensor',tab:'diagnostics'},
   {key:'selected_source',name:'Valgt Bluetooth-kilde',domain:'sensor',tab:'diagnostics'},
   {key:'last_error',name:'Siste Bluetooth-feil',domain:'sensor',tab:'diagnostics'},
+  {key:'last_data_at',name:'Sist oppdatert (Bluetooth)',domain:'sensor',tab:'diagnostics'},
+  {key:'last_successful_bt_status',name:'Sist vellykket Bluetooth-oppdatering',domain:'sensor',tab:'diagnostics'},
+  {key:'next_poll_at',name:'Neste Bluetooth-oppdatering',domain:'sensor',tab:'diagnostics'},
 ];
+// Display-only translation of the legacy English state sensor. Raw entity state
+// is left untouched so existing automations keep working.
+const XZ_STATE_KEYS = {"Offline":"offline","Setup":"setup","Ready for lighting":"ready_for_lighting","Boosting":"boosting","Operation":"operation","Burnout":"burnout","Afterrun":"afterrun","Refueling":"refueling","Ventilation":"ventilation","Error":"error","Upgrading":"upgrading"};
+const XZ_STATE_NB = {"offline":"Frakoblet","setup":"Oppsett","ready_for_lighting":"Klar for fyring","boosting":"Boost","operation":"Drift","burnout":"Utbrenning","afterrun":"Ettergang","refueling":"Legg på ved","ventilation":"Ventilasjon","error":"Feil","upgrading":"Oppdatering","unknown_state":"Ukjent tilstand"};
 const XZ_TABS = [
   ['main','Hovedskjerm','mdi:fireplace'],
   ['operating','Driftsinnstillinger','mdi:tune-vertical'],
@@ -61,6 +73,7 @@ const XZ_STYLES = `
   .tab[aria-selected=true]{color:var(--xz-accent);background:color-mix(in srgb,var(--xz-accent) 10%,transparent);font-weight:650}
   .panel{padding:16px;display:grid;gap:14px}.hero{background:var(--secondary-background-color,#f5f6f7);padding:18px;border-radius:12px}
   .big{font-size:2.25rem;font-weight:700;line-height:1.25}.hero-label{font-size:.86rem;color:var(--xz-muted)}
+  .freshness{display:flex;align-items:center;gap:7px;margin-top:10px;color:var(--xz-muted);font-size:.79rem;line-height:1.45;flex-wrap:wrap}.freshness strong{color:var(--primary-text-color,#202124);font-weight:600}.freshness ha-icon{--mdc-icon-size:16px}
   .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
   .stat{border-radius:8px;padding:9px;background:var(--card-background-color,#fff);min-width:0}
   .stat small{display:block;color:var(--xz-muted);font-size:.73rem}.stat strong{display:block;overflow-wrap:anywhere;font-size:.95rem;margin-top:4px}
@@ -103,33 +116,66 @@ class XzenseCard extends HTMLElement {
       const state=this._hass.states[id];
       const raw=id.split('.')[1];
       const friendly=String(state?.attributes?.friendly_name||'').toLowerCase();
-      return raw===key || raw.endsWith('_'+key) || (friendly.includes('xzense') && xzSlug(friendly).endsWith(xzSlug(this._field(key).name)));
+      const xzenseNamed = raw.includes('xzense') || friendly.includes('xzense');
+      const oldUpdateName = key==='last_data_at' && xzenseNamed && (raw.endsWith('_last_data_update') || raw.endsWith('_sist_oppdatert_bluetooth'));
+      return raw===key || raw.endsWith('_'+key) || oldUpdateName || (friendly.includes('xzense') && xzSlug(friendly).endsWith(xzSlug(this._field(key).name)));
     });
     return exact.length===1?exact[0]:null;
   }
   _state(key){const id=this._entity(key);return id?this._hass?.states?.[id]:null;}
-  _format(key){const s=this._state(key);return s&&s.state&&!['unavailable','unknown'].includes(s.state)?s.state+(s.attributes?.unit_of_measurement?' '+s.attributes.unit_of_measurement:''):'–';}
+  _translatedDeviceState(raw){
+    const key=XZ_STATE_KEYS[String(raw)] || (Object.hasOwn(XZ_STATE_NB,String(raw))?String(raw):null);
+    if(!key){const unknown=String(raw).match(/^Unknown \((\d+)\)$/);return unknown?`Ukjent tilstand (${unknown[1]})`:raw;}
+    const translationId=`component.xzense_full_preview.entity.sensor.device_state_localized.state.${key}`;
+    const localized=typeof this._hass?.localize==='function'?this._hass.localize(translationId):null;
+    return localized && localized!==translationId ? localized : (XZ_STATE_NB[key] || raw);
+  }
+  _format(key){
+    const s=this._state(key);
+    if(!s||!s.state||['unavailable','unknown'].includes(s.state))return '–';
+    if(key==='device_state_localized')return this._translatedDeviceState(s.state);
+    if(['bluetooth_update_interval','bluetooth_active_update_interval'].includes(key)&&Number(s.state)===0)return 'Kontinuerlig';
+    return s.state+(s.attributes?.unit_of_measurement?' '+s.attributes.unit_of_measurement:'');
+  }
+  _lastUpdatedInfo(){
+    const rawSensor=this._state('last_successful_bt_status')?.attributes?.timestamp_iso||this._state('last_data_at')?.state;
+    const valid=value=>value && !['unavailable','unknown','none'].includes(String(value).toLowerCase());
+    const raw=valid(rawSensor)?rawSensor:
+      ['chimney_temperature','device_state','inside_temperature','outside_temperature','pressure']
+        .map(key=>this._state(key)?.attributes?.last_data_at).find(valid);
+    if(!raw || ['unavailable','unknown','none'].includes(String(raw).toLowerCase()))return {time:'–',age:'Ingen mottatte data ennå'};
+    const stamp=new Date(raw), timestamp=stamp.getTime();
+    if(!Number.isFinite(timestamp))return {time:'–',age:'Ukjent tidspunkt'};
+    const seconds=Math.max(0,Math.floor((Date.now()-timestamp)/1000));
+    const age=seconds<60?'nettopp':seconds<3600?`for ${Math.floor(seconds/60)} min siden`:seconds<86400?`for ${Math.floor(seconds/3600)} t siden`:`for ${Math.floor(seconds/86400)} d siden`;
+    const local=this._state('last_successful_bt_status')?.state;
+    const time=valid(local)?local:stamp.toLocaleString('nb-NO',{timeZone:this._hass?.config?.time_zone||'Europe/Oslo',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}).replace(', ',' kl. ');
+    return {time,age};
+  }
+  _lastUpdatedLine(){const info=this._lastUpdatedInfo();return `${info.time} (${info.age})`;}
   _ready(key){const e=this._state(key);return !!e && !['unavailable','unknown'].includes(e.state);}
   _tabButton(t){return `<button class="tab" data-tab="${t[0]}" aria-selected="${this._tab===t[0]}"><ha-icon icon="${t[2]}"></ha-icon> <span class="tlabel">${t[1]}</span></button>`;}
   _stat(key){return `<div class="stat"><small>${xzEsc(this._label(key))}</small><strong>${xzEsc(this._format(key))}</strong></div>`;}
-  _action(key,icon){const e=this._state(key);const linked=!!this._entity(key);const ready=this._ready(key);const on=e?.state==='on';return `<button class="action ${on?'on':''}" data-action="${key}" ${ready?'':'disabled'} title="${xzEsc(linked?'':'Velg riktig entitet i kortredigeringen')}"><ha-icon icon="${icon}"></ha-icon>${xzEsc(this._label(key))}${!linked?' ⚠':''}</button>`;}
+  _action(key,icon){const e=this._state(key);const linked=!!this._entity(key);const ready=this._ready(key);const on=e?.state==='on';const afterrun=key==='start_fire' && /afterrun|ettergang/i.test(this._state('device_state_localized')?.state||'');const label=afterrun&&!this._config.labels?.start_fire?'Start ny fyring':this._label(key);return `<button class="action ${on?'on':''}" data-action="${key}" ${ready?'':'disabled'} title="${xzEsc(linked?'':'Velg riktig entitet i kortredigeringen')}"><ha-icon icon="${icon}"></ha-icon>${xzEsc(label)}${!linked?' ⚠':''}</button>`;}
   _numeric(key,slider=false){const e=this._state(key), a=e?.attributes||{}, v=e?.state, ready=this._ready(key), num=ready?Number(v):NaN;
     const low=Number.isFinite(Number(a.min))?Number(a.min):(slider?0:0),high=Number.isFinite(Number(a.max))?Number(a.max):(slider?100:100),step=Number(a.step)>0?Number(a.step):1;
     const shown=Number.isFinite(num)?String(num):'';
     const inp=slider?`<input type="range" data-number="${key}" min="${low}" max="${high}" step="${step}" value="${shown||low}" ${ready?'':'disabled'}>`:
     `<input type="number" data-number="${key}" min="${low}" max="${high}" step="${step}" value="${shown}" ${ready?'':'disabled'} aria-label="${xzEsc(this._label(key))}">`;
-    return `<div class="rowset"><div class="rowhead"><strong>${xzEsc(this._label(key))}</strong><span class="val">${xzEsc(this._format(key))}</span></div><div class="setter">${inp}<button class="set" data-number-save="${key}" ${ready?'':'disabled'}>Lagre</button></div>${!this._entity(key)?'<span class="missing">Entitet må velges i kortredigeringen</span>':''}</div>`;
+    const factory=a.factory_reference!==null&&a.factory_reference!==undefined?`<div class="note">Standardreferanse: ${xzEsc(a.factory_reference)}${xzEsc(a.unit_of_measurement||'')}${a.factory_reference_note?` · ${xzEsc(a.factory_reference_note)}`:''}</div>`:'';
+    const voltageWarning=key==='minimum_fan_voltage'&&a.under_motor_minimum?'<div class="warn">RS009-41 er aktivert, men kontrollpanelet står under 100 V. Velg en verdi fra 100 til 120 V og lagre.</div>':'';
+    return `<div class="rowset"><div class="rowhead"><strong>${xzEsc(this._label(key))}</strong><span class="val">${xzEsc(this._format(key))}</span></div><div class="setter">${inp}<button class="set" data-number-save="${key}" ${ready?'':'disabled'}>Lagre</button></div>${factory}${voltageWarning}${!this._entity(key)?'<span class="missing">Entitet må velges i kortredigeringen</span>':''}</div>`;
   }
   _mode(key){const e=this._state(key),ready=this._ready(key),options=e?.attributes?.options||[];return `<div class="rowset"><div class="rowhead"><strong>${xzEsc(this._label(key))}</strong><span class="val">${xzEsc(this._format(key))}</span></div><div class="setter"><select data-select="${key}" ${ready?'':'disabled'}>${options.map(o=>`<option value="${xzEsc(o)}" ${e?.state===o?'selected':''}>${xzEsc(o)}</option>`).join('')}</select><button data-select-save="${key}" class="set" ${ready?'':'disabled'}>Lagre</button></div></div>`;}
   _toggle(key,experimental=false){const e=this._state(key);const ready=this._ready(key);return `<div class="rowset"><div class="rowhead"><strong>${xzEsc(this._label(key))}</strong><span class="val">${xzEsc(this._format(key))}</span></div><div class="setter"><button data-toggle="${key}" class="action ${e?.state==='on'?'on':''}" ${ready?'':'disabled'}><ha-icon icon="mdi:toggle-switch${e?.state==='on'?'':'-off'}"></ha-icon>${e?.state==='on'?'Slå av':'Slå på'}</button></div>${experimental?'<span class="warn">Eksperimentell GLOBAL 0x56-kontroll. Slått av = ingen automatisk temperaturbasert start/stopp. Kontroller panelet etter endring.</span>':''}</div>`;}
-  _main(){return `<div class="hero"><div class="hero-label">Driftsstatus</div><div class="big">${xzEsc(this._format('device_state'))}</div><div class="stats">${['chimney_temperature','fan_speed','inside_temperature','outside_temperature','pressure','state_timer','fire_duration'].map(k=>this._stat(k)).join('')}</div></div><div class="group"><h4>Fyring og ventilasjon</h4><div class="controls">${this._action('start_fire','mdi:fire')}${this._action('refuel','mdi:fire-plus')}${this._action('stop_fire','mdi:fire-off')}${this._action('boost','mdi:rocket-launch-outline')}${this._action('ventilation','mdi:fan')}</div></div><div class="group"><h4>Vifte</h4>${this._numeric('user_fan_speed',true)}</div>`;}
-  _operating(){return `<div class="group"><h4>Hastigheter</h4>${this._numeric('user_fan_speed',true)}${this._numeric('boost_fan_speed',true)}</div><div class="group"><h4>Temperaturer</h4>${['auto_start_temperature','auto_stop_temperature','boost_stop_temperature','alarm_setpoint'].map(k=>this._numeric(k)).join('')}</div><div class="group"><h4>Tider</h4>${['boost_time','afterrun_time','refire_time','burnout_time'].map(k=>this._numeric(k)).join('')}</div><div class="group"><h4>Trekk og viftegrense</h4>${['wanted_draft','minimum_fan_voltage'].map(k=>this._numeric(k)).join('')}</div>`;}
-  _configuration(){return `${this._mode('system_control')}${this._toggle('temperature_sensor',true)}<div class="note">Språk og firmwareoppdatering er bevisst ikke eksponert.</div>`;}
+  _main(){const last=this._lastUpdatedInfo();return `<div class="hero"><div class="hero-label">Driftsstatus</div><div class="big">${xzEsc(this._format('device_state_localized'))}</div><div class="freshness"><ha-icon icon="mdi:bluetooth"></ha-icon><span>Sist oppdatert: <strong>${xzEsc(last.time)}</strong> · ${xzEsc(last.age)}</span></div><div class="stats">${['chimney_temperature','fan_speed','inside_temperature','outside_temperature','pressure','state_timer','fire_duration','battery','signal_strength'].map(k=>this._stat(k)).join('')}</div></div><div class="group"><h4>Fyring og ventilasjon</h4><div class="controls">${this._action('start_fire','mdi:fire')}${this._action('refuel','mdi:fire-plus')}${this._action('stop_fire','mdi:fire-off')}${this._action('boost','mdi:turbine')}${this._action('ventilation','mdi:fan')}</div></div><div class="group"><h4>Vifte</h4>${this._numeric('user_fan_speed',true)}</div>`;}
+  _operating(){return `<div class="group"><h4>Hastigheter</h4>${this._numeric('user_fan_speed',true)}${this._numeric('boost_fan_speed',true)}</div><div class="group"><h4>Temperaturer</h4>${['auto_start_temperature','auto_stop_temperature','boost_stop_temperature','alarm_setpoint'].map(k=>this._numeric(k)).join('')}</div><div class="group"><h4>Tider</h4>${['boost_time','afterrun_time','refire_time','burnout_time'].map(k=>this._numeric(k)).join('')}</div><div class="group"><h4>Viftegrense</h4>${this._numeric('minimum_fan_voltage')}</div>`;}
+  _configuration(){return `<div class="group"><h4>Bluetooth</h4><div class="note">0 = kontinuerlig Bluetooth. Hvile (Ready): 0–120 min, standard 5. Aktiv (Boosting, Operation, Afterrun og Ventilation): 0–600 sekunder, standard 0. Knappetrykk kobler til ved behov. Verdier beholdes ved frakobling.</div>${this._numeric('bluetooth_update_interval',true)}${this._numeric('bluetooth_active_update_interval',true)}</div><div class="group"><h4>Viftetype</h4><div class="note">RS009-41 på: minste viftespenning begrenses lokalt til 100–120 V. Av: 80–120 V. Valget endrer ikke spenningen på kontrollpanelet automatisk.</div>${this._toggle('rs009_41_motor')}</div><div class="group"><h4>Pipetrekk (installasjon)</h4><div class="note">Dette er lagret installasjonsverdi og ikke målt pipetrekk. Ingen XTP-trykksensor er montert.</div>${this._numeric('wanted_draft')}</div>${this._mode('system_control')}${this._toggle('temperature_sensor',true)}<div class="note">Trykkstyring (XTP), språk og firmwareoppdatering er bevisst ikke eksponert.</div>`;}
   _display(){return `<div class="note">Displayinnstillinger fra Xzense-panelet, 0–100 %. Verdiene skrives først når du trykker Lagre.</div>${['brightness_raw','contrast_raw','volume_raw'].map(k=>this._numeric(k,true)).join('')}`;}
-  _diagnostics(){return `<div class="diag">${['ble_link_connected','phase','last_advertisement_rssi','selected_source','last_error'].map(k=>`<div class="diagline"><span>${xzEsc(this._label(k))}</span><strong>${xzEsc(this._format(k))}</strong></div>`).join('')}</div><div class="note">Fullstendig protokolldiagnostikk er tilgjengelig i Home Assistants integrasjonsdiagnostikk.</div>`;}
+  _diagnostics(){return `<div class="diag">${['ble_link_connected','phase','last_successful_bt_status','next_poll_at','last_advertisement_rssi','selected_source','last_error'].map(k=>`<div class="diagline"><span>${xzEsc(this._label(k))}</span><strong>${xzEsc(this._format(k))}</strong></div>`).join('')}</div><div class="note">Fullstendig protokolldiagnostikk er tilgjengelig i Home Assistants integrasjonsdiagnostikk.</div>`;}
   _render(){if(!this._config)return;const contents={main:()=>this._main(),operating:()=>this._operating(),configuration:()=>this._configuration(),display:()=>this._display(),diagnostics:()=>this._diagnostics()};
     const missing=XZ_FIELDS.filter(f=>f.tab===this._tab&&!this._entity(f.key)).length;
-    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div><ha-icon icon="mdi:fireplace"></ha-icon></div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Velg <strong>Rediger dashboard → Rediger kort</strong> for å koble riktig entitet til hver funksjon.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.16 · bruker faktiske Home Assistant-entiteter</div></ha-card>`;
+    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div><ha-icon icon="mdi:fireplace"></ha-icon></div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Velg <strong>Rediger dashboard → Rediger kort</strong> for å koble riktig entitet til hver funksjon.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.25 · bruker faktiske Home Assistant-entiteter</div></ha-card>`;
     this.shadowRoot.querySelectorAll('[data-tab]').forEach(n=>n.addEventListener('click',()=>{this._tab=n.dataset.tab;this._lastProblem='';this._render()}));
     this.shadowRoot.querySelectorAll('[data-action]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.action)));
     this.shadowRoot.querySelectorAll('[data-toggle]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.toggle)));
@@ -179,4 +225,4 @@ if(!customElements.get('xzense-card'))customElements.define('xzense-card',Xzense
 if(!customElements.get('xzense-card-editor'))customElements.define('xzense-card-editor',XzenseCardEditor);
 window.customCards=window.customCards||[];
 if(!window.customCards.some(c=>c.type==='xzense-card'))window.customCards.push({type:'xzense-card',name:'Xzense Kontrollpanel',description:'Xzense med norsk meny og valgfrie Home Assistant-entiteter',preview:true});
-console.info('%c Xzense Dashboard 0.5.14','color:#1976d2;font-weight:bold');
+console.info('%c Xzense Dashboard 0.5.25','color:#1976d2;font-weight:bold');

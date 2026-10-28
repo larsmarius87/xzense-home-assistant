@@ -1,8 +1,8 @@
 # Xzense – versjonsarkiv og revisjonsoversikt
 
-Oppdatert 26. oktober 2026. **Nyeste tilgjengelige bygg: 0.5.24 Alpha.** Arkivet omfatter også 20 kildepakker fra 0.1.0–0.4.4.
+Oppdatert 28. oktober 2026. **Nyeste tilgjengelige bygg: 0.5.25 Alpha.** Arkivet omfatter også 20 kildepakker fra 0.1.0–0.4.4.
 
-Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, ikke en liste over generelt støttede eller anbefalte installasjoner. ZIP-ene er kildearkiver som inneholder komplette integrasjonsfiler for aktuell revisjon. Se også [README](README.md), [CHANGELOG](CHANGELOG.md) og [installasjon for 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md).
+Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, ikke en liste over generelt støttede eller anbefalte installasjoner. ZIP-ene er kildearkiver som inneholder komplette integrasjonsfiler for aktuell revisjon. Se også [README](README.md), [CHANGELOG](CHANGELOG.md) og [installasjon for 0.5.25](INSTALLASJON_0.5.25.md).
 
 > **Advarsel:** 0.5.15 og 0.5.16 har en kjent asyncio busy-loop som kan fryse Home Assistant. Versjonene beholdes kun som historikk. 0.5.17 rettet denne konkrete feilen.
 
@@ -35,6 +35,8 @@ Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, 
 | 0.5.22 | [Last ned](arkiv/versjoner/xzense-alpha-0.5.22-stue-only-test-source.zip) | Låst Bluetooth-kilde: gammel Stue (test) | [INSTALLASJON_0.5.22_STUE_TEST.md](arkiv/installasjon/INSTALLASJON_0.5.22_STUE_TEST.md) |
 | 0.5.23 | [Last ned](arkiv/versjoner/xzense-alpha-0.5.23-stue-only-relaxed-source.zip) | Låst Stue med kildebestemt cache-fallback (test) | [INSTALLASJON_0.5.23_STUE_RELAXED.md](arkiv/installasjon/INSTALLASJON_0.5.23_STUE_RELAXED.md) |
 | 0.5.24 | [Last ned](xzense-alpha-0.5.24-multi-proxy-relaxed-source.zip) | Automatisk multi-proxy, RSSI-sortering og cache-fallback | [INSTALLASJON_0.5.24_MULTI_PROXY.md](INSTALLASJON_0.5.24_MULTI_PROXY.md) |
+| 0.5.25-rc1 | [Last ned](xzense-alpha-0.5.25-rc1-source.zip) | Arkivert testkandidat før siste språk-, ikon- og varslingsendringer | [INSTALLASJON_0.5.25-rc1.md](INSTALLASJON_0.5.25-rc1.md) |
+| **0.5.25 Alpha** | **[Last ned](xzense-alpha-0.5.25-source.zip)** | Flere mobilvarsler, norske tekster og MDI-ikoner, registeropprydding, 0x-kart | [INSTALLASJON_0.5.25.md](INSTALLASJON_0.5.25.md) |
 
 ## Tilleggspakker (ikke komplette installasjoner)
 

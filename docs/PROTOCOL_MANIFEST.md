@@ -1,4 +1,4 @@
-# Xzense BLE protocol manifest — Alpha 0.5.10
+# Xzense BLE protocol manifest — Alpha 0.5.25
 
 Current source of truth for the 4.10 controller. **Verified** = confirmed on live hardware/captured working write. **Live-correlated** = physical controller setting matched to GLOBAL value. **Firmware-derived** = directly recovered from the official Xzense 5.0.5 bundled controller firmware (`v4.10_RC2`). **Candidate** = read-only until semantics/scaling are independently confirmed.
 
@@ -6,8 +6,10 @@ The v4.10_RC2 image contains a stale legacy GLOBAL debug-name table. Current IDs
 
 | ID | Current meaning | Encoding / unit | Access | Status | Evidence / notes |
 |---:|---|---|---|---|---|
-| `0x05` | 0x05 status (meaning unknown) | raw integer | read | **Unresolved** | 2 and 3 observed despite stable wired setup; previous 2=Battery/3=External mapping contradicted |
-| `0x18` | 0x18 status (possible signal level) | raw integer | read | Candidate | Discrete level; not RSSI dBm |
+| `0x00`–`0x03` | Ukjente controllerfelter | int16 | diagnostikk | Ukjent | Lesbare i full GLOBAL-dump og samlet rådiagnostikk |
+| `0x04` | Batteri på kontrollpanel | prosent, tentativt direkte | sensor | **Live-korrelert kandidat** | Endret rå 100→90 samtidig med batteriikon; eksakt kalibrering ikke fastslått |
+| `0x05` | Signalstyrke panel ↔ kraftenhet | rå 0–3 (antatt) | sensor | **Firmware-hint / kandidat** | 2/3 observert; ikke Bluetooth-RSSI og ikke strømforsyningskilde |
+| `0x18` | MY_STATE | rå integer | rådiagnostikk | Ukjent | Tidligere feilaktig tolket som signalstyrke; kan aktiveres som råsensor |
 | `0x19` | Device state | enum | read + selected state action | Verified read / Firmware-derived write | State 3/6 live verified; Afterrun action writes value 6 |
 | `0x1A` | State timer | seconds | read | **Verified** | Advances approximately once per second |
 | `0x1B` | Air pressure | hPa | read | **Verified** | e.g. live 1011 = 1011 hPa |
@@ -15,29 +17,50 @@ The v4.10_RC2 image contains a stale legacy GLOBAL debug-name table. Current IDs
 | `0x1D` | Outside temperature | /10 °C | read | Strong | Corroborates STATUS |
 | `0x1E` | Chimney temperature | /10 °C | read | **Verified** | Live calibrated |
 | `0x1F` | Actual fan speed | % | read | **Verified** | Live at 10 % and 100 % |
-| `0x20` | Unknown | int16 | read | Unknown | Often 10 |
+| `0x20` | XTP-relatert / uavklart | int16 | kun full dump | Ukjent | Ingen montert XTP. Ikke opprettet som aktiv sensor |
 | `0x32` | Sound | % | read/write | **Live-correlated + firmware** | 12→24 A/B; direct v4.10 UI binding |
 | `0x33` | Contrast | % | read/write | **Live-correlated + firmware** | 75 matched panel |
 | `0x34` | Brightness | % | read/write | **Live-correlated + firmware** | 68 matched panel |
-| `0x35` | Unknown | int16 | read | Unknown | observed 1 |
-| `0x36` | Unknown | int16 | read | Unknown | observed 0 |
+| `0x35` | Unknown | int16 | rådiagnostikk | Ukjent | observert 1 |
+| `0x36` | Unknown | int16 | rådiagnostikk | Ukjent | observert 0 |
 | `0x4B` | Start temperature | /10 °C | read/write | **Live-correlated + firmware** | 502 = 50.2 °C |
 | `0x4C` | Stop temperature | /10 °C | read/write | **Live-correlated + firmware** | 398 = 39.8 °C |
 | `0x4D` | Boost time | seconds | read/write | **Live-correlated + firmware** | 900 = 15 min |
 | `0x4E` | Afterrun time | seconds | read/write | **Live-correlated + firmware** | 1800 = 30 min |
 | `0x4F` | Boost speed | % | read/write | **Live-correlated + firmware** | 100 = 100 % |
 | `0x50` | Fan speed setpoint | % | read/write | **Live Ventilation A/B + firmware** | Operation (4) and Ventilation (8): 10→16 steps observed in Ventilation, STATUS fan=16%; HA control gated to states 4 and 8 |
-| `0x51` | Actual draught | raw | read | Firmware-derived | Scaling not yet live-confirmed; read-only |
+| `0x51` | XTP actual draught | raw | kun full dump | Firmware-derived | Mangler XTP-sensor; ingen aktiv entitet |
 | `0x52` | Boost stop temperature | /10 °C | read/write | **Live-correlated + firmware** | 600 = 60.0 °C |
-| `0x53` | Chimney draught setpoint | Pa | read/write | **Live-correlated + firmware** | 26 = 26 Pa |
-| `0x54` | Minimum fan voltage | V | read/write | **Live-correlated + firmware** | 105 = 105 V |
-| `0x55` | System control | enum | read/write | **v4.10 firmware-derived** | direct SystemManager binding; 0 Manual, 1 eXotelligence, 2 Pressure controlled |
+| `0x53` | **Pipetrekk** (lagret installasjonsverdi) | Pa | read/write | **Live-correlated + firmware** | 26 = 26 Pa; ikke en sanntidsmåling uten XTP |
+| `0x54` | Minimum fan voltage | V | read/write | **Live-correlated + firmware** | 80–120 V; HA-lokal RS009-41-bryter begrenser skriveområdet til 100–120 V |
+| `0x55` | System control | enum | read/write kun 0/1 | **v4.10 firmware-derived** | 0 Manual, 1 eXotelligence; 2 Pressure controlled ikke vist uten XTP |
 | `0x56` | Temperature probe | experimental enum (0/1) | read/write experimental | **v4.10 ID known** | assumed 0=Off,1=On; needs live confirmation |
 | `0x57` | External start | raw/enum | diagnostic only (deferred) | Firmware-derived | removed from active feature registry; raw capture retained |
-| `0x58` | Alarm setpoint | raw | read | Firmware-derived | direct setup UI binding; scaling pending |
-| `0x59` | Reboost/refire time | raw | read | Firmware-derived | Reheat setup screen directly binds 0x59; scaling pending |
+| `0x58` | Alarm setpoint | /10 °C | read/write | Firmware-derived | 150–500 °C, manual 150–400 °C |
+| `0x59` | Reboost/refire time | seconds | read/write | Firmware-derived | 0–45 min, observed 180s=3min |
 | `0x5A` | External fan speed | raw | diagnostic only (deferred) | Firmware-derived candidate | removed from active feature registry; raw capture retained |
-| `0x5B` | Burnout timeout | raw | read | Firmware-derived | Burnout setup screen directly binds 0x5B; observed 300 |
+| `0x5B` | Burnout timeout | seconds | read/write | Firmware-derived | 1–200 min, observed 300s=5min |
+
+## Firmwaregrenser og referanseverdier for 0.5.25
+
+Alle tallene under er vist som brukerrettede verdier; registerets rå verdi er hele grader ×10 eller minutter ×60 der det er oppgitt. Grensene ble funnet i 4.10_RC2-firmwarens oppsettsbeskrivelser og kan avvike fra den trykte manualen. **Endring av integrasjonen overskriver aldri kontrollpanelets eksisterende konfigurasjon.**
+
+| GLOBAL | Innstilling | Firmware minimum | Firmware maksimum | Fabrikk-/brukerreferanse | Lokal tilleggssperre |
+|---|---|---:|---:|---:|---|
+| `0x4B` | Starttemperatur | 5 °C | 205 °C | 40 °C | Må være minst 6 °C over stopp |
+| `0x4C` | Stopptemperatur | 0 °C | 200 °C | 35 °C | Må være minst 6 °C under start |
+| `0x4D` | Boost-tid | 0 min | 45 min | 10 min | – |
+| `0x4E` | Ettergangstid | 1 min | 200 min | 30 min | – |
+| `0x52` | Boost-stopptemperatur | 30 °C | 250 °C | **60 °C brukerønske**; manual 150 °C | – |
+| `0x53` | Pipetrekk | 8 Pa | 150 Pa | 20 Pa | Ikke XTP-sanntid |
+| `0x54` | Minimum viftespenning | 80 V | 120 V | 100 V (manual) | RS009-41 PÅ: 100–120 V |
+| `0x58` | Alarmtemperatur | 150 °C | 500 °C | 250 °C | – |
+| `0x59` | Gjenfyringstid | 0 min | 45 min | 3 min | – |
+| `0x5B` | Utbrenningstid | 1 min | 200 min | 5 min | – |
+
+## Alle øvrige registre i HA-diagnostikk
+
+`sensor.*unused_global_values` viser hvert mottatt, ellers ubrukt GLOBAL-register og dets råverdi under attributtet `registers`. Dette omfatter også eventuelle nye, ennå ikke navngitte ID-er. Registerbeskrivelsene ovenfor er **ikke** en påstand om at en ubrukt verdi støttes av fysisk utstyr. Kjente ubrukte ID-er (`0x00`–`0x03`, `0x18`, `0x35`, `0x36`, `0x57`, `0x5A` osv.) har dessuten separate diagnostikkentiteter som er **deaktivert som standard** for å redusere antall løpende HA-tilstandsoppdateringer. XTP-feltene `0x20` og `0x51` holdes utenfor de nye diagnostikkentitetene, men finnes fortsatt i fullstendig diagnostikkeksport.
 
 ## v4.10 state table
 

@@ -2,18 +2,27 @@
 
 Eksperimentell, lokal Home Assistant-integrasjon for **Exodraft Xzense** via Bluetooth Low Energy (BLE), med PIN-autentisering, statusavlesning, konfigurering og utvalgte styringskommandoer.
 
-> **Gjeldende prosjektversjon: 0.5.24 Alpha (26. oktober 2026).** Dette er en utviklingsversjon, ikke en offisiell Exodraft-integrasjon. Den er testet med et fysisk kontrollpanel, men langvarig stabilitet og alle styringskommandoer er ikke fullstendig verifisert.
+> **Gjeldende prosjektversjon: 0.5.25 Alpha (28. oktober 2026).** Dette er en utviklingsversjon, ikke en offisiell Exodraft-integrasjon. Den er testet med et fysisk kontrollpanel, men langvarig stabilitet og alle styringskommandoer er ikke fullstendig verifisert.
 
 ## Last ned og installer
 
-**[Last ned Xzense 0.5.24 – komplett kildepakke (ZIP)](xzense-alpha-0.5.24-multi-proxy-relaxed-source.zip)**
+**[Last ned Xzense 0.5.25 – komplett kildepakke (ZIP)](xzense-alpha-0.5.25-source.zip)**
 
 1. Ta backup av eksisterende `/config/custom_components/xzense_full_preview/`.
 2. Pakk ut ZIP-filen og kopier **hele** mappen `custom_components/xzense_full_preview/` inn i `/config/custom_components/`; erstatt filene i eksisterende mappe.
 3. Start Home Assistant på nytt. Behold eksisterende konfigurasjonsoppføring, PIN og integrasjonsdomene `xzense_full_preview`.
-4. Kontroller versjon **0.5.24** under integrasjonens diagnostikk, og sjekk at det kommer et nytt STATUS-svar.
+4. Kontroller versjon **0.5.25** under integrasjonens diagnostikk, og sjekk at det kommer et nytt STATUS-svar.
 
-Se [full installasjonsveiledning for 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md).
+Se [full installasjonsveiledning for 0.5.25](INSTALLASJON_0.5.25.md).
+
+## Nytt i 0.5.25
+
+- En eller flere mobiler kan motta «Xzense: Legg i mer ved» når STATUS går fra Drift til Utbrenning. Varsling er av som standard; tidligere valg av én mobil beholdes.
+- «Viftetype RS009-41» begrenser minimum viftespenning til 100–120 V ved ny justering, mot 80–120 V ellers. Den skriver ikke til kontrollpanelet automatisk.
+- Radiolink (0x05) vises som 0–3 signalstreker, og panelbatteri (0x04) forsøksvis i prosent. Begge tolkes foreløpig og er ikke fullstendig kalibrert.
+- Boost bruker `mdi:turbine`, viftetype `mdi:engine-outline`. Gammel utilgjengelig diagnose-teststøy ryddes fra entitetsregisteret, mens rådata bevares.
+- Protokolloversikt med samtlige identifiserte **0x-registre og sikkerhetsgrad** finnes i [protokollmanifestet](docs/PROTOCOL_MANIFEST.md).
+- Bluetooth-transport og automatisk valg av proxy er identisk med 0.5.24.
 
 ## Hva integrasjonen gjør
 
@@ -45,7 +54,7 @@ Testen med ny Stue-proxy (M5Stack ATOM Lite) og gammel Stue viste **8/8 applikas
 | Ressurs | Innhold |
 |---|---|
 | **[Endringslogg](CHANGELOG.md)** | Kronologiske endringer og verifiserte funn |
-| **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.24, med nedlastingslenker |
+| **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.25, med nedlastingslenker |
 | [Historiske prototyper](arkiv/tidlige-versjoner/README.md) | Opprinnelige 0.1–0.4-arkiver, inkludert isolerte testbygg |
 | [Tidligere README](arkiv/dokumenter/README_HISTORISK_TIL_0.5.24.md) | Arkivert dokumentasjon før opprydding |
 | [Tidligere CHANGELOG](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md) | Original endringslogg bevart for sammenligning |

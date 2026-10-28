@@ -1,10 +1,10 @@
 # Xzense Alpha – komplett endringslogg
 
-**Nyeste dokumenterte kildepakke: 0.5.24 Alpha (26. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
+**Nyeste dokumenterte kildepakke: 0.5.25 Alpha (28. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
 
-**Planlagt og ikke implementert i 0.5.24:** En egen sensor med sist vellykkede STATUS-oppdatering vist som norsk dato og klokkeslett.
+**Implementert i 0.5.25:** Sensor med sist vellykkede STATUS-oppdatering i norsk dato-/tidsformat, flertelefonvarsling og ryddigere diagnostikk.
 
 ## Verifiserte observasjoner (skilt fra kodeendringer)
 
@@ -30,6 +30,20 @@
 ---
 
 ## Versjonsendringer (nyeste først)
+
+## 0.5.25 – 2026-10-28 – siste Alpha etter RC1
+
+- Ferdig versjon `0.5.25` med bevarte innstillinger og uendret BLE fra 0.5.24. RC1-ZIP beholdt separat i arkivet.
+- `mdi:turbine` for Boost, `mdi:engine-outline` for Viftetype RS009-41, `mdi:fan` for viftehastighet.
+- Radio-link `0x05` tolkes foreløpig 0–3 signalstreker, panelbatteri `0x04` foreløpig prosent. `0x18` fortsatt ukjent. Pipetrekk `0x53` lagret installasjonsparameter.
+- Flertelefonvalg i varslingsinnstillinger, automatisk lesing av tidligere ett-telefonvalg. Varselteksten «Xzense: Legg i mer ved» ved fersk Drift (4) → Utbrenning (5), og ingen varsel ved oppstart.
+- Tidligere utilgjengelige, eksperimentelle probe- og rådiagnostikkentiteter ryddes fra registeret. Råverdiene ligger fortsatt i nedlastbar integrasjonsdiagnostikk.
+- 0x54 minimum viftespenning 80–120 V, eller 100–120 V når Viftetype RS009-41 er på, uten automatisk skriving.
+- 184 av 184 lokale Python-testtilfeller og fem dashbord-smoketester bestått. Fysisk BLE- og push-test gjenstår.
+
+## 0.5.25-rc1 – 2026-10-27 – arkivert testkandidat
+
+- Oppsettgrenser fra firmware 4.10_RC2, start-/stoppdifferanse minst 6 °C, råregistersamling og nye sensorverdier. Se [installasjon av RC1](INSTALLASJON_0.5.25-rc1.md).
 
 ## 0.5.24 – 2026-10-26 – automatisk multi-proxy med cache-fallback
 
