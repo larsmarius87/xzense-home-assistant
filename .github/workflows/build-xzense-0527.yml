@@ -20,6 +20,7 @@ jobs:
           sed -i "/before\\['entity'\\]\\[kind\\]\\['name'\\]=/d" tools/build_xzense_0527.py
           python tools/build_xzense_0527.py
           python tools/patch_0527_tests.py
+          python tools/fix_0527_release.py
       - name: Test 0.5.27 release
         run: |
           python -m pip install -q pytest
