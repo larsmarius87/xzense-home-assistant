@@ -19,6 +19,18 @@ p.write_text(t)
 p=root/"tests"/"test_release_0514.py"
 t=p.read_text().replace('"0.5.25-rc1", "0.5.27"', '"0.5.25-rc1", "0.5.26", "0.5.27"')
 p.write_text(t)
+# Preserve version 0.5.27; adjust only the requested Norwegian button label.
+for rel in [
+    "custom_components/xzense_full_preview/translations/nb.json",
+    "custom_components/xzense_full_preview/www/xzense-card.js",
+    "www/xzense-card.js",
+    "tests/test_release_0527_naming.py",
+    "CHANGELOG.md",
+]:
+    file = root / rel
+    text = file.read_text()
+    file.write_text(text.replace("Legg i ved", "Legg inn ved"))
+
 out=Path("xzense-alpha-0.5.27-source.zip")
 with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED,compresslevel=8) as z:
     for f in sorted(root.rglob("*")):
