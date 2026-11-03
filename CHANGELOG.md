@@ -1,5 +1,13 @@
 # Xzense Alpha – komplett endringslogg
 
+## 0.5.26 – testversjon (03.11.2026)
+
+- Basert på 0.5.25-rc1. Bluetooth-transport og multi-proxy er uendret.
+- Refueling bare i Burnout (state 5), firmware velger 0x59-timer og state 7. Operation state 4 gir ordinær Boost med 0x4D, ikke Refueling.
+- Sensorikon med sikker fallback fra Final Fix1.
+- Forbedret dashboard og sensorvisning. Se [installasjonsnotat](INSTALLASJON_0.5.26.md).
+- Må verifiseres i drift før den regnes som stabil.
+
 **Nyeste dokumenterte kildepakke: 0.5.25 Alpha (28. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.

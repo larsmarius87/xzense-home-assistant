@@ -1,5 +1,7 @@
 # Exodraft Xzense – Home Assistant (Alpha)
 
+> **0.5.26 er tilgjengelig som testversjon i en egen gren/PR.** Den er basert på sist bekreftede stabile 0.5.25-rc1, med firmwarebasert Refueling og feilretting for sensorikon. [Les installasjonsveiledningen](INSTALLASJON_0.5.26.md) og [last ned kildepakken](xzense-alpha-0.5.26-source.zip). Behold RC1 som sikker tilbakefallsversjon.
+
 Eksperimentell, lokal Home Assistant-integrasjon for **Exodraft Xzense** via Bluetooth Low Energy (BLE), med PIN-autentisering, statusavlesning, konfigurering og utvalgte styringskommandoer.
 
 > **Gjeldende prosjektversjon: 0.5.25 Alpha (28. oktober 2026).** Dette er en utviklingsversjon, ikke en offisiell Exodraft-integrasjon. Den er testet med et fysisk kontrollpanel, men langvarig stabilitet og alle styringskommandoer er ikke fullstendig verifisert.
