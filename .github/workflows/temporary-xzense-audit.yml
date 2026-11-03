@@ -1,0 +1,24 @@
+name: Temporary historical Xzense archive audit
+on:
+  push:
+    branches:
+      - xzense-0.5.26-refueling-test
+    paths:
+      - .github/workflows/temporary-xzense-audit.yml
+jobs:
+  archives:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          unzip -t xzense-alpha-0.5.25-rc1-source.zip >/dev/null
+          unzip -t xzense-alpha-0.5.25-source.zip >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xzense-historical-audit
+          path: |
+            xzense-alpha-0.5.25-rc1-source.zip
+            xzense-alpha-0.5.25-source.zip
+          retention-days: 1
