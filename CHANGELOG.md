@@ -8,7 +8,7 @@
 - Forbedret dashboard og sensorvisning. Se [installasjonsnotat](INSTALLASJON_0.5.26.md).
 - Må verifiseres i drift før den regnes som stabil.
 
-**Nyeste dokumenterte kildepakke: 0.5.25 Alpha (28. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
+**Nyeste testpakke: 0.5.26 (3. november 2026), ennå ikke fysisk verifisert. Sist bekreftet fungerende versjon: 0.5.25 RC1.** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
 
