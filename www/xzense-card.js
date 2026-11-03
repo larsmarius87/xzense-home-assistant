@@ -6,7 +6,6 @@ const XZ_FIELDS = [
   {key:'inside_temperature',name:'Innetemperatur',domain:'sensor',tab:'main'},
   {key:'outside_temperature',name:'Utetemperatur',domain:'sensor',tab:'main'},
   {key:'pressure',name:'Lufttrykk',domain:'sensor',tab:'main'},
-  {key:'state_timer',name:'Tid i driftstilstand',domain:'sensor',tab:'diagnostics'},
   {key:'fire_duration',name:'Fyringsvarighet',domain:'sensor',tab:'main'},
   {key:'battery',name:'Batteri kontrollpanel',domain:'sensor',tab:'main'},
   {key:'signal_strength',name:'Radiolink – signalstyrke (0–3)',domain:'sensor',tab:'main'},
