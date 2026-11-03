@@ -12,13 +12,18 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          unzip -t xzense-alpha-0.5.25-rc1-source.zip >/dev/null
-          unzip -t xzense-alpha-0.5.25-source.zip >/dev/null
+      - name: Validate historical archives
+        run: |
+          for f in arkiv/versjoner/xzense-alpha-0.5.20*.zip arkiv/versjoner/xzense-alpha-0.5.21*.zip arkiv/versjoner/xzense-alpha-0.5.22*.zip arkiv/versjoner/xzense-alpha-0.5.23*.zip xzense-alpha-0.5.24*.zip; do
+            unzip -t "$f" >/dev/null
+          done
       - uses: actions/upload-artifact@v4
         with:
-          name: xzense-historical-audit
+          name: xzense-historical-names-0520-0524
           path: |
-            xzense-alpha-0.5.25-rc1-source.zip
-            xzense-alpha-0.5.25-source.zip
+            arkiv/versjoner/xzense-alpha-0.5.20*.zip
+            arkiv/versjoner/xzense-alpha-0.5.21*.zip
+            arkiv/versjoner/xzense-alpha-0.5.22*.zip
+            arkiv/versjoner/xzense-alpha-0.5.23*.zip
+            xzense-alpha-0.5.24*.zip
           retention-days: 1
