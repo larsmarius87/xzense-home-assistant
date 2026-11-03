@@ -5,6 +5,7 @@ on:
       - xzense-0.5.27-alpha
     paths:
       - .github/workflows/build-xzense-0527.yml
+      - tools/fix_0527_release.py
   workflow_dispatch:
 permissions:
   contents: write
