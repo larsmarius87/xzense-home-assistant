@@ -1,95 +1,62 @@
-# Exodraft Xzense – Home Assistant
+# Xzense for Home Assistant
 
-**Nyeste tilgjengelige testversjon: 0.5.27 (korrigert)**, på grenen [`xzense-0.5.27-alpha`](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/README.md). `main` inneholder fortsatt eldre 0.5.25-kildefiler; **ikke bruk `main` som grunnlag for det nyeste bygget.**
+Uoffisiell integrasjon for **Exodraft Xzense**. Lar Home Assistant lese status og styre utvalgte funksjoner på kontrollpanelet via Bluetooth Low Energy (BLE).
 
-- [0.5.27 ZIP](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip)
-- [Installasjonsveiledning og tilbakefall](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md)
-- [Oppdatert endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md)
-- [Revisjonsoversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md)
-- [Planlagte forbedringer](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md)
+**Nyeste testversjon: 0.5.27 (korrigert)** · Kontrollerfirmware testet: 4.10_RC2
 
-**Status:** 0.5.27 er testversjon, ikke HACS-pakke. Refueling er testet på fysisk panel i riktig driftstilstand, men hele pakken er ikke langtidsverifisert. Behold backup. Sist bekreftet stabil referanse over tid var 0.5.25 RC1.
+> Prosjektet er under utvikling. Den korrigerte 0.5.27-pakken er tilgjengelig, men er ikke fullstendig langtidsverifisert. 0.5.25 RC1 er tidligere bekreftet fungerende og beholdes som tilbakefallsversjon.
 
-**Planlagt, ikke ferdig:** HACS-støtte, navn uten «Alpha», mulig flytting til `custom_components/xzense` med sikker domenemigrering, og ikonene på Start/Avslutt fyring i integrasjonen. Fyringslogg i Home Assistant er planlagt til senere; interne Exodraft-loggfiler ligger på is.
+## Last ned
 
-## Historisk dokumentasjon for 0.5.25 på `main`
+**[Last ned Xzense 0.5.27 (ZIP)](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip)**
 
-Teksten nedenfor beskriver **eldre 0.5.25** og beholdes for etterprøvbarhet. Bruk lenkene over for siste versjon.
+- [Installasjonsveiledning](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md)
+- [Endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md)
+- [Alle revisjoner og eldre versjoner](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md)
 
----
+Versjon 0.5.27 ligger foreløpig på grenen [`xzense-0.5.27-alpha`](https://github.com/larsmarius87/xzense-home-assistant/tree/xzense-0.5.27-alpha). `main` er ikke oppdatert med integrasjonskoden for 0.5.27. **HACS-installasjon er ikke tilgjengelig ennå.**
 
-# Exodraft Xzense – Home Assistant (Alpha)
+## Funksjoner
 
-Eksperimentell, lokal Home Assistant-integrasjon for **Exodraft Xzense** via Bluetooth Low Energy (BLE), med PIN-autentisering, statusavlesning, konfigurering og utvalgte styringskommandoer.
+- **Status:** Driftstilstand, skorsteinstemperatur, inne- og utetemperatur, lufttrykk, faktisk viftehastighet, batterinivå og radiolink mellom panel og kraftenhet.
+- **Styring:** Start fyring, avslutt fyring, Boost, ventilasjon og vedpåfylling. Vedpåfylling er avhengig av riktig driftstilstand i kontrolleren.
+- **Innstillinger:** Blant annet temperaturgrenser, Boost-tid, ettergangstid, viftehastighet og kontrollpanelinnstillinger.
+- **Bluetooth:** Bruker Home Assistants Bluetooth-adaptere og ESPHome-proxyer, med automatisk kildevalg og fallback. Separate oppdateringsintervaller for hvile og aktiv drift.
+- **Varsling:** Valgfri melding til én eller flere telefoner når Xzense går fra Drift til Utbrenning.
+- **Dashboard:** Eget Xzense-kort med norsk tekst, status og relevante kontroller.
 
-> **Gjeldende prosjektversjon: 0.5.25 Alpha (28. oktober 2026).** Dette er en utviklingsversjon, ikke en offisiell Exodraft-integrasjon. Den er testet med et fysisk kontrollpanel, men langvarig stabilitet og alle styringskommandoer er ikke fullstendig verifisert.
+## Installere eller oppdatere
 
-## Last ned og installer
+1. Ta backup av Home Assistant og den eksisterende Xzense-mappen.
+2. Pakk ut [ZIP-filen](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip) og kopier `custom_components/xzense_full_preview` til `/config/custom_components/`.
+3. Kopier `www/xzense-card.js` til `/config/www/` dersom du bruker dashboardkortet. Kontroller ressursadressen `/local/xzense-card.js?v=0527`.
+4. Start Home Assistant på nytt og sjekk tilkobling, status, entiteter og kontrollfunksjoner.
 
-**[Last ned Xzense 0.5.25 – komplett kildepakke (ZIP)](xzense-alpha-0.5.25-source.zip)**
+**Viktig:** I 0.5.27 er integrasjonsdomenet fortsatt `xzense_full_preview`. Ikke gi mappen nytt navn eller slett den eksisterende integrasjonen. Se [installasjonsveiledningen](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md) for detaljer og tilbakefall.
 
-1. Ta backup av eksisterende `/config/custom_components/xzense_full_preview/`.
-2. Pakk ut ZIP-filen og kopier **hele** mappen `custom_components/xzense_full_preview/` inn i `/config/custom_components/`; erstatt filene i eksisterende mappe.
-3. Start Home Assistant på nytt. Behold eksisterende konfigurasjonsoppføring, PIN og integrasjonsdomene `xzense_full_preview`.
-4. Kontroller versjon **0.5.25** under integrasjonens diagnostikk, og sjekk at det kommer et nytt STATUS-svar.
+## Neste steg
 
-Se [full installasjonsveiledning for 0.5.25](INSTALLASJON_0.5.25.md).
+Til neste større oppdatering planlegges:
 
-## Nytt i 0.5.25
+- Kortere integrasjonsnavn **Xzense**, uten «Alpha».
+- Tilrettelegging for installasjon og oppdateringer gjennom **HACS**.
+- Sikker migrering fra `xzense_full_preview` til `xzense`, hvis eksisterende konfigurasjon og entiteter kan bevares.
+- Egne ikoner på knappene for å starte og avslutte fyring.
 
-- En eller flere mobiler kan motta «Xzense: Legg i mer ved» når STATUS går fra Drift til Utbrenning. Varsling er av som standard; tidligere valg av én mobil beholdes.
-- «Viftetype RS009-41» begrenser minimum viftespenning til 100–120 V ved ny justering, mot 80–120 V ellers. Den skriver ikke til kontrollpanelet automatisk.
-- Radiolink (0x05) vises som 0–3 signalstreker, og panelbatteri (0x04) forsøksvis i prosent. Begge tolkes foreløpig og er ikke fullstendig kalibrert.
-- Boost bruker `mdi:turbine`, viftetype `mdi:engine-outline`. Gammel utilgjengelig diagnose-teststøy ryddes fra entitetsregisteret, mens rådata bevares.
-- Protokolloversikt med samtlige identifiserte **0x-registre og sikkerhetsgrad** finnes i [protokollmanifestet](docs/PROTOCOL_MANIFEST.md).
-- Bluetooth-transport og automatisk valg av proxy er identisk med 0.5.24.
+En egen **fyringslogg i Home Assistant** er planlagt senere. En fyringsøkt avsluttes først når kontrolleren returnerer til «Klar for fyring». Arbeid med Exodrafts interne loggfiler er satt på vent.
 
-## Hva integrasjonen gjør
+Se [veikartet](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md) for mer informasjon.
 
-- Leser tilstand, skorsteinstemperatur, inne-/utetemperatur, viftehastighet, lufttrykk og en rekke globale innstillinger.
-- Bruker kontrollpanelets BLE/PIN/CONNECT-protokoll og STATUS/GLOBAL-meldinger.
-- Har kontroller for blant annet Boost, Ventilation, oppstart/gjenfyring og flere innstillinger. Enkelte skrivefunksjoner er fortsatt **eksperimentelle**; ikke alle er fysisk testet.
-- Støtter behovsstyrt/periodisk Bluetooth-oppkobling, separate oppdateringsintervaller for hvile og aktiv drift, og beholdte sensordata mellom økter.
-- Inneholder norsk språkpakke og et panelinspirert Lovelace-kort.
-- Kan valgfritt sende pushvarsel ved observert overgang **Operation (4) → Burnout (5)**; dette er av som standard.
+## Dokumentasjon
 
-Se [funksjonsmatrisen](docs/FEATURE_MATRIX.md), [protokollnotatene](docs/PROTOCOL_NOTES.md) og [dashboardveiledningen](dashboard/INSTALLASJON.md) for detaljer og begrensninger.
-
-## Bluetooth i 0.5.24
-
-- Velger automatisk blant Home Assistants tilgjengelige Bluetooth-adaptere og ESPHome-proxyer, med rangering etter RSSI.
-- Bruker kildebestemte BLE-observasjoner i Home Assistant-cache dersom fersk annonsering mangler.
-- Prøver neste kilde ved feil under BLE/GATT-oppkobling, med **ett forsøk per kilde og opptil seks kilder per runde**.
-- Har **120 sekunders pause etter mislykkede cachetilkoblinger** for å unngå aggressive forsøk.
-- Bytter ikke proxy midt i samme runde dersom BLE allerede er opprettet, men Xzense-applikasjonens ACK/STATUS senere uteblir.
-
-Ved periodisk oppdatering er `connected: false` **normalt mellom vellykkede pollinger**. Bruk `last_status_response_at`, `selected_source`, `source_fallbacks` og `last_error` i diagnostikken ved feilsøking.
-
-### Fysisk status 26. oktober 2026
-
-Testen med ny Stue-proxy (M5Stack ATOM Lite) og gammel Stue viste **8/8 applikasjonsautentiseringer, 8/8 STATUS-svar, 2/2 GLOBAL-skrive-ACK-er og 0 CRC-feil**. Det var samtidig **3 kildefallbacks**. Dette bekrefter fungerende kommunikasjon i testperioden, ikke bevist døgnlang stabilitet.
-
-## Versjoner, historikk og dokumentasjon
-
-| Ressurs | Innhold |
+| Dokument | Innhold |
 |---|---|
-| **[Endringslogg](CHANGELOG.md)** | Kronologiske endringer og verifiserte funn |
-| **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.25, med nedlastingslenker |
-| [Historiske prototyper](arkiv/tidlige-versjoner/README.md) | Opprinnelige 0.1–0.4-arkiver, inkludert isolerte testbygg |
-| [Tidligere README](arkiv/dokumenter/README_HISTORISK_TIL_0.5.24.md) | Arkivert dokumentasjon før opprydding |
-| [Tidligere CHANGELOG](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md) | Original endringslogg bevart for sammenligning |
-| [Installasjon 0.5.24](INSTALLASJON_0.5.24_MULTI_PROXY.md) | Oppdatering og diagnose av ny multi-proxy-strategi |
+| [CHANGELOG](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md) | Alle registrerte endringer og korrigeringer |
+| [REVISJONER](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md) | Versjonsarkiv og tidligere ZIP-pakker |
+| [Protokolloversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/docs/PROTOCOL_MANIFEST.md) | Kartlagte BLE-/GLOBAL-verdier og verifiseringsstatus |
+| [Funksjonsmatrise](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/docs/FEATURE_MATRIX.md) | Oversikt over implementerte funksjoner |
+| [VEIKART](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md) | Avtalte planer og utsatte oppgaver |
 
-**Viktig om historiske versjoner:** 0.5.15 og 0.5.16 har en dokumentert asyncio busy-loop som kan fryse Home Assistant. Ikke installer disse i et fungerende system. Versjon 0.5.22 og 0.5.23 var midlertidige **Stue-only**-tester, mens 0.5.24 støtter flere proxyer.
+## Sikkerhet
 
-Noen mellomversjoner har dokumenterte endringer, men ingen verifisert original ZIP i repoet. Dette er merket særskilt i [revisjonsoversikten](REVISJONER.md); manglende kildepakker er ikke funnet på.
-
-## Planlagt, men ikke implementert
-
-I **neste** revisjon er det ønsket en egen automatisk aktivert sensor for **sist vellykkede Bluetooth/STATUS-oppdatering**, vist som norsk dato og klokkeslett (for eksempel `26.10.2026 kl. 10:32:48`). Dette er **ikke** en del av 0.5.24. Eksisterende diagnostikk har `last_status_response_at`.
-
-## Sikkerhet og teststatus
-
-Xzense styrer en fysisk skorsteinsvifte. Home Assistant-integrasjonen er ikke en sikkerhetsfunksjon og skal ikke erstatte lokal betjening, kontrollpanelets alarmer eller sikker overvåkning. Test skrivekommandoer bare under trygge forhold. Ukjent GLOBAL-semantikk skal behandles som uverifisert, ikke som dokumenterte enhetsverdier.
-
-Ingen firmwareoppdatering, reflash eller automatisk kontrollpanelendring følger av å installere denne HA-integrasjonen.
+Dette er en uoffisiell integrasjon, ikke et produkt fra Exodraft. Home Assistant skal ikke erstatte kontrollpanelets lokale betjening, alarmer eller sikkerhetsfunksjoner. Styringskommandoer og eksperimentelle innstillinger må testes forsvarlig.
