@@ -1,0 +1,29 @@
+name: Temporary historical Xzense archive audit
+on:
+  push:
+    branches:
+      - xzense-0.5.26-refueling-test
+    paths:
+      - .github/workflows/temporary-xzense-audit.yml
+jobs:
+  archives:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate historical archives
+        run: |
+          for f in arkiv/versjoner/xzense-alpha-0.5.20*.zip arkiv/versjoner/xzense-alpha-0.5.21*.zip arkiv/versjoner/xzense-alpha-0.5.22*.zip arkiv/versjoner/xzense-alpha-0.5.23*.zip xzense-alpha-0.5.24*.zip; do
+            unzip -t "$f" >/dev/null
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xzense-historical-names-0520-0524
+          path: |
+            arkiv/versjoner/xzense-alpha-0.5.20*.zip
+            arkiv/versjoner/xzense-alpha-0.5.21*.zip
+            arkiv/versjoner/xzense-alpha-0.5.22*.zip
+            arkiv/versjoner/xzense-alpha-0.5.23*.zip
+            xzense-alpha-0.5.24*.zip
+          retention-days: 1

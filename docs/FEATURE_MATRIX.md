@@ -1,4 +1,4 @@
-# Xzense Alpha 0.5.12b — feature matrix
+# Xzense Alpha 0.5.26 (test) — feature matrix
 
 | Feature | Status | Mapping / notes |
 |---|---|---|
@@ -12,11 +12,11 @@
 | Outside temperature | Strong read mapping | GLOBAL `0x1D`, tenths °C |
 | Chimney temperature | Verified read | GLOBAL `0x1E`, tenths °C |
 | Actual fan speed | Verified read | GLOBAL `0x1F`, % |
-| 0x05 status | Raw, semantics unresolved | GLOBAL `0x05`; integers `2` and `3` observed during continuous USB power |
+| Radio-link (0x05) | Inferred 0–3 bars | GLOBAL `0x05` describes the panel-to-power-unit radio link, not Home Assistant Bluetooth RSSI |
 | Firmware version | Verified read | CONNECT ACK; `410` -> `4.10` |
 | Boost switch | Commands tested; state derived | packet `0x08`, start 1/0 + inside temperature; STATUS state 3 |
 | Start lighting | Firmware-derived / write-ready | state 2 -> BOOST `0x08`, start=1 |
-| Refuel | Test write-ready | states 4 Operation and 5 Burnout -> BOOST `0x08`, start=1; state-4 outcome unverified |
+| Refuel | Firmware-derived / HA test pending | Only Burnout (state 5) enables Refuel. BOOST/REQ `0x08` start=1 then enters state 7 for GLOBAL `0x59` seconds (typically 180 s). From Operation (state 4), the same command starts normal Boost (state 3) for GLOBAL `0x4D` seconds. |
 | Stop firing | v4.10 firmware-derived / write-ready | state 3/7 -> BOOST start=0; state 4/5 -> GLOBAL `0x19=6` |
 | Finish firing | Removed in 0.5.11 | Stop firing still performs the Afterrun action |
 | Ventilation switch | Live tested | packet `0x09` on/off; STATUS state 8 determines switch state |
@@ -34,7 +34,7 @@
 | Boost stop temperature | Live-correlated / write-ready | GLOBAL `0x52`, raw / 10 °C |
 | Chimney draught setpoint | Live-correlated / write-ready | GLOBAL `0x53`, direct Pa |
 | Minimum fan voltage | Live-correlated / write-ready | GLOBAL `0x54`, direct V |
-| Temperature probe | **EXPERIMENTAL / write-enabled** | GLOBAL `0x56`; On=1, Off=0 assumed; confirm physically before use. Off disables temperature-based start/stop |
+| Temperature probe | Physically tested / write-ready | GLOBAL `0x56`; On=1, Off=0. Turning it off disables automatic temperature-based start/stop |
 | Alarm temperature | CONFIG / write-ready | GLOBAL `0x58` raw tenths °C; 150–400 °C manual range |
 | Reboost/refire time | CONFIG / write-ready | GLOBAL `0x59` in seconds, shown as minutes; freely adjustable within signed wire range (controller safety limits unknown) |
 | Burnout timeout | CONFIG / write-ready | GLOBAL `0x5B` in seconds, shown as minutes; freely adjustable within signed wire range (controller safety limits unknown) |
@@ -46,7 +46,7 @@ The Home Assistant domain remains `xzense_full_preview` for registry compatibili
 
 Only features marked `write_ready` create Home Assistant button/number/select/switch controls; candidate settings are diagnostics-only until their write semantics are confirmed. Previous `Burn count`, `Operation time`, `Error log`, `Download log`, `Language` and virtual `History` scaffolds were removed because they offered no data or working action. `Burn count`, `Operation time` and `Error log` remain **planned protocol research** under `FILE_TRANSFER 0x0C` / `ChimneyLog`; no decoded response is available yet. The raw GLOBAL payload and full diagnostic snapshots remain available for analysis.
 
-External start (`0x57`) and External fan speed (`0x5A`) are **deferred at user request**. They are not represented as features/HA entities, but both continue to appear in full diagnostic raw GLOBAL dumps so no investigation data is lost. GLOBAL `0x05` is retained as an unresolved raw sensor, separate from external start/speed.
+External start (`0x57`) and External fan speed (`0x5A`) are **deferred at user request**. They are not represented as features/HA entities, but both continue to appear in full diagnostic raw GLOBAL dumps so no investigation data is lost. GLOBAL `0x05` is exposed as the inferred 0–3 panel-to-power-unit radio-link sensor, separate from Bluetooth RSSI and external start/speed.
 
 ## Alpha 0.5.11 update (2026-10-21)
 
