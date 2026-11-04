@@ -81,11 +81,45 @@ def build():
         raise RuntimeError("Self-blocking guard not fixed")
     init.write_text(s.replace('Xzense Alpha', 'Xzense'))
 
+    # Keep the 0.5.27 entity icons, and apply the two agreed native button
+    # icons. These are integration entity icons, not just dashboard artwork.
+    switches = APP / "switch.py"
+    sw = switches.read_text()
+    if '"boost": "mdi:turbine"' not in sw or '_attr_icon = "mdi:engine-outline"' not in sw:
+        raise RuntimeError("0.5.27 Boost / motor-type icons are missing")
+    buttons = APP / "button.py"
+    b = buttons.read_text()
+    needle = "        super().__init__(client, feature)\\n"
+    replacement = (
+        "        super().__init__(client, feature)\\n"
+        "        self._attr_icon = {\\n"
+        '            "start_fire": "mdi:fire",\\n'
+        '            "stop_fire": "mdi:fire-off",\\n'
+        '            "refuel": "mdi:forest",\\n'
+        '        }.get(feature.key, "mdi:gesture-tap-button")\\n'
+    )
+    if needle not in b:
+        raise RuntimeError("Xzense button constructor changed")
+    buttons.write_text(b.replace(needle, replacement, 1))
+
     card = APP / "www" / "xzense-card.js"
-    if card.exists():
-        card.write_text(card.read_text().replace(
-            "component.xzense_full_preview.entity.", "component.xzense.entity."
-        ).replace("Xzense Alpha", "Xzense"))
+    if not card.exists():
+        raise RuntimeError("Bundled Xzense dashboard card not found")
+    js = card.read_text()
+    js = js.replace("component.xzense_full_preview.entity.", "component.xzense.entity.")
+    js = js.replace("Xzense Alpha", "Xzense")
+    for required in (
+        "_action('boost','mdi:turbine')",
+        "_action('refuel','mdi:forest')",
+        "_action('start_fire','mdi:fire')",
+        "_action('stop_fire','mdi:fire-off')",
+    ):
+        if required not in js:
+            raise RuntimeError(f"Missing dashboard icon: {required}")
+    card.write_text(js)
+    # Keep the GitHub root card in sync with the bundled copy. A stale /local
+    # resource in Home Assistant still needs manual replacement by the user.
+    (ROOT / "www" / "xzense-card.js").write_text(js)
     for p in APP.rglob("*.py"):
         if p.name not in ("client.py", "__init__.py"):
             s = p.read_text()
