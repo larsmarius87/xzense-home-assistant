@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28 full domain-migration HACS test from corrected 0.5.27.
+"""Build Xzense 0.5.28.1 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -14,7 +14,7 @@ ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 OLD_DOMAIN = "xzense_full_preview"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28"
+VERSION = "0.5.28.1"
 
 
 def build():
@@ -107,6 +107,18 @@ def build():
             s = p.read_text()
             s = s.replace("Xzense Alpha", "Xzense")
             p.write_text(s)
+    # The dashboard card is authored separately from the source ZIP, and its
+    # registry-based auto-linking must never be lost during rebuilding.
+    source_card = ROOT / "tools" / "xzense_card_05281.js"
+    if not source_card.is_file():
+        raise RuntimeError("Missing 0.5.28.1 dashboard card")
+    js = source_card.read_text(encoding="utf-8")
+    for required in ("config/entity_registry/list", "config/device_registry/list",
+                     "unique_id.endsWith('_'+key)", "xz-device"):
+        if required not in js:
+            raise RuntimeError(f"Dashboard auto-link check failed: {required}")
+    (APP / "www" / "xzense-card.js").write_text(js, encoding="utf-8")
+
     # Keep OLD_DOMAIN storage namespaces in client.py to preserve saved state and fire durations.
     if f"{OLD_DOMAIN}.timing_" not in (APP / "client.py").read_text():
         raise RuntimeError("Stored timing namespace changed unexpectedly")
@@ -135,8 +147,8 @@ def build():
     assert manifest["domain"] == APP.name
     assert manifest["version"] == VERSION
     assert not old.exists()
-    print("Built Xzense 0.5.28 as HACS custom_components/xzense")
-    print("IMPORTANT: Existing HA installations require offline migration before reboot.")
+    print("Built Xzense 0.5.28.1 as HACS custom_components/xzense")
+    print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
 if __name__ == "__main__":
