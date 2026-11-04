@@ -1,4 +1,4 @@
-/* Xzense panel card 0.5.27. No external libraries or Home Assistant plugins. */
+/* Xzense panel card 0.5.28.1. No external libraries or Home Assistant plugins. */
 const XZ_FIELDS = [
   {key:'device_state_localized',name:'Driftsstatus',domain:'sensor',tab:'main'},
   {key:'chimney_temperature',name:'Pipetemperatur',domain:'sensor',tab:'main'},
@@ -40,7 +40,7 @@ const XZ_FIELDS = [
   {key:'selected_source',name:'Valgt Bluetooth-kilde',domain:'sensor',tab:'diagnostics'},
   {key:'last_error',name:'Siste Bluetooth-feil',domain:'sensor',tab:'diagnostics'},
   {key:'last_data_at',name:'Sist oppdatert (Bluetooth)',domain:'sensor',tab:'diagnostics'},
-  {key:'last_successful_bt_status',name:'Sist vellykket Bluetooth-oppdatering',domain:'sensor',tab:'diagnostics'},
+  {key:'last_successful_bt_status',name:'Sist BT-synk',domain:'sensor',tab:'diagnostics'},
   {key:'next_poll_at',name:'Neste Bluetooth-oppdatering',domain:'sensor',tab:'diagnostics'},
 ];
 // Display-only translation of the legacy English state sensor. Raw entity state
@@ -97,10 +97,46 @@ const XZ_STYLES = `
 `;
 function xzEsc(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function xzSlug(value){return String(value??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+
+// Resolve entity IDs from Home Assistant's registries rather than display names.
+// Shared connection cache: one registry request per browser session.
+const XZ_REGISTRY_CACHE = new WeakMap();
+function xzRegistries(hass) {
+  const conn=hass?.connection;
+  if(!conn || typeof conn.sendMessagePromise!=='function') return Promise.resolve(null);
+  if(!XZ_REGISTRY_CACHE.has(conn)) {
+    const result=Promise.all([
+      conn.sendMessagePromise({type:'config/entity_registry/list'}),
+      conn.sendMessagePromise({type:'config/device_registry/list'})
+    ]).then(([entities,devices])=>({
+      entities:entities.filter(e=>e.platform==='xzense' && e.device_id && e.unique_id),
+      devices:devices.filter(d=>(d.identifiers||[]).some(id=>id[0]==='xzense'))
+    })).catch(err=>{XZ_REGISTRY_CACHE.delete(conn);console.warn('Xzense registry lookup failed',err);return null;});
+    XZ_REGISTRY_CACHE.set(conn,result);
+  }
+  return XZ_REGISTRY_CACHE.get(conn);
+}
+function xzDevices(registry) {
+  if(!registry)return [];
+  const ids=new Set(registry.entities.map(e=>e.device_id));
+  return registry.devices.filter(d=>ids.has(d.id));
+}
+function xzDeviceId(registry,configured) {
+  const devices=xzDevices(registry);
+  if(configured)return devices.some(d=>d.id===configured)?configured:null;
+  return devices.length===1?devices[0].id:null;
+}
+function xzEntityId(registry,device,key,domain) {
+  if(!registry || !device)return null;
+  const matches=registry.entities.filter(e=>e.device_id===device &&
+    e.entity_id.startsWith(domain+'.') && e.unique_id.endsWith('_'+key));
+  return matches.length===1?matches[0].entity_id:null;
+}
 class XzenseCard extends HTMLElement {
-  constructor(){super();this.attachShadow({mode:'open'});this._config={};this._hass=null;this._tab='main';this._lastProblem='';}
+  constructor(){super();this.attachShadow({mode:'open'});this._config={};this._hass=null;this._tab='main';this._lastProblem='';this._registry=null;this._registryLoading=false;}
   setConfig(config){this._config={title:'Xzense',...config,entities:{...(config.entities||{})},labels:{...(config.labels||{})}};this._render();}
-  set hass(hass){this._hass=hass;if(this.shadowRoot.activeElement?.matches('input,select'))return;this._render();}
+  set hass(hass){this._hass=hass;this._loadRegistry();if(this.shadowRoot.activeElement?.matches('input,select'))return;this._render();}
+  _loadRegistry(){if(this._registryLoading||this._registry||!this._hass)return;this._registryLoading=true;xzRegistries(this._hass).then(registry=>{this._registry=registry;this._registryLoading=false;this._render();});}
   static getConfigElement(){return document.createElement('xzense-card-editor');}
   static getStubConfig(){return {type:'custom:xzense-card',title:'Xzense',entities:{}};}
   getCardSize(){return 6;}
@@ -111,25 +147,19 @@ class XzenseCard extends HTMLElement {
     if(manually)return manually;
     if(!this._hass)return null;
     const field=this._field(key);if(!field)return null;
-    const names=Object.keys(this._hass.states||{}).filter(e=>e.startsWith(field.domain+'.'));
-    // Autolink only on an *unambiguous* match. No cross-device guessing.
-    let candidates=names.filter(id => this._hass.states[id]?.attributes?.global_id === XZ_GLOBAL_IDS[key]);
-    if(candidates.length===1)return candidates[0];
-    const exact=names.filter(id=>{
-      const state=this._hass.states[id];
-      const raw=id.split('.')[1];
-      const friendly=String(state?.attributes?.friendly_name||'').toLowerCase();
-      const xzenseNamed = raw.includes('xzense') || friendly.includes('xzense');
-      const oldUpdateName = key==='last_data_at' && xzenseNamed && (raw.endsWith('_last_data_update') || raw.endsWith('_sist_oppdatert_bluetooth'));
-      return raw===key || raw.endsWith('_'+key) || oldUpdateName || (friendly.includes('xzense') && xzSlug(friendly).endsWith(xzSlug(this._field(key).name)));
-    });
-    return exact.length===1?exact[0]:null;
+    if(this._registry){
+      const device=xzDeviceId(this._registry,this._config.device);
+      // Never guess across devices or renamed entities.
+      return xzEntityId(this._registry,device,key,field.domain);
+    }
+    // No registry yet: hold off rather than controlling an unrelated entity.
+    return null;
   }
   _state(key){const id=this._entity(key);return id?this._hass?.states?.[id]:null;}
   _translatedDeviceState(raw){
     const key=XZ_STATE_KEYS[String(raw)] || (Object.hasOwn(XZ_STATE_NB,String(raw))?String(raw):null);
     if(!key){const unknown=String(raw).match(/^Unknown \((\d+)\)$/);return unknown?`Ukjent tilstand (${unknown[1]})`:raw;}
-    const translationId=`component.xzense_full_preview.entity.sensor.device_state_localized.state.${key}`;
+    const translationId=`component.xzense.entity.sensor.device_state_localized.state.${key}`;
     const localized=typeof this._hass?.localize==='function'?this._hass.localize(translationId):null;
     return localized && localized!==translationId ? localized : (XZ_STATE_NB[key] || raw);
   }
@@ -179,8 +209,10 @@ class XzenseCard extends HTMLElement {
   _display(){return `<div class="note">Displayinnstillinger fra Xzense-panelet, 0–100 %. Verdiene skrives først når du trykker Lagre.</div>${['brightness_raw','contrast_raw','volume_raw'].map(k=>this._numeric(k,true)).join('')}`;}
   _diagnostics(){return `<div class="diag">${['ble_link_connected','phase','last_successful_bt_status','next_poll_at','last_advertisement_rssi','selected_source','last_error'].map(k=>`<div class="diagline"><span>${xzEsc(this._label(k))}</span><strong>${xzEsc(this._format(k))}</strong></div>`).join('')}</div><div class="note">Fullstendig protokolldiagnostikk er tilgjengelig i Home Assistants integrasjonsdiagnostikk.</div>`;}
   _render(){if(!this._config)return;const contents={main:()=>this._main(),operating:()=>this._operating(),configuration:()=>this._configuration(),display:()=>this._display(),diagnostics:()=>this._diagnostics()};
+    const devices=xzDevices(this._registry);
+    const mustChoose=devices.length>1&&!xzDeviceId(this._registry,this._config.device);
     const missing=XZ_FIELDS.filter(f=>f.tab===this._tab&&!this._entity(f.key)).length;
-    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div>${this._batteryIndicator()}</div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Velg <strong>Rediger dashboard → Rediger kort</strong> for å koble riktig entitet til hver funksjon.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.27 · bruker faktiske Home Assistant-entiteter</div></ha-card>`;
+    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div>${this._batteryIndicator()}</div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${mustChoose?'<div class="tip">Flere Xzense-enheter funnet. Velg riktig enhet i kortredigeringen.</div>':''}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Kontroller enhetsvalg under <strong>Rediger kort</strong> eller velg en entitet manuelt.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.28.1 · automatisk entitetskobling</div></ha-card>`;
     this.shadowRoot.querySelectorAll('[data-tab]').forEach(n=>n.addEventListener('click',()=>{this._tab=n.dataset.tab;this._lastProblem='';this._render()}));
     this.shadowRoot.querySelectorAll('[data-action]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.action)));
     this.shadowRoot.querySelectorAll('[data-toggle]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.toggle)));
@@ -208,11 +240,14 @@ class XzenseCard extends HTMLElement {
   _selectSave(key){const select=this.shadowRoot.querySelector(`[data-select="${key}"]`);if(select)return this._send('select','select_option',key,{option:select.value});}
 }
 class XzenseCardEditor extends HTMLElement{
-  constructor(){super();this.attachShadow({mode:'open'});this._config={type:'custom:xzense-card',title:'Xzense',entities:{},labels:{}};this._hass=null;}
+  constructor(){super();this.attachShadow({mode:'open'});this._config={type:'custom:xzense-card',title:'Xzense',entities:{},labels:{}};this._hass=null;this._registry=null;this._registryLoading=false;}
   setConfig(config){this._config={...config,entities:{...(config.entities||{})},labels:{...(config.labels||{})}};this._render();}
-  set hass(hass){this._hass=hass;if(this.shadowRoot.activeElement?.matches('input,select'))return;this._render();}
+  set hass(hass){this._hass=hass;this._loadRegistry();if(this.shadowRoot.activeElement?.matches('input,select'))return;this._render();}
+  _loadRegistry(){if(this._registryLoading||this._registry||!this._hass)return;this._registryLoading=true;xzRegistries(this._hass).then(registry=>{this._registry=registry;this._registryLoading=false;this._render();});}
   _changed(){this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:{...this._config}},bubbles:true,composed:true}));}
   _render(){const ent=this._config.entities||{};const labels=this._config.labels||{};
+    const devices=xzDevices(this._registry);const configured=this._config.device||'';
+    const deviceOptions=devices.map(d=>`<option value="${xzEsc(d.id)}" ${configured===d.id?'selected':''}>${xzEsc(d.name_by_user||d.name||'Xzense')} (${xzEsc((d.identifiers||[]).find(i=>i[0]==='xzense')?.[1]||d.id)})</option>`).join('');
     const groups=[['Hovedskjerm','main'],['Driftsinnstillinger','operating'],['Konfigurasjon','configuration'],['Kontrollpanel','display'],['Diagnostikk','diagnostics']];
     const rows=groups.map(([name,tab])=>`<section><h3>${name}</h3>${XZ_FIELDS.filter(f=>f.tab===tab).map(f=>{
       const options=Object.keys(this._hass?.states||{}).filter(e=>e.startsWith(f.domain+'.'));
@@ -220,8 +255,9 @@ class XzenseCardEditor extends HTMLElement{
       const displayList=options.sort((a,b)=>{const aa=a.includes('xzense')?0:1,bb=b.includes('xzense')?0:1;return aa-bb||a.localeCompare(b)});
       return `<div class="field"><label for="map_${f.key}">${xzEsc(f.name)}</label><select id="map_${f.key}" data-entity="${f.key}"><option value="">Automatisk (kun sikker match)</option>${selected&&!displayList.includes(selected)?`<option selected value="${xzEsc(selected)}">${xzEsc(selected)} (ikke tilgjengelig)</option>`:''}${displayList.map(id=>`<option value="${xzEsc(id)}" ${selected===id?'selected':''}>${xzEsc(id)} · ${xzEsc(this._hass.states[id]?.attributes?.friendly_name||'')}</option>`).join('')}</select><input data-label="${f.key}" aria-label="Visningsnavn ${xzEsc(f.name)}" placeholder="Visningsnavn (valgfritt)" value="${xzEsc(labels[f.key]||'')}"></div>`;
     }).join('')}</section>`).join('');
-    this.shadowRoot.innerHTML=`<style>*{box-sizing:border-box} .wrap{display:grid;gap:13px;color:var(--primary-text-color)}label{font-size:.81rem;display:block;margin-bottom:5px;font-weight:600}input,select{display:block;width:100%;font:inherit;font-size:.87rem;border:1px solid var(--divider-color,#bbb);border-radius:7px;padding:8px;background:var(--card-background-color,#fff);color:var(--primary-text-color,#222)}section{border-top:1px solid var(--divider-color,#ccc);padding-top:8px}section h3{font-size:.96rem}.field{margin-bottom:13px;display:grid;gap:6px}.info{font-size:.8rem;line-height:1.5;color:var(--secondary-text-color,#666)}</style><div class="wrap"><label>Tittel<input id="title" value="${xzEsc(this._config.title||'Xzense')}"></label><div class="info">Velg riktig Home Assistant-entitet for hver Xzense-funksjon. Endringene lagres sammen med dashboardet og gjelder på alle enheter. Valgfritt visningsnavn endrer bare teksten på kortet, ikke Home Assistant-entiteten.</div>${rows}</div>`;
+    this.shadowRoot.innerHTML=`<style>*{box-sizing:border-box} .wrap{display:grid;gap:13px;color:var(--primary-text-color)}label{font-size:.81rem;display:block;margin-bottom:5px;font-weight:600}input,select{display:block;width:100%;font:inherit;font-size:.87rem;border:1px solid var(--divider-color,#bbb);border-radius:7px;padding:8px;background:var(--card-background-color,#fff);color:var(--primary-text-color,#222)}section{border-top:1px solid var(--divider-color,#ccc);padding-top:8px}section h3{font-size:.96rem}.field{margin-bottom:13px;display:grid;gap:6px}.info{font-size:.8rem;line-height:1.5;color:var(--secondary-text-color,#666)}</style><div class="wrap"><label>Tittel<input id="title" value="${xzEsc(this._config.title||'Xzense')}"></label><div class="info">Entitetene kobles automatisk fra Xzense-integrasjonens enhetsregister, også om du endrer navn på dem. Ved flere Xzense-kontrollpaneler velger du enhet. Manuell overstyring er valgfri.</div><label>Xzense-enhet<select id="xz-device"><option value="">Automatisk (én Xzense-enhet)</option>${deviceOptions}</select></label>${rows}</div>`;
     this.shadowRoot.getElementById('title').addEventListener('change',e=>{this._config.title=e.target.value;this._changed()});
+    this.shadowRoot.getElementById('xz-device').addEventListener('change',e=>{if(e.target.value)this._config.device=e.target.value;else delete this._config.device;this._changed()});
     this.shadowRoot.querySelectorAll('[data-entity]').forEach(el=>el.addEventListener('change',e=>{const key=e.target.dataset.entity;this._config.entities={...(this._config.entities||{})};if(e.target.value)this._config.entities[key]=e.target.value;else delete this._config.entities[key];this._changed()}));
     this.shadowRoot.querySelectorAll('[data-label]').forEach(el=>el.addEventListener('change',e=>{const key=e.target.dataset.label;this._config.labels={...(this._config.labels||{})};if(e.target.value.trim())this._config.labels[key]=e.target.value.trim();else delete this._config.labels[key];this._changed()}));
   }
@@ -229,5 +265,5 @@ class XzenseCardEditor extends HTMLElement{
 if(!customElements.get('xzense-card'))customElements.define('xzense-card',XzenseCard);
 if(!customElements.get('xzense-card-editor'))customElements.define('xzense-card-editor',XzenseCardEditor);
 window.customCards=window.customCards||[];
-if(!window.customCards.some(c=>c.type==='xzense-card'))window.customCards.push({type:'xzense-card',name:'Xzense Kontrollpanel',description:'Xzense med norsk meny og valgfrie Home Assistant-entiteter',preview:true});
-console.info('%c Xzense Dashboard 0.5.27','color:#1976d2;font-weight:bold');
+if(!window.customCards.some(c=>c.type==='xzense-card'))window.customCards.push({type:'xzense-card',name:'Xzense Kontrollpanel',description:'Xzense med automatisk enhets- og entitetskobling',preview:true});
+console.info('%c Xzense Dashboard 0.5.28.1','color:#1976d2;font-weight:bold');
