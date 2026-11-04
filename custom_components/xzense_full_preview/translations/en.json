@@ -1,0 +1,537 @@
+{
+  "title": "Xzense Alpha",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Choose Xzense",
+        "description": "Choose a discovered Xzense device and enter the four-character PIN shown on the Xzense control panel.",
+        "data": {
+          "address": "Bluetooth address",
+          "pin": "Xzense PIN"
+        },
+        "data_description": {
+          "pin": "Four hexadecimal characters (0-9, A-F), for example B490."
+        }
+      },
+      "bluetooth_confirm": {
+        "title": "Set up Xzense Alpha",
+        "description": "Enter the four-character PIN shown under Network → Bluetooth on the Xzense control panel.",
+        "data": {
+          "pin": "Xzense PIN"
+        },
+        "data_description": {
+          "pin": "Four hexadecimal characters (0-9, A-F)."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Enter Xzense PIN",
+        "description": "This integration version requires the four-character PIN shown on the Xzense control panel.",
+        "data": {
+          "pin": "Xzense PIN"
+        }
+      },
+      "reconfigure": {
+        "title": "Change Xzense PIN",
+        "description": "Update the PIN stored by Home Assistant.",
+        "data": {
+          "pin": "Xzense PIN"
+        }
+      }
+    },
+    "error": {
+      "invalid_pin": "The PIN must contain exactly four hexadecimal characters (0-9, A-F)."
+    },
+    "abort": {
+      "already_configured": "This Xzense device is already configured.",
+      "no_devices_found": "No Xzense device was found.",
+      "not_supported": "The discovered Bluetooth device is not supported.",
+      "reauth_successful": "The Xzense PIN was updated.",
+      "reconfigure_successful": "The Xzense PIN was updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "active_session_source": {
+        "name": "Active Bluetooth proxy"
+      },
+      "advertisement_count": {
+        "name": "Fresh BLE advertisements"
+      },
+      "advertisement_timeouts": {
+        "name": "Advertisement wait timeouts"
+      },
+      "advertisement_waits": {
+        "name": "Advertisement waits"
+      },
+      "application_auth_state": {
+        "name": "Application authentication state"
+      },
+      "application_auth_success_count": {
+        "name": "Application authentication successes"
+      },
+      "application_connect_attempts": {
+        "name": "Application CONNECT attempts"
+      },
+      "authorization_retries": {
+        "name": "GATT authorization retries"
+      },
+      "battery": {
+        "name": "Panel battery"
+      },
+      "ble_link_connected": {
+        "name": "BLE link connected"
+      },
+      "boost_ack_count": {
+        "name": "Boost ACKs"
+      },
+      "boost_nack_count": {
+        "name": "Boost NACKs"
+      },
+      "boost_request_count": {
+        "name": "Boost requests"
+      },
+      "candidate_source_count": {
+        "name": "Bluetooth candidate sources"
+      },
+      "candidate_sources": {
+        "name": "Bluetooth source candidates"
+      },
+      "chimney_temperature": {
+        "name": "Chimney temperature"
+      },
+      "connect_ack_flag": {
+        "name": "CONNECT ACK flag"
+      },
+      "connect_ack_version": {
+        "name": "CONNECT ACK version"
+      },
+      "connection_attempts": {
+        "name": "Bluetooth connection attempts"
+      },
+      "crc_errors": {
+        "name": "Protocol CRC errors"
+      },
+      "device_state": {
+        "name": "Device state"
+      },
+      "discarded_bytes": {
+        "name": "Discarded protocol bytes"
+      },
+      "disconnect_count": {
+        "name": "Bluetooth disconnects"
+      },
+      "fan_speed": {
+        "name": "Actual fan speed"
+      },
+      "fire_duration": {
+        "name": "Fire duration"
+      },
+      "firmware_version": {
+        "name": "Firmware version"
+      },
+      "global_0x20_raw": {
+        "name": "GLOBAL 0x20 raw"
+      },
+      "global_update_count": {
+        "name": "Global updates"
+      },
+      "global_values": {
+        "name": "Global values"
+      },
+      "global_write_ack_count": {
+        "name": "GLOBAL write ACKs"
+      },
+      "global_write_nack_count": {
+        "name": "GLOBAL write NACKs"
+      },
+      "global_write_request_count": {
+        "name": "GLOBAL write requests"
+      },
+      "handshake_last_error": {
+        "name": "Application handshake error"
+      },
+      "handshake_response_at": {
+        "name": "Application handshake response time"
+      },
+      "handshake_sent_at": {
+        "name": "Application handshake sent time"
+      },
+      "inside_temperature": {
+        "name": "Inside temperature"
+      },
+      "invalid_frames": {
+        "name": "Invalid protocol frames"
+      },
+      "last_advertisement_at": {
+        "name": "Last fresh advertisement time"
+      },
+      "last_advertisement_connectable": {
+        "name": "Last advertisement connectable"
+      },
+      "last_advertisement_name": {
+        "name": "Last advertisement name"
+      },
+      "last_advertisement_rssi": {
+        "name": "Last advertisement RSSI"
+      },
+      "last_advertisement_source": {
+        "name": "Last advertisement adapter"
+      },
+      "last_boost_action": {
+        "name": "Last Boost action"
+      },
+      "last_boost_request_at": {
+        "name": "Last Boost request time"
+      },
+      "last_boost_response": {
+        "name": "Last Boost response"
+      },
+      "last_boost_response_at": {
+        "name": "Last Boost response time"
+      },
+      "last_data_at": {
+        "name": "Last updated (Bluetooth)"
+      },
+      "last_successful_bt_status": {
+        "name": "Last successful Bluetooth update"
+      },
+      "last_disconnect_kind": {
+        "name": "Last BLE disconnect classification"
+      },
+      "last_disconnect_session_seconds": {
+        "name": "Last BLE session duration"
+      },
+      "last_disconnect_source": {
+        "name": "Last disconnected proxy"
+      },
+      "last_error": {
+        "name": "Last Bluetooth error"
+      },
+      "last_failed_source": {
+        "name": "Last failed Bluetooth source"
+      },
+      "last_frame": {
+        "name": "Last protocol frame"
+      },
+      "last_global_at": {
+        "name": "Last global update time"
+      },
+      "last_global_id": {
+        "name": "Last global ID"
+      },
+      "last_global_name": {
+        "name": "Last global name"
+      },
+      "last_global_value": {
+        "name": "Last global value"
+      },
+      "last_global_write_id": {
+        "name": "Last GLOBAL write ID"
+      },
+      "last_global_write_request_at": {
+        "name": "Last GLOBAL write request time"
+      },
+      "last_global_write_response": {
+        "name": "Last GLOBAL write response"
+      },
+      "last_global_write_response_at": {
+        "name": "Last GLOBAL write response time"
+      },
+      "last_global_write_value": {
+        "name": "Last GLOBAL write value"
+      },
+      "last_notification": {
+        "name": "Last BLE notification"
+      },
+      "last_notification_at": {
+        "name": "Last BLE notification time"
+      },
+      "last_packet_type": {
+        "name": "Last application packet type"
+      },
+      "last_payload": {
+        "name": "Last protocol payload"
+      },
+      "last_protocol_type": {
+        "name": "Last application protocol type"
+      },
+      "last_status_payload": {
+        "name": "Last status payload"
+      },
+      "last_status_request_at": {
+        "name": "Last status request time"
+      },
+      "last_status_response_at": {
+        "name": "Last status response time"
+      },
+      "last_tx": {
+        "name": "Last application TX"
+      },
+      "last_tx_at": {
+        "name": "Last application TX time"
+      },
+      "last_tx_kind": {
+        "name": "Last application TX type"
+      },
+      "next_poll_at": {
+        "name": "Next Bluetooth update"
+      },
+      "notification_count": {
+        "name": "BLE notifications"
+      },
+      "notifications_active": {
+        "name": "BLE notifications active"
+      },
+      "outside_temperature": {
+        "name": "Outside temperature"
+      },
+      "packet_count": {
+        "name": "Valid protocol frames"
+      },
+      "pairing_attempts": {
+        "name": "Bluetooth pairing attempts"
+      },
+      "pairing_last_error": {
+        "name": "Last Bluetooth pairing error"
+      },
+      "pairing_success": {
+        "name": "Bluetooth pairing succeeded"
+      },
+      "phase": {
+        "name": "Bluetooth setup phase"
+      },
+      "preferred_source": {
+        "name": "Preferred Bluetooth proxy"
+      },
+      "pressure": {
+        "name": "Air pressure"
+      },
+      "raw_global_35": {
+        "name": "GLOBAL 0x35 (raw)"
+      },
+      "raw_global_00": {
+        "name": "GLOBAL 0x00 (raw)"
+      },
+      "raw_global_01": {
+        "name": "GLOBAL 0x01 (raw)"
+      },
+      "raw_global_02": {
+        "name": "GLOBAL 0x02 (raw)"
+      },
+      "raw_global_03": {
+        "name": "GLOBAL 0x03 (raw)"
+      },
+      "raw_global_18": {
+        "name": "GLOBAL 0x18 MY_STATE (raw)"
+      },
+      "raw_global_57": {
+        "name": "GLOBAL 0x57 external start (raw)"
+      },
+      "raw_global_5a": {
+        "name": "GLOBAL 0x5A external fan (raw)"
+      },
+      "raw_global_36": {
+        "name": "GLOBAL 0x36 (raw)"
+      },
+      "selected_source": {
+        "name": "Selected Bluetooth source"
+      },
+      "selected_source_rssi": {
+        "name": "Selected Bluetooth source RSSI"
+      },
+      "session_id": {
+        "name": "Application session ID"
+      },
+      "signal_strength": {
+        "name": "Radio link signal strength"
+      },
+      "unused_global_values": {
+        "name": "Unused GLOBAL register values (0x)"
+      },
+      "source_connection_attempts": {
+        "name": "Bluetooth source connection attempts"
+      },
+      "source_fallbacks": {
+        "name": "Bluetooth source fallbacks"
+      },
+      "state_timer": {
+        "name": "Time in current state"
+      },
+      "status_air_pressure_hpa": {
+        "name": "Status air pressure"
+      },
+      "status_chimney_temperature_raw": {
+        "name": "Status chimney temperature raw"
+      },
+      "status_device_state": {
+        "name": "Status device state"
+      },
+      "status_fan_speed": {
+        "name": "Status fan speed"
+      },
+      "status_flags": {
+        "name": "Status flags"
+      },
+      "status_inside_temperature_raw": {
+        "name": "Status inside temperature raw"
+      },
+      "status_nack_count": {
+        "name": "Status NACKs"
+      },
+      "status_outside_temperature_raw": {
+        "name": "Status outside temperature raw"
+      },
+      "status_polling_active": {
+        "name": "Status polling active"
+      },
+      "status_request_count": {
+        "name": "Status requests"
+      },
+      "status_request_errors": {
+        "name": "Status request errors"
+      },
+      "status_response_count": {
+        "name": "Status responses"
+      },
+      "status_state_timer": {
+        "name": "Status time in current state"
+      },
+      "tx_chunk_count": {
+        "name": "Application TX chunks"
+      },
+      "tx_chunk_size": {
+        "name": "Application TX chunk size"
+      },
+      "tx_count": {
+        "name": "Application TX frames"
+      },
+      "tx_write_mode": {
+        "name": "Application TX write mode"
+      },
+      "device_state_localized": {
+        "name": "Localized device state",
+        "state": {
+          "offline": "Offline",
+          "setup": "Setup",
+          "ready_for_lighting": "Ready for lighting",
+          "boosting": "Boosting",
+          "operation": "Operation",
+          "burnout": "Burnout",
+          "afterrun": "Afterrun",
+          "refueling": "Refueling",
+          "ventilation": "Ventilation",
+          "error": "Error",
+          "upgrading": "Upgrading",
+          "unknown_state": "Unknown state"
+        }
+      }
+    },
+    "number": {
+      "afterrun_time": {
+        "name": "Afterrun time"
+      },
+      "alarm_setpoint": {
+        "name": "Alarm temperature"
+      },
+      "auto_start_temperature": {
+        "name": "Start temperature"
+      },
+      "auto_stop_temperature": {
+        "name": "Stop temperature"
+      },
+      "bluetooth_active_update_interval": {
+        "name": "Bluetooth active update interval"
+      },
+      "bluetooth_update_interval": {
+        "name": "Bluetooth update interval"
+      },
+      "boost_fan_speed": {
+        "name": "Boost speed"
+      },
+      "boost_stop_temperature": {
+        "name": "Boost stop temperature"
+      },
+      "boost_time": {
+        "name": "Boost time"
+      },
+      "brightness_raw": {
+        "name": "Brightness"
+      },
+      "burnout_time": {
+        "name": "Burnout timeout"
+      },
+      "contrast_raw": {
+        "name": "Contrast"
+      },
+      "minimum_fan_voltage": {
+        "name": "Minimum fan voltage"
+      },
+      "refire_time": {
+        "name": "Refire / Reboost time"
+      },
+      "user_fan_speed": {
+        "name": "Fan speed"
+      },
+      "volume_raw": {
+        "name": "Sound"
+      },
+      "wanted_draft": {
+        "name": "Chimney draught setpoint"
+      }
+    },
+    "button": {
+      "refuel": {
+        "name": "Refuel"
+      },
+      "start_fire": {
+        "name": "Start lighting"
+      },
+      "stop_fire": {
+        "name": "Stop firing"
+      }
+    },
+    "switch": {
+      "rs009_41_motor": {
+        "name": "Fan type RS009-41"
+      },
+      "boost": {
+        "name": "Boost"
+      },
+      "temperature_sensor": {
+        "name": "Temperature probe"
+      },
+      "ventilation": {
+        "name": "Ventilation"
+      }
+    },
+    "select": {
+      "system_control": {
+        "name": "System control"
+      }
+    },
+    "binary_sensor": {
+      "ble_connection": {
+        "name": "BLE link"
+      },
+      "connection": {
+        "name": "Connection"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Burnout notification",
+        "description": "Send a push notification to one or more selected phones on Operation to Burnout. Requires Home Assistant Companion with notifications enabled. Startup and repeated STATUS messages do not notify.",
+        "data": {
+          "burnout_notification_enabled": "Notify when burnout begins",
+          "burnout_notification_target": "Phones to notify"
+        }
+      }
+    },
+    "error": {
+      "target_required": "Select at least one phone before enabling notifications.",
+      "invalid_target": "One of the selected phones is unavailable."
+    }
+  }
+}

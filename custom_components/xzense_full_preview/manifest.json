@@ -1,0 +1,26 @@
+{
+  "domain": "xzense_full_preview",
+  "name": "Xzense Alpha",
+  "version": "0.5.28",
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
+  "bluetooth": [
+    {
+      "service_uuid": "0783b03e-8535-b5a0-7140-a304d2495cb7",
+      "connectable": true
+    },
+    {
+      "local_name": "Xzense*",
+      "connectable": true
+    }
+  ],
+  "documentation": "https://github.com/larsmarius87/xzense-home-assistant",
+  "issue_tracker": "https://github.com/larsmarius87/xzense-home-assistant/issues",
+  "codeowners": [
+    "@larsmarius87"
+  ]
+}
