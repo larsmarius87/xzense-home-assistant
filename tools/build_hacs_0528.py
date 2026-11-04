@@ -88,6 +88,15 @@ def build():
     if f"{OLD_DOMAIN}.cache_" not in (APP / "client.py").read_text():
         raise RuntimeError("Stored sensor cache namespace changed unexpectedly")
 
+    # Home Assistant 2026.3+ reads custom integration branding from brand/.
+    # Preserve the existing Xzense artwork byte-for-byte.
+    icon = APP / "icon.png"
+    if not icon.is_file():
+        raise RuntimeError("Missing existing Xzense icon.png in source ZIP")
+    brand = APP / "brand"
+    brand.mkdir(exist_ok=True)
+    shutil.copy2(icon, brand / "icon.png")
+
     (ROOT / "hacs.json").write_text(
         json.dumps({"name": "Xzense", "render_readme": True}, indent=2) + "\n"
     )
