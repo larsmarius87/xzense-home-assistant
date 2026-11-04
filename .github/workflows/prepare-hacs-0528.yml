@@ -39,6 +39,14 @@ jobs:
           assert (app/'config_flow.py').is_file()
           assert (app/'translations'/'nb.json').is_file()
           assert json.loads(Path('hacs.json').read_text())['name']
+          numbers=(app/'number.py').read_text()
+          for class_name in ('XzenseUpdateInterval','XzenseActiveUpdateInterval'):
+              section=numbers.split('class '+class_name+'(',1)[1].split('\\nclass ',1)[0]
+              assert '_attr_mode = NumberMode.BOX' in section, class_name
+              assert '_attr_mode = NumberMode.SLIDER' not in section, class_name
+          card=(app/'www'/'xzense-card.js').read_text()
+          assert "this._numeric('bluetooth_update_interval',true)" in card
+          assert "this._numeric('bluetooth_active_update_interval',true)" in card
           print('HACS layout OK, domain:',app.name)
           PY
       - name: Validate dashboard JavaScript
