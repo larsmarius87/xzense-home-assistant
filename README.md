@@ -8,13 +8,13 @@ Uoffisiell integrasjon for **Exodraft Xzense**. Lar Home Assistant lese status o
 
 ## Last ned
 
-**[Last ned Xzense 0.5.27 (ZIP)](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip)**
+**[Last ned Xzense 0.5.27 (ZIP)](https://github.com/larsmarius87/xzense-home-assistant/blob/main/xzense-alpha-0.5.27-source.zip)**
 
-- [Installasjonsveiledning](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md)
-- [Endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md)
-- [Alle revisjoner og eldre versjoner](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md)
+- [Installasjonsveiledning](https://github.com/larsmarius87/xzense-home-assistant/blob/main/INSTALLASJON_0.5.27.md)
+- [Endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/main/CHANGELOG.md)
+- [Alle revisjoner og eldre versjoner](https://github.com/larsmarius87/xzense-home-assistant/blob/main/REVISJONER.md)
 
-Versjon 0.5.27 ligger foreløpig på grenen [`xzense-0.5.27-alpha`](https://github.com/larsmarius87/xzense-home-assistant/tree/xzense-0.5.27-alpha). `main` er ikke oppdatert med integrasjonskoden for 0.5.27. **HACS-installasjon er ikke tilgjengelig ennå.**
+**0.5.27 ligger nå på hovedgrenen `main`.** HACS-installasjon er ikke tilgjengelig ennå.
 
 ## Funksjoner
 
@@ -28,11 +28,11 @@ Versjon 0.5.27 ligger foreløpig på grenen [`xzense-0.5.27-alpha`](https://gith
 ## Installere eller oppdatere
 
 1. Ta backup av Home Assistant og den eksisterende Xzense-mappen.
-2. Pakk ut [ZIP-filen](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip) og kopier `custom_components/xzense_full_preview` til `/config/custom_components/`.
+2. Pakk ut [ZIP-filen](https://github.com/larsmarius87/xzense-home-assistant/blob/main/xzense-alpha-0.5.27-source.zip) og kopier `custom_components/xzense_full_preview` til `/config/custom_components/`.
 3. Kopier `www/xzense-card.js` til `/config/www/` dersom du bruker dashboardkortet. Kontroller ressursadressen `/local/xzense-card.js?v=0527`.
 4. Start Home Assistant på nytt og sjekk tilkobling, status, entiteter og kontrollfunksjoner.
 
-**Viktig:** I 0.5.27 er integrasjonsdomenet fortsatt `xzense_full_preview`. Ikke gi mappen nytt navn eller slett den eksisterende integrasjonen. Se [installasjonsveiledningen](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md) for detaljer og tilbakefall.
+**Viktig:** I 0.5.27 er integrasjonsdomenet fortsatt `xzense_full_preview`. Ikke gi mappen nytt navn eller slett den eksisterende integrasjonen. Se [installasjonsveiledningen](https://github.com/larsmarius87/xzense-home-assistant/blob/main/INSTALLASJON_0.5.27.md) for detaljer og tilbakefall.
 
 ## Neste steg
 
@@ -45,17 +45,17 @@ Til neste større oppdatering planlegges:
 
 En egen **fyringslogg i Home Assistant** er planlagt senere. En fyringsøkt avsluttes først når kontrolleren returnerer til «Klar for fyring». Arbeid med Exodrafts interne loggfiler er satt på vent.
 
-Se [veikartet](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md) for mer informasjon.
+Se [veikartet](https://github.com/larsmarius87/xzense-home-assistant/blob/main/VEIKART.md) for mer informasjon.
 
 ## Dokumentasjon
 
 | Dokument | Innhold |
 |---|---|
-| [CHANGELOG](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md) | Alle registrerte endringer og korrigeringer |
-| [REVISJONER](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md) | Versjonsarkiv og tidligere ZIP-pakker |
-| [Protokolloversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/docs/PROTOCOL_MANIFEST.md) | Kartlagte BLE-/GLOBAL-verdier og verifiseringsstatus |
-| [Funksjonsmatrise](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/docs/FEATURE_MATRIX.md) | Oversikt over implementerte funksjoner |
-| [VEIKART](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md) | Avtalte planer og utsatte oppgaver |
+| [CHANGELOG](https://github.com/larsmarius87/xzense-home-assistant/blob/main/CHANGELOG.md) | Alle registrerte endringer og korrigeringer |
+| [REVISJONER](https://github.com/larsmarius87/xzense-home-assistant/blob/main/REVISJONER.md) | Versjonsarkiv og tidligere ZIP-pakker |
+| [Protokolloversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/main/docs/PROTOCOL_MANIFEST.md) | Kartlagte BLE-/GLOBAL-verdier og verifiseringsstatus |
+| [Funksjonsmatrise](https://github.com/larsmarius87/xzense-home-assistant/blob/main/docs/FEATURE_MATRIX.md) | Oversikt over implementerte funksjoner |
+| [VEIKART](https://github.com/larsmarius87/xzense-home-assistant/blob/main/VEIKART.md) | Avtalte planer og utsatte oppgaver |
 
 ## Sikkerhet
 
