@@ -119,20 +119,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             # 0.5.19.3 rollback re-enables all integration-disabled entities.
             registry.async_update_entity(entity_entry.entity_id, disabled_by=None)
 
-    # The current integration uses DOMAIN == "xzense" and is already in
-    # hass.data[DOMAIN]. Never treat our own client as a competing integration.
-    # Only actual *legacy* domains can indicate a second BLE controller.
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # This is a side-by-side development integration. Avoid two clients fighting
+    # for the same Xzense BLE peripheral.
     if hass.data.get("xzense_full_preview") or hass.data.get("xzense_preview"):
         client.state.phase = "blocked_by_other_xzense_integration"
         client.state.last_error = (
-            "An older Xzense integration is still running. Stop/unload the "
-            "legacy integration before enabling the new Xzense client."
+            "Another Xzense integration is loaded. Disable/unload it, then reload "
+            "Xzense; only one client may own the BLE session."
         )
         client._notify_listeners()
-        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
         return True
-
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     await client.async_initialize_timing()
     await client.async_initialize_cache()
