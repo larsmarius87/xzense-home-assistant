@@ -1,11 +1,11 @@
-"""Constants for the Xzense Alpha integration."""
+"""Constants for the Xzense integration."""
 
 from __future__ import annotations
 
 import re
 
-DOMAIN = "xzense_full_preview"
-NAME = "Xzense Alpha"
+DOMAIN = "xzense"
+NAME = "Xzense"
 VERSION = "0.5.28"
 
 # Dialog/Renesas DSPS (Serial Port Service) UUIDs recovered from Xzense 5.0.2.

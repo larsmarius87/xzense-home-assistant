@@ -1,4 +1,4 @@
-"""Exodraft Xzense Alpha Home Assistant integration."""
+"""Exodraft Xzense Home Assistant integration."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ PLATFORMS = [
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Xzense Alpha from a config entry."""
+    """Set up Xzense from a config entry."""
     if not entry.data.get(CONF_PIN):
         raise ConfigEntryAuthFailed("Xzense PIN is required")
 
@@ -127,7 +127,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         client.state.phase = "blocked_by_other_xzense_integration"
         client.state.last_error = (
             "Another Xzense integration is loaded. Disable/unload it, then reload "
-            "Xzense Alpha; only one client may own the BLE session."
+            "Xzense; only one client may own the BLE session."
         )
         client._notify_listeners()
         return True
@@ -142,7 +142,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Unload Xzense Alpha."""
+    """Unload Xzense."""
     client: XzenseClient = hass.data[DOMAIN][entry.entry_id]
     manager = hass.data[DOMAIN].pop(f"_burnout_notifier_{entry.entry_id}", None)
     if manager:

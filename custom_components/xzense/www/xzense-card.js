@@ -129,7 +129,7 @@ class XzenseCard extends HTMLElement {
   _translatedDeviceState(raw){
     const key=XZ_STATE_KEYS[String(raw)] || (Object.hasOwn(XZ_STATE_NB,String(raw))?String(raw):null);
     if(!key){const unknown=String(raw).match(/^Unknown \((\d+)\)$/);return unknown?`Ukjent tilstand (${unknown[1]})`:raw;}
-    const translationId=`component.xzense_full_preview.entity.sensor.device_state_localized.state.${key}`;
+    const translationId=`component.xzense.entity.sensor.device_state_localized.state.${key}`;
     const localized=typeof this._hass?.localize==='function'?this._hass.localize(translationId):null;
     return localized && localized!==translationId ? localized : (XZ_STATE_NB[key] || raw);
   }

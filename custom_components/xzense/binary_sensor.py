@@ -1,4 +1,4 @@
-"""Binary sensors for Xzense Alpha."""
+"""Binary sensors for Xzense."""
 
 from __future__ import annotations
 

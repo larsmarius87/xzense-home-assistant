@@ -1,6 +1,6 @@
 {
-  "domain": "xzense_full_preview",
-  "name": "Xzense Alpha",
+  "domain": "xzense",
+  "name": "Xzense",
   "version": "0.5.28",
   "config_flow": true,
   "integration_type": "device",

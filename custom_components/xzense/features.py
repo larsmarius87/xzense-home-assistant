@@ -1,4 +1,4 @@
-"""Feature registry for Xzense Alpha.
+"""Feature registry for Xzense.
 
 The registry separates verified live mappings from candidates. Only features
 marked ``write_ready`` are exposed as controls. Read-only candidate metadata is

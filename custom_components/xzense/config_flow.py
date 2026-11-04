@@ -1,4 +1,4 @@
-"""Config flow for Xzense Alpha."""
+"""Config flow for Xzense."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def _looks_like_xzense(info: BluetoothServiceInfoBleak) -> bool:
 
 
 class XzenseConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle Xzense Alpha setup."""
+    """Handle Xzense setup."""
 
     VERSION = 2
 

@@ -1,4 +1,4 @@
-"""Shared entity bases for Xzense Alpha."""
+"""Shared entity bases for Xzense."""
 
 from __future__ import annotations
 
