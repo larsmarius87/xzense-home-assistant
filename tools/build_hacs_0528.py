@@ -113,6 +113,13 @@ def build():
     if f"{OLD_DOMAIN}.cache_" not in (APP / "client.py").read_text():
         raise RuntimeError("Stored sensor cache namespace changed unexpectedly")
 
+    # Short Norwegian label for last successful Bluetooth status synchronization.
+    nb_path = APP / "translations" / "nb.json"
+    nb = json.loads(nb_path.read_text(encoding="utf-8"))
+    bt_label = nb["entity"]["sensor"]["last_successful_bt_status"]
+    bt_label["name"] = "Sist BT-synk"
+    nb_path.write_text(json.dumps(nb, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
     # Home Assistant 2026.3+ reads custom integration branding from brand/.
     # Preserve the existing Xzense artwork byte-for-byte.
     icon = APP / "icon.png"
