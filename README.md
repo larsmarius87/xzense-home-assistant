@@ -1,3 +1,23 @@
+# Exodraft Xzense – Home Assistant
+
+**Nyeste tilgjengelige testversjon: 0.5.27 (korrigert)**, på grenen [`xzense-0.5.27-alpha`](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/README.md). `main` inneholder fortsatt eldre 0.5.25-kildefiler; **ikke bruk `main` som grunnlag for det nyeste bygget.**
+
+- [0.5.27 ZIP](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip)
+- [Installasjonsveiledning og tilbakefall](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md)
+- [Oppdatert endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md)
+- [Revisjonsoversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md)
+- [Planlagte forbedringer](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/VEIKART.md)
+
+**Status:** 0.5.27 er testversjon, ikke HACS-pakke. Refueling er testet på fysisk panel i riktig driftstilstand, men hele pakken er ikke langtidsverifisert. Behold backup. Sist bekreftet stabil referanse over tid var 0.5.25 RC1.
+
+**Planlagt, ikke ferdig:** HACS-støtte, navn uten «Alpha», mulig flytting til `custom_components/xzense` med sikker domenemigrering, og ikonene på Start/Avslutt fyring i integrasjonen. Fyringslogg i Home Assistant er planlagt til senere; interne Exodraft-loggfiler ligger på is.
+
+## Historisk dokumentasjon for 0.5.25 på `main`
+
+Teksten nedenfor beskriver **eldre 0.5.25** og beholdes for etterprøvbarhet. Bruk lenkene over for siste versjon.
+
+---
+
 # Exodraft Xzense – Home Assistant (Alpha)
 
 Eksperimentell, lokal Home Assistant-integrasjon for **Exodraft Xzense** via Bluetooth Low Energy (BLE), med PIN-autentisering, statusavlesning, konfigurering og utvalgte styringskommandoer.
