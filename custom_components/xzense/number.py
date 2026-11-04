@@ -106,7 +106,7 @@ class XzenseUpdateInterval(XzenseEntity, NumberEntity):
 
     _attr_translation_key = "bluetooth_update_interval"
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_mode = NumberMode.SLIDER
+    _attr_mode = NumberMode.BOX
     _attr_native_min_value = 0
     _attr_native_max_value = 120
     _attr_native_step = 1
@@ -134,7 +134,7 @@ class XzenseActiveUpdateInterval(XzenseEntity, NumberEntity):
 
     _attr_translation_key = "bluetooth_active_update_interval"
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_mode = NumberMode.SLIDER
+    _attr_mode = NumberMode.BOX
     _attr_native_min_value = 0
     _attr_native_max_value = 600
     _attr_native_step = 1
