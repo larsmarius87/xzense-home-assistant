@@ -1,4 +1,4 @@
-name: Prepare HACS test 0.5.28
+name: Prepare HACS test 0.5.28.1
 on:
   push:
     branches:
@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/prepare-hacs-0528.yml
       - tools/build_hacs_0528.py
+      - tools/xzense_card_05281.js
   workflow_dispatch:
 permissions:
   contents: write
@@ -32,13 +33,18 @@ jobs:
           app=dirs[0]
           manifest=json.loads((app/'manifest.json').read_text())
           assert manifest['domain']==app.name=='xzense', manifest
-          assert manifest['version']=='0.5.28'
+          assert manifest['version']=='0.5.28.1'
           assert (app/'__init__.py').is_file()
           assert (app/'config_flow.py').is_file()
           assert (app/'translations'/'nb.json').is_file()
           assert json.loads(Path('hacs.json').read_text())['name']
           print('HACS layout OK, domain:',app.name)
           PY
+      - name: Validate dashboard JavaScript
+        run: |
+          node --check custom_components/xzense/www/xzense-card.js
+          node --check tools/xzense_card_05281.js
+          cmp custom_components/xzense/www/xzense-card.js tools/xzense_card_05281.js
       - name: Publish HACS directory to the HACS branch
         run: |
           git config user.name "github-actions[bot]"
@@ -46,6 +52,6 @@ jobs:
           find custom_components/xzense -type d -name __pycache__ -prune -exec rm -rf {} +
           git add -A custom_components/ hacs.json
           if ! git diff --cached --quiet; then
-            git commit -m "test: publish Xzense 0.5.28 HACS layout"
+            git commit -m "test: publish Xzense 0.5.28.1 HACS layout"
             git push origin HEAD:HACS
           fi
