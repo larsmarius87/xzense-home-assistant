@@ -7,6 +7,7 @@ on:
       - .github/workflows/prepare-hacs-0528.yml
       - tools/build_hacs_0528.py
       - tools/xzense_card_05281.js
+      - tools/test_card_05281.cjs
   workflow_dispatch:
 permissions:
   contents: write
@@ -45,6 +46,7 @@ jobs:
           node --check custom_components/xzense/www/xzense-card.js
           node --check tools/xzense_card_05281.js
           cmp custom_components/xzense/www/xzense-card.js tools/xzense_card_05281.js
+          node tools/test_card_05281.cjs
       - name: Publish HACS directory to the HACS branch
         run: |
           git config user.name "github-actions[bot]"
