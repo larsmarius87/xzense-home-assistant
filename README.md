@@ -2,7 +2,7 @@
 
 **English** · [Norsk](#norsk)
 
-An unofficial Home Assistant integration for **Exodraft Xzense**, using Bluetooth Low Energy (BLE) to monitor and control selected functions of the Xzense fireplace draft controller.
+An unofficial Home Assistant integration for **Exodraft Xzense**, providing extensive monitoring, control and configuration over Bluetooth Low Energy (BLE). Alongside the functions available in the official app, it exposes additional settings, sensors and diagnostics directly in Home Assistant.
 
 **Current HACS test version: 0.5.28** · Integration name: **Xzense** · Domain and folder: `xzense`
 
@@ -57,7 +57,7 @@ For stability and safety, make a Home Assistant backup before experimental updat
 
 ## Norsk
 
-En uoffisiell Home Assistant-integrasjon for **Exodraft Xzense**. Den bruker Bluetooth Low Energy (BLE) til å lese status og styre utvalgte funksjoner på Xzense-kontrollpanelet.
+En uoffisiell Home Assistant-integrasjon for **Exodraft Xzense** med omfattende overvåking, styring og konfigurasjon via Bluetooth Low Energy (BLE). I tillegg til funksjonene fra originalappen gir den tilgang til flere innstillinger, sensorer og diagnostikk direkte i Home Assistant.
 
 **Gjeldende HACS-testversjon: 0.5.28** · Integrasjonsnavn: **Xzense** · Domene og mappe: `xzense`
 
