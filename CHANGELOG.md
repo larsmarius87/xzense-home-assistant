@@ -1,4 +1,26 @@
-# Xzense Alpha – komplett endringslogg
+# Xzense – komplett endringslogg
+
+> Oppdatert 4. november 2026. **Gjeldende testpakke er 0.5.27 korrigert.** [ZIP](xzense-alpha-0.5.27-source.zip) · [Installasjon](INSTALLASJON_0.5.27.md) · [Revisjoner](REVISJONER.md). Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.27 korrigert – 04.11.2026 (samme versjonsnummer)
+
+- Gjeninnført fra 0.5.25 final: Boost-ikon `mdi:turbine` og Viftetype RS009-41-ikon `mdi:engine-outline`.
+- Gjeninnført varseltittel «Xzense: Legg i mer ved» og avgrenset opprydding av foreldede test-/diagnostikkentiteter.
+- Beholdt Refueling, BLE/multi-proxy og flervalg for telefonvarsler. Ikke fysisk fulltestet som samlet pakke.
+- Knappene «Start fyring» og «Avslutt fyring» mangler fortsatt egne eksplisitte integrasjonsikoner; avtalt neste bygg.
+
+## 0.5.27 – 03.11.2026
+
+- Norsk driftstatus 7: **Vedpåfylling**. Knappeteksten ble deretter justert til **Legg inn ved**, uten versjonsøkning.
+- Gjenopprettet navnene **Radiolink – signalstyrke** og **Viftetype RS009-41** etter regresjon fra 0.5.25 final.
+- Forbedret norsk og engelsk oversettelse. Egendefinerte navn i eksisterende Home Assistant-entiteter kan fortsatt kreve manuell tilbakestilling.
+- Korreksjoner og regresjonstester for navngiving/visning, ingen planlagt endring i BLE-protokollen.
+
+## 0.5.26.1 – 03.11.2026
+
+- Gjeninnført valg av flere telefoner i varslingsinnstillingene; allerede valgt én telefon videreføres.
+- Varsel sendes individuelt til valgte mottakere ved observert Drift (4) → Utbrenning (5).
+- Ble bygget videre på 0.5.26. Senere 0.5.27 gjenoppretter flere mistede rettelser fra 0.5.25 final.
 
 ## 0.5.26 – testversjon (03.11.2026)
 
@@ -8,7 +30,7 @@
 - Forbedret dashboard og sensorvisning. Se [installasjonsnotat](INSTALLASJON_0.5.26.md).
 - Må verifiseres i drift før den regnes som stabil.
 
-**Nyeste testpakke: 0.5.26 (3. november 2026), ennå ikke fysisk verifisert. Sist bekreftet fungerende versjon: 0.5.25 RC1.** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
+**Tidligere status ved 0.5.26:** 0.5.25 RC1 var da siste bekreftet stabile referanse. Refueling har siden blitt fysisk testet, men full 0.5.27 er fortsatt en testversjon. Se [README](README.md) for gjeldende status.
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
 
