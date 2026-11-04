@@ -193,7 +193,7 @@
         "name": "Sist oppdatert (Bluetooth)"
       },
       "last_successful_bt_status": {
-        "name": "Sist vellykket Bluetooth-oppdatering"
+        "name": "Sist BT-synk"
       },
       "last_disconnect_kind": {
         "name": "Type siste BLE-frakobling"
