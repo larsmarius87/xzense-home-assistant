@@ -102,6 +102,28 @@ def build():
         raise RuntimeError("Xzense button constructor changed")
     buttons.write_text(b.replace(needle, replacement, 1))
 
+    # Bluetooth interval entities use direct number input in HA Devices & Services.
+    # Do not change dashboard card controls or any other numeric entities.
+    number_path = APP / "number.py"
+    number_source = number_path.read_text(encoding="utf-8")
+    for class_name in ("XzenseUpdateInterval", "XzenseActiveUpdateInterval"):
+        class_start = number_source.find(f"class {class_name}(")
+        if class_start < 0:
+            raise RuntimeError(f"Missing {class_name} in number.py")
+        mode_start = number_source.find("_attr_mode = NumberMode.SLIDER", class_start)
+        next_class = number_source.find("\\nclass ", class_start + 1)
+        if mode_start < 0 or (next_class >= 0 and mode_start > next_class):
+            raise RuntimeError(f"Expected slider in {class_name}; review source")
+        number_source = (
+            number_source[:mode_start]
+            + "_attr_mode = NumberMode.BOX"
+            + number_source[mode_start + len("_attr_mode = NumberMode.SLIDER"):]
+        )
+    if number_source.count("_attr_mode = NumberMode.BOX") < 3:
+        raise RuntimeError("Bluetooth number input replacement incomplete")
+    number_path.write_text(number_source, encoding="utf-8")
+
+
     for p in APP.rglob("*.py"):
         if p.name not in ("client.py", "__init__.py"):
             s = p.read_text()
