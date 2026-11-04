@@ -1,6 +1,15 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-strukturtest er **0.5.28** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.1** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.1 – Dashboard auto-discovery (04.11.2026)
+
+- Dashboardkortet kobler nå sensorer, brytere, knapper og innstillinger automatisk via Home Assistants enhets- og entitetsregister.
+- Faste `unique_id`-verdier brukes fremfor visningsnavn, slik at omdøpte entiteter fortsatt oppdages.
+- Flere Xzense-enheter støttes med eksplisitt enhetsvalg i kortredigeringen. Ved flere enheter uten valg gjøres ingen usikker automatisk kobling.
+- Manuelle entitetskoblinger beholdes og prioriteres.
+- Oppdatert versjon i integrasjonens manifest og konstant; Bluetooth-kode og styringsprotokoll er uendret.
+- Automatiske JavaScript-tester dekker navneendringer, valg mellom flere enheter og manuelle overstyringer.
 
 ## 0.5.28 – HACS-strukturtest (04.11.2026)
 
