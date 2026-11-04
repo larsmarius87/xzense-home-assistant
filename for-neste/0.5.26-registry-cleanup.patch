@@ -1,0 +1,69 @@
+--- a/custom_components/xzense_full_preview/__init__.py
++++ b/custom_components/xzense_full_preview/__init__.py
+@@ -81,6 +81,20 @@
+     obsolete_unique_ids = {
+         f"{entry.data[CONF_ADDRESS]}_{suffix}" for suffix in obsolete_suffixes
+     }
++
++    def is_obsolete_unique_id(unique_id: str) -> bool:
++        """Match retired identifiers from earlier builds with varying prefixes.
++
++        Some Alpha builds used a diagnostic or normalized-address prefix rather
++        than the current ``address_suffix`` format. The registry lookup is
++        already restricted to this config entry, so matching an exact retired
++        suffix removes those historical aliases without touching live keys.
++        """
++        normalized = unique_id.casefold()
++        return unique_id in obsolete_unique_ids or any(
++            normalized == suffix or normalized.endswith(f"_{suffix}")
++            for suffix in obsolete_suffixes
++        )
+     # 0x59/0x5B were read-only sensors in the pre-release 0.5.12 build.
+     # When upgraded to configuration numbers, remove any old sensor entities.
+     promoted_time_unique_ids = {
+@@ -102,7 +116,7 @@
+         ):
+             registry.async_remove(entity_entry.entity_id)
+             continue
+-        if entity_entry.unique_id in obsolete_unique_ids or (
++        if is_obsolete_unique_id(entity_entry.unique_id) or (
+             entity_entry.domain == "button"
+             and entity_entry.unique_id == f"{entry.data[CONF_ADDRESS]}_boost"
+         ):
+
+--- a/tests/test_cleanup_exposure.py
++++ b/tests/test_cleanup_exposure.py
+@@ -26,3 +26,33 @@
+     source = (COMPONENT / "__init__.py").read_text(encoding="utf-8")
+     assert '"burn_count", "operation_time", "error_log"' in source
+     assert '"language_raw", "download_log"' in source
++
++
++def test_legacy_diagnostic_cleanup_matches_historical_prefixes_only():
++    """Old Alpha prefixes must not keep retired entities in the registry."""
++    source = (COMPONENT / "__init__.py").read_text(encoding="utf-8")
++    setup = next(
++        node for node in ast.parse(source).body
++        if isinstance(node, ast.AsyncFunctionDef) and node.name == "async_setup_entry"
++    )
++    matcher = next(
++        node for node in setup.body
++        if isinstance(node, ast.FunctionDef) and node.name == "is_obsolete_unique_id"
++    )
++    names = {
++        "obsolete_unique_ids": {"AA:BB:CC:DD:EE:FF_raw_global_35"},
++        "obsolete_suffixes": (
++            "raw_global_35", "raw_global_5b", "experimental_write_probes",
++            "fan_probe_target_raw", "status_polling_interval",
++        ),
++    }
++    exec(compile(ast.Module(body=[matcher], type_ignores=[]), "<registry-matcher>", "exec"), names)
++    matches = names["is_obsolete_unique_id"]
++    assert matches("AA:BB:CC:DD:EE:FF_raw_global_35")
++    assert matches("AABBCCDDEEFF_diagnostic_raw_global_5b")
++    assert matches("other-prefix_fan_probe_target_raw")
++    assert matches("other-prefix_EXPERIMENTAL_WRITE_PROBES")
++    assert matches("status_polling_interval")
++    assert not matches("AA:BB:CC:DD:EE:FF_status_polling_active")
++    assert not matches("AA:BB:CC:DD:EE:FF_boost")
++    assert not matches("AA:BB:CC:DD:EE:FF_fan_speed")

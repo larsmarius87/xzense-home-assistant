@@ -1,0 +1,26 @@
+--- a/custom_components/xzense_full_preview/button.py
++++ b/custom_components/xzense_full_preview/button.py
+@@ -30,6 +30,11 @@
+ 
+     def __init__(self, client: XzenseClient, feature: FeatureSpec) -> None:
+         super().__init__(client, feature)
++        self._attr_icon = {
++            "start_fire": "mdi:fire",
++            "refuel": "mdi:fireplace",
++            "stop_fire": "mdi:fire-off",
++        }.get(feature.key)
+ 
+     @property
+     def available(self) -> bool:
+
+--- a/custom_components/xzense_full_preview/number.py
++++ b/custom_components/xzense_full_preview/number.py
+@@ -49,6 +49,8 @@
+ 
+     def __init__(self, client: XzenseClient, feature: FeatureSpec) -> None:
+         super().__init__(client, feature)
++        if feature.key == "user_fan_speed":
++            self._attr_icon = "mdi:fan-chevron-up"
+         if feature.key != "user_fan_speed":
+             self._attr_entity_category = EntityCategory.CONFIG
+         rule = SETTING_RULES.get(feature.key)
