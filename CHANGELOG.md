@@ -1,5 +1,8 @@
 # Xzense Alpha – komplett endringslogg
 
+> **Dokumentasjon oppdatert 4. november 2026:** Nyeste testpakke er **0.5.27 korrigert**, på en egen gren. [Komplett oppdatert endringslogg](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/CHANGELOG.md) · [Last ned ZIP](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip) · [Installasjon](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md). Historikken under er et eldre 0.5.25-øyeblikksbilde fra `main`, **ikke** den gjeldende utgivelsesstatusen.
+
+
 **Nyeste dokumenterte kildepakke: 0.5.25 Alpha (28. oktober 2026).** Alle tilgjengelige komplette arkiver er listet i [REVISJONER.md](REVISJONER.md). Se også [README](README.md). Original endringslogg før opprydding er bevart i [docs/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md).
 
 > **IKKE INSTALLER 0.5.15 eller 0.5.16:** Begge inneholder en dokumentert busy-loop som kan fryse Home Assistant. 0.5.17 rettet denne konkrete feilen.
