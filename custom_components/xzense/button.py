@@ -30,6 +30,11 @@ class XzenseButton(XzenseFeatureEntity, ButtonEntity):
 
     def __init__(self, client: XzenseClient, feature: FeatureSpec) -> None:
         super().__init__(client, feature)
+        self._attr_icon = {
+            "start_fire": "mdi:fire",
+            "stop_fire": "mdi:fire-off",
+            "refuel": "mdi:forest",
+        }.get(feature.key, "mdi:gesture-tap-button")
 
     @property
     def available(self) -> bool:
