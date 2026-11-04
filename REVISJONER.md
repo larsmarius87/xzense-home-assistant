@@ -1,5 +1,8 @@
 # Xzense – versjonsarkiv og revisjonsoversikt
 
+> **Dokumentasjon oppdatert 4. november 2026:** Nyeste testpakke er **0.5.27 korrigert**, på en egen gren. [Komplett oppdatert revisjonsoversikt](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/REVISJONER.md) · [Last ned ZIP](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/xzense-alpha-0.5.27-source.zip) · [Installasjon](https://github.com/larsmarius87/xzense-home-assistant/blob/xzense-0.5.27-alpha/INSTALLASJON_0.5.27.md). Historikken under er et eldre 0.5.25-øyeblikksbilde fra `main`, **ikke** den gjeldende utgivelsesstatusen.
+
+
 Oppdatert 28. oktober 2026. **Nyeste tilgjengelige bygg: 0.5.25 Alpha.** Arkivet omfatter også 20 kildepakker fra 0.1.0–0.4.4.
 
 Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, ikke en liste over generelt støttede eller anbefalte installasjoner. ZIP-ene er kildearkiver som inneholder komplette integrasjonsfiler for aktuell revisjon. Se også [README](README.md), [CHANGELOG](CHANGELOG.md) og [installasjon for 0.5.25](INSTALLASJON_0.5.25.md).
