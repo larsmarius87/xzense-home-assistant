@@ -1,6 +1,13 @@
 # Xzense – komplett endringslogg
 
-> Oppdatert 4. november 2026. **Gjeldende testpakke er 0.5.27 korrigert.** [ZIP](xzense-alpha-0.5.27-source.zip) · [Installasjon](INSTALLASJON_0.5.27.md) · [Revisjoner](REVISJONER.md). Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-strukturtest er **0.5.28** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28 – HACS-strukturtest (04.11.2026)
+
+- Integrasjonskoden er lagt i `custom_components/xzense/`, med `manifest.json` som bruker domene `xzense` og navnet Xzense.
+- `hacs.json` er lagt i repositoryets rot, og tidligere Xzense-ikon er beholdt i `custom_components/xzense/brand/icon.png`.
+- GitHub Actions kontrollerer mappestruktur og Python-syntaks. Dette er **ikke** en bekreftelse på at domenemigrering av eksisterende installasjoner fungerer.
+- Automatisk migrering av gamle `xzense_full_preview`-oppføringer og HA-entiteter er **ikke ferdig**. Ikke installer over eksisterende HA uten separat migreringstest og backup.
 
 ## 0.5.27 korrigert – 04.11.2026 (samme versjonsnummer)
 
