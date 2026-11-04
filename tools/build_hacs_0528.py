@@ -70,41 +70,15 @@ def build():
         'StaticPathConfig(\n                "/api/xzense_full_preview/xzense-card.js",',
         'StaticPathConfig(\n                "/api/xzense_full_preview/xzense-card.js",'
     )
-    # Fix inherited side-by-side guard: after the domain rename, checking
-    # hass.data["xzense"] would always match the newly initialized client.
-    old_guard = '''    # This is a side-by-side development integration. Avoid two clients fighting
-    # for the same Xzense BLE peripheral.
-    if hass.data.get("xzense") or hass.data.get("xzense_preview"):
-        client.state.phase = "blocked_by_other_xzense_integration"
-        client.state.last_error = (
-            "Another Xzense integration is loaded. Disable/unload it, then reload "
-            "Xzense; only one client may own the BLE session."
-        )
-        client._notify_listeners()
-        return True
-
-'''
-    if old_guard not in s:
-        raise RuntimeError("Legacy guard changed: stop build for review")
-    s = s.replace(old_guard, "")
-    before_forward = "    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)\n"
-    if before_forward not in s:
-        raise RuntimeError("Cannot locate setup forward point")
-    s = s.replace(before_forward, '''    # Only a still-loaded legacy Xzense client should block a second BLE owner.
-    if hass.data.get("xzense_full_preview") or hass.data.get("xzense_preview"):
-        client.state.phase = "blocked_by_other_xzense_integration"
-        client.state.last_error = (
-            "An older Xzense integration is still running. Stop/unload the "
-            "legacy integration before enabling the new Xzense client."
-        )
-        client._notify_listeners()
-        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-        return True
-
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-''', 1)
-    if 'hass.data.get("xzense")' in s:
-        raise RuntimeError("Self-blocking guard remained after patch")
+    # In 0.5.28 DOMAIN is xzense. The old side-by-side guard checks
+    # hass.data["xzense"], which is the current integration itself.
+    # Only the old domains count as competing integrations.
+    self_guard = 'hass.data.get("xzense") or hass.data.get("xzense_preview")'
+    if self_guard not in s:
+        raise RuntimeError("Self-blocking guard not found in source; review required")
+    s = s.replace(self_guard, 'hass.data.get("xzense_full_preview") or hass.data.get("xzense_preview")')
+    if self_guard in s:
+        raise RuntimeError("Self-blocking guard not fixed")
     init.write_text(s.replace('Xzense Alpha', 'Xzense'))
 
     card = APP / "www" / "xzense-card.js"
