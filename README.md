@@ -1,30 +1,28 @@
-# Exodraft Xzense – Home Assistant (Alpha)
+# Exodraft Xzense – Home Assistant
 
-> **0.5.26 er tilgjengelig som testversjon i en egen gren/PR.** Den er basert på sist bekreftede stabile 0.5.25-rc1, med firmwarebasert Refueling og feilretting for sensorikon. [Les installasjonsveiledningen](INSTALLASJON_0.5.26.md) og [last ned kildepakken](xzense-alpha-0.5.26-source.zip). Behold RC1 som sikker tilbakefallsversjon.
+Eksperimentell, lokal Home Assistant-integrasjon via BLE. Dette er et **uoffisielt testprosjekt**.
 
-Eksperimentell, lokal Home Assistant-integrasjon for **Exodraft Xzense** via Bluetooth Low Energy (BLE), med PIN-autentisering, statusavlesning, konfigurering og utvalgte styringskommandoer.
+> **Nyeste testpakke: 0.5.27 (korrigert).** [Last ned ZIP](xzense-alpha-0.5.27-source.zip) · [Installasjon](INSTALLASJON_0.5.27.md) · [Endringslogg](CHANGELOG.md) · [Alle revisjoner](REVISJONER.md).
+>
+> 0.5.25 RC1 er siste versjon som var bekreftet stabil over tid. Refueling er senere testet på fysisk panel, men hele 0.5.27 er ikke fullstendig langtidsverifisert. **Versjonsnavnet Alpha finnes fortsatt i manifestet; fjerning og sikker domenemigrering er planlagt for 0.5.28.**
 
-> **Gjeldende prosjektversjon: 0.5.25 Alpha (28. oktober 2026).** Dette er en utviklingsversjon, ikke en offisiell Exodraft-integrasjon. Den er testet med et fysisk kontrollpanel, men langvarig stabilitet og alle styringskommandoer er ikke fullstendig verifisert.
+## Installere 0.5.27
 
-## Last ned og installer
+1. Ta backup av Home Assistant og `/config/custom_components/xzense_full_preview/`.
+2. Pakk ut [0.5.27-kildepakken](xzense-alpha-0.5.27-source.zip). Kopier `custom_components/xzense_full_preview/` til `/config/custom_components/xzense_full_preview/`.
+3. Kopier `www/xzense-card.js` til `/config/www/xzense-card.js`, og bruk ressursen `/local/xzense-card.js?v=0527`.
+4. Start Home Assistant på nytt og kontroller sensorer, PIN, Bluetooth og knapper. Behold det eksisterende integrasjonsdomenet `xzense_full_preview`.
 
-**[Last ned Xzense 0.5.25 – komplett kildepakke (ZIP)](xzense-alpha-0.5.25-source.zip)**
+**HACS er ikke klart ennå.** ZIP er fortsatt installasjonsmetoden. Automatisk oppdatering fra GitHub og mulig migrering til domenet `xzense` utredes for neste versjon. Ikke slett den gamle integrasjonen manuelt før migrering er testet.
 
-1. Ta backup av eksisterende `/config/custom_components/xzense_full_preview/`.
-2. Pakk ut ZIP-filen og kopier **hele** mappen `custom_components/xzense_full_preview/` inn i `/config/custom_components/`; erstatt filene i eksisterende mappe.
-3. Start Home Assistant på nytt. Behold eksisterende konfigurasjonsoppføring, PIN og integrasjonsdomene `xzense_full_preview`.
-4. Kontroller versjon **0.5.25** under integrasjonens diagnostikk, og sjekk at det kommer et nytt STATUS-svar.
+## Nytt siden 0.5.25 RC1
 
-Se [full installasjonsveiledning for 0.5.25](INSTALLASJON_0.5.25.md).
+- 0.5.26: Firmwarebasert Refueling bare i Utbrenning (status 5); status 7 er «Vedpåfylling».
+- 0.5.26.1: Flervalg for telefonvarslinger og kompatibilitet med tidligere enkeltvalg.
+- 0.5.27: «Legg inn ved», gjenopprettet Radiolink og Viftetype RS009-41, rettelser for oversettelser og dashboard.
+- Korrigert 0.5.27: Boost `mdi:turbine`, viftetype `mdi:engine-outline`, varslingsteksten «Xzense: Legg i mer ved» og avgrenset opprydding av gamle diagnostikkentiteter.
 
-## Nytt i 0.5.25
-
-- En eller flere mobiler kan motta «Xzense: Legg i mer ved» når STATUS går fra Drift til Utbrenning. Varsling er av som standard; tidligere valg av én mobil beholdes.
-- «Viftetype RS009-41» begrenser minimum viftespenning til 100–120 V ved ny justering, mot 80–120 V ellers. Den skriver ikke til kontrollpanelet automatisk.
-- Radiolink (0x05) vises som 0–3 signalstreker, og panelbatteri (0x04) forsøksvis i prosent. Begge tolkes foreløpig og er ikke fullstendig kalibrert.
-- Boost bruker `mdi:turbine`, viftetype `mdi:engine-outline`. Gammel utilgjengelig diagnose-teststøy ryddes fra entitetsregisteret, mens rådata bevares.
-- Protokolloversikt med samtlige identifiserte **0x-registre og sikkerhetsgrad** finnes i [protokollmanifestet](docs/PROTOCOL_MANIFEST.md).
-- Bluetooth-transport og automatisk valg av proxy er identisk med 0.5.24.
+**Bekreftet på fysisk panel:** Refueling virker ved riktig driftstilstand. Batteri `0x04` og radiolink `0x05` er bekreftet. Alle andre funksjoner må vurderes etter individuell teststatus.
 
 ## Hva integrasjonen gjør
 
@@ -56,7 +54,7 @@ Testen med ny Stue-proxy (M5Stack ATOM Lite) og gammel Stue viste **8/8 applikas
 | Ressurs | Innhold |
 |---|---|
 | **[Endringslogg](CHANGELOG.md)** | Kronologiske endringer og verifiserte funn |
-| **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.25, med nedlastingslenker |
+| **[Alle revisjoner og ZIP-arkiver](REVISJONER.md)** | Tilgjengelige utgaver fra tidlige 0.1-prototyper til 0.5.27, med nedlastingslenker |
 | [Historiske prototyper](arkiv/tidlige-versjoner/README.md) | Opprinnelige 0.1–0.4-arkiver, inkludert isolerte testbygg |
 | [Tidligere README](arkiv/dokumenter/README_HISTORISK_TIL_0.5.24.md) | Arkivert dokumentasjon før opprydding |
 | [Tidligere CHANGELOG](arkiv/dokumenter/CHANGELOG_OPPRINNELIG_TIL_0.5.24.md) | Original endringslogg bevart for sammenligning |
@@ -66,9 +64,9 @@ Testen med ny Stue-proxy (M5Stack ATOM Lite) og gammel Stue viste **8/8 applikas
 
 Noen mellomversjoner har dokumenterte endringer, men ingen verifisert original ZIP i repoet. Dette er merket særskilt i [revisjonsoversikten](REVISJONER.md); manglende kildepakker er ikke funnet på.
 
-## Planlagt, men ikke implementert
+## Planlagt, ikke implementert
 
-I **neste** revisjon er det ønsket en egen automatisk aktivert sensor for **sist vellykkede Bluetooth/STATUS-oppdatering**, vist som norsk dato og klokkeslett (for eksempel `26.10.2026 kl. 10:32:48`). Dette er **ikke** en del av 0.5.24. Eksisterende diagnostikk har `last_status_response_at`.
+Se [VEIKART.md](VEIKART.md). Blant annet: HACS, sikker migrering til domenet `xzense`, integrasjonsnavn uten «Alpha» og knappeikoner for «Start fyring» / «Avslutt fyring». Home Assistant-basert fyringslogg er planlagt senere; interne Exodraft-loggfiler er satt på vent.
 
 ## Sikkerhet og teststatus
 
