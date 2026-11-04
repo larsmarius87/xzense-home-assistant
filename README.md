@@ -1,5 +1,11 @@
 # Xzense for Home Assistant
 
+> **HACS-test 0.5.28 – kun på denne `HACS`-grenen.** Integrasjonen ligger nå i `custom_components/xzense_full_preview/`, med `hacs.json` i roten. Bygget er kontrollert for struktur og Python-syntaks, men **ikke testet i Home Assistant**. Domenet er bevisst beholdt som `xzense_full_preview`; navne-/domenemigrering er ikke inkludert.
+>
+> **Merk:** HACS validerer vanligvis standardgrenen `main` når du legger til et egendefinert pakkelager. At `HACS`-grenen er klargjort er derfor ikke tilstrekkelig for at samme repository skal bli godkjent mens `main` fortsatt mangler `custom_components`. For isolert praktisk HACS-test må repositoryets standardgren midlertidig være `HACS`, eller denne grenen ligge i et eget test-repository. Ikke bytt standardgren før du er klar for test.
+>
+> Dashboardkortet `www/xzense-card.js` installeres **ikke automatisk** som separat HACS-dashboardressurs gjennom denne integrasjonspakken. Ved behov kopieres det fortsatt manuelt.
+
 Uoffisiell integrasjon for **Exodraft Xzense**. Lar Home Assistant lese status og styre utvalgte funksjoner på kontrollpanelet via Bluetooth Low Energy (BLE).
 
 **Nyeste testversjon: 0.5.27 (korrigert)** · Kontrollerfirmware testet: 4.10_RC2
