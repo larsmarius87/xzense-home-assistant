@@ -34,7 +34,7 @@ jobs:
           app=dirs[0]
           manifest=json.loads((app/'manifest.json').read_text())
           assert manifest['domain']==app.name=='xzense', manifest
-          assert manifest['version']=='0.5.28.1'
+          assert manifest['version']=='0.5.28.2'
           assert (app/'__init__.py').is_file()
           assert (app/'config_flow.py').is_file()
           assert (app/'translations'/'nb.json').is_file()
@@ -44,6 +44,16 @@ jobs:
               section=numbers.split('class '+class_name+'(',1)[1].split('\\nclass ',1)[0]
               assert '_attr_mode = NumberMode.BOX' in section, class_name
               assert '_attr_mode = NumberMode.SLIDER' not in section, class_name
+          const=(app/'const.py').read_text()
+          assert 'VERSION = "0.5.28.2"' in const
+          sensor=(app/'sensor.py').read_text()
+          assert "lambda s: min(100, s.globals[0x04]) if 0x04 in s.globals else None" in sensor
+          # Regression check of values; raw GLOBAL dictionary must remain intact.
+          for raw,expected in ((None,None),(0,0),(29,29),(100,100),(101,100),(115,100)):
+              globals_ = {} if raw is None else {0x04:raw}
+              observed = min(100, globals_[0x04]) if 0x04 in globals_ else None
+              assert observed == expected
+              assert raw is None or globals_[0x04] == raw
           card=(app/'www'/'xzense-card.js').read_text()
           assert "this._numeric('bluetooth_update_interval',true)" in card
           assert "this._numeric('bluetooth_active_update_interval',true)" in card
@@ -62,6 +72,6 @@ jobs:
           find custom_components/xzense -type d -name __pycache__ -prune -exec rm -rf {} +
           git add -A custom_components/ hacs.json
           if ! git diff --cached --quiet; then
-            git commit -m "test: publish Xzense 0.5.28.1 HACS layout"
+            git commit -m "test: publish Xzense 0.5.28.2 HACS layout"
             git push origin HEAD:HACS
           fi
