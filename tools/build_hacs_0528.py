@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.2 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.3 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -14,7 +14,7 @@ ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 OLD_DOMAIN = "xzense_full_preview"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.2"
+VERSION = "0.5.28.3"
 
 
 def build():
@@ -181,7 +181,7 @@ def build():
     assert manifest["domain"] == APP.name
     assert manifest["version"] == VERSION
     assert not old.exists()
-    print("Built Xzense 0.5.28.2 as HACS custom_components/xzense")
+    print("Built Xzense 0.5.28.3 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
