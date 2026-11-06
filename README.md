@@ -4,7 +4,7 @@
 
 An unofficial Home Assistant integration for **Exodraft Xzense**, providing extensive monitoring, control and configuration over Bluetooth Low Energy (BLE). Alongside the functions available in the official app, it exposes additional settings, sensors and diagnostics directly in Home Assistant.
 
-**Current HACS test version: 0.5.28.2** · Integration name: **Xzense** · Domain and folder: `xzense`
+**Current HACS test version: 0.5.28.3** · Integration name: **Xzense** · Domain and folder: `xzense`
 
 > **Development release:** This integration is under active development. Some controls are based on firmware analysis and have not been fully verified on a physical controller. It is not affiliated with or supported by Exodraft.
 
@@ -39,11 +39,13 @@ This repository currently publishes the HACS test integration from its **`HACS` 
 
 **Optional dashboard card:** The bundled Xzense card **automatically discovers its sensors and controls through the Home Assistant entity and device registries**, even after entity renaming. With multiple Xzense devices, select the target device in the card editor; manual entity overrides remain available. Add a card using `type: custom:xzense-card`. The dashboard resource must be registered separately (the HACS integration is not an independent frontend plugin). The bundled JavaScript is served at `/api/xzense_full_preview/xzense-card.js` for manually configured dashboard resources. The historical path is retained for compatibility; it does **not** indicate the integration's current domain.
 
+**Dashboard buttons:** Start firing, refuel and stop firing now work when Home Assistant reports a button state of `unknown` before its first use. Truly unavailable buttons remain disabled.
+
 **Battery display:** The panel battery sensor is capped at 100% in Home Assistant. Raw GLOBAL `0x04` values remain available in diagnostic exports.
 
 ### Current status and limitations
 
-- Version **0.5.28.2** is intended for HACS testing. The HACS layout and Python syntax are checked automatically.
+- Version **0.5.28.3** is intended for HACS testing. The HACS layout and Python syntax are checked automatically.
 - The main features are based on the corrected **0.5.27** codebase, with native entity icon fixes and the shorter integration name.
 - Some Bluetooth writes and advanced controller settings still require live testing.
 - A Home Assistant firing-session history is planned, not implemented.
@@ -61,7 +63,7 @@ For stability and safety, make a Home Assistant backup before experimental updat
 
 En uoffisiell Home Assistant-integrasjon for **Exodraft Xzense** med omfattende overvåking, styring og konfigurasjon via Bluetooth Low Energy (BLE). I tillegg til funksjonene fra originalappen gir den tilgang til flere innstillinger, sensorer og diagnostikk direkte i Home Assistant.
 
-**Gjeldende HACS-testversjon: 0.5.28.2** · Integrasjonsnavn: **Xzense** · Domene og mappe: `xzense`
+**Gjeldende HACS-testversjon: 0.5.28.3** · Integrasjonsnavn: **Xzense** · Domene og mappe: `xzense`
 
 > **Utviklingsversjon:** Integrasjonen er under aktiv utvikling. Enkelte kontroller er basert på analyse av fastvaren og er ikke ferdig testet på fysisk enhet. Prosjektet er ikke tilknyttet eller støttet av Exodraft.
 
@@ -94,11 +96,13 @@ Integrasjonen publiseres foreløpig fra **`HACS`-grenen** og installeres i `cust
 
 **Valgfritt dashboardkort:** Xzense-kortet **finner sensorer og kontroller automatisk via Home Assistants enhets- og entitetsregister**, også når entitetene har fått egne navn. Har du flere Xzense-enheter, velger du riktig enhet i kortredigeringen. Manuell overstyring er fortsatt mulig. Legg til kortet med `type: custom:xzense-card`. Dashboardressursen må registreres separat (HACS-integrasjonen er ikke en egen frontendutvidelse). Det innebygde JavaScript-kortet serveres på `/api/xzense_full_preview/xzense-card.js` for manuell registrering av dashboardressurs. Den gamle URL-en er beholdt av kompatibilitetshensyn og betyr **ikke** at integrasjonen bruker det gamle domenet.
 
+**Dashboardknapper:** Start fyring, Legg inn ved og Avslutt fyring fungerer nå også når Home Assistant viser `unknown` før knappen har vært brukt. Faktisk utilgjengelige knapper er fortsatt deaktivert.
+
 **Batterivisning:** Batterisensoren viser maksimalt 100 % i Home Assistant. Råverdien fra GLOBAL `0x04` beholdes i diagnostikkeksporten.
 
 ### Status og begrensninger
 
-- **0.5.28.2** er en HACS-testversjon. Mappestruktur og Python-syntaks blir kontrollert automatisk.
+- **0.5.28.3** er en HACS-testversjon. Mappestruktur og Python-syntaks blir kontrollert automatisk.
 - Funksjonaliteten bygger på korrigert **0.5.27**, med oppdaterte integrasjonsikoner og kortere integrasjonsnavn.
 - Enkelte Bluetooth-skrivekommandoer og avanserte innstillinger trenger fortsatt fysisk testing.
 - Egen fyringslogg i Home Assistant er planlagt, men ikke implementert.
