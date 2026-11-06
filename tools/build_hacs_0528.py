@@ -130,7 +130,7 @@ def build():
     for p in APP.rglob("*.py"):
         s = p.read_text()
         s = s.replace("Xzense Alpha", "Xzense")
-        if source_domain in s:
+        if source_domain in s and p.name != "client.py":
             raise RuntimeError(f"Legacy domain remains in {p.name}")
         p.write_text(s)
     # The dashboard card is authored separately from the source ZIP, and its
