@@ -39,7 +39,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data[DOMAIN].get("_frontend_registered"):
         await hass.http.async_register_static_paths([
             StaticPathConfig(
-                "/api/xzense_full_preview/xzense-card.js",
+                "/api/xzense/xzense-card.js",
                 str(Path(__file__).parent / "www" / "xzense-card.js"),
                 False,
             )
@@ -120,17 +120,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             registry.async_update_entity(entity_entry.entity_id, disabled_by=None)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
-    # This is a side-by-side development integration. Avoid two clients fighting
-    # for the same Xzense BLE peripheral.
-    if hass.data.get("xzense_full_preview") or hass.data.get("xzense_preview"):
-        client.state.phase = "blocked_by_other_xzense_integration"
-        client.state.last_error = (
-            "Another Xzense integration is loaded. Disable/unload it, then reload "
-            "Xzense; only one client may own the BLE session."
-        )
-        client._notify_listeners()
-        return True
 
     await client.async_initialize_timing()
     await client.async_initialize_cache()

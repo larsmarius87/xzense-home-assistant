@@ -322,7 +322,7 @@ class XzenseClient:
         self._active_ble_started_monotonic: float | None = None
         self._timing = XzenseTiming()
         self._timing_store: Store[dict[str, object]] = Store(
-            hass, 1, f"xzense_full_preview.timing_{entry.entry_id}"
+            hass, 1, f"xzense.timing_{entry.entry_id}"
         )
         self._last_timing_save_schedule = 0.0
         # Preserve old option/unique ID for the idle slider when upgrading.
@@ -359,7 +359,7 @@ class XzenseClient:
         self._fresh_status_event = asyncio.Event()
         self._command_lock = asyncio.Lock()
         self._cache_store: Store[dict[str, object]] = Store(
-            hass, 1, f"xzense_full_preview.cache_{entry.entry_id}"
+            hass, 1, f"xzense.cache_{entry.entry_id}"
         )
 
     @callback
