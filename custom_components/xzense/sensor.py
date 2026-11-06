@@ -178,7 +178,7 @@ APP_READ_SENSORS = (
         options=tuple(DEVICE_STATE_CODES.values()) + ("unknown_state",),
     ),
     SensorDescription("signal_strength", "Radio link signal strength", lambda s: s.globals.get(0x05), diagnostic=False),
-    SensorDescription("battery", "Panel battery", lambda s: s.globals.get(0x04),
+    SensorDescription("battery", "Panel battery", lambda s: min(100, s.globals[0x04]) if 0x04 in s.globals else None,
                       diagnostic=False, native_unit=PERCENTAGE, state_class=SensorStateClass.MEASUREMENT),
     SensorDescription("last_successful_bt_status", "Last successful Bluetooth update", _local_status_time,
                       diagnostic=False),
