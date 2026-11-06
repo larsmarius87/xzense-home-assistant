@@ -1,4 +1,4 @@
-name: Prepare HACS test 0.5.28.1
+name: Build and release Xzense 0.5.28.3
 on:
   push:
     branches:
@@ -34,7 +34,7 @@ jobs:
           app=dirs[0]
           manifest=json.loads((app/'manifest.json').read_text())
           assert manifest['domain']==app.name=='xzense', manifest
-          assert manifest['version']=='0.5.28.2'
+          assert manifest['version']=='0.5.28.3'
           assert (app/'__init__.py').is_file()
           assert (app/'config_flow.py').is_file()
           assert (app/'translations'/'nb.json').is_file()
@@ -45,7 +45,7 @@ jobs:
               assert '_attr_mode = NumberMode.BOX' in section, class_name
               assert '_attr_mode = NumberMode.SLIDER' not in section, class_name
           const=(app/'const.py').read_text()
-          assert 'VERSION = "0.5.28.2"' in const
+          assert 'VERSION = "0.5.28.3"' in const
           sensor=(app/'sensor.py').read_text()
           assert "lambda s: min(100, s.globals[0x04]) if 0x04 in s.globals else None" in sensor
           # Regression check of values; raw GLOBAL dictionary must remain intact.
@@ -65,6 +65,7 @@ jobs:
           node --check tools/xzense_card_05281.js
           cmp custom_components/xzense/www/xzense-card.js tools/xzense_card_05281.js
           node tools/test_card_05281.cjs
+          grep -F "this._field(key)?.domain==='button' || e.state!=='unknown'" custom_components/xzense/www/xzense-card.js
       - name: Publish HACS directory to the HACS branch
         run: |
           git config user.name "github-actions[bot]"
@@ -72,6 +73,24 @@ jobs:
           find custom_components/xzense -type d -name __pycache__ -prune -exec rm -rf {} +
           git add -A custom_components/ hacs.json
           if ! git diff --cached --quiet; then
-            git commit -m "test: publish Xzense 0.5.28.2 HACS layout"
+            git commit -m "build: publish Xzense 0.5.28.3 HACS layout"
             git push origin HEAD:HACS
+          fi
+      - name: Publish versioned GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION="0.5.28.3"
+          # The build commit (if any) is HEAD; attach the tag to tested files.
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view "$VERSION" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; skipping."
+          else
+            if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+              echo "Tag $VERSION exists. Will publish release from that tag."
+              gh release create "$VERSION" --repo "${{ github.repository }}" --title "Xzense $VERSION" --notes-file "docs/releases/$VERSION.md" --verify-tag --latest
+            else
+              gh release create "$VERSION" --repo "${{ github.repository }}" --target "$TARGET" --title "Xzense $VERSION" --notes-file "docs/releases/$VERSION.md" --latest
+            fi
           fi
