@@ -6,7 +6,7 @@ import re
 
 DOMAIN = "xzense"
 NAME = "Xzense"
-VERSION = "0.5.28.4"
+VERSION = "0.5.28.5"
 
 # Dialog/Renesas DSPS (Serial Port Service) UUIDs recovered from Xzense 5.0.2.
 SERVICE_UUID = "0783b03e-8535-b5a0-7140-a304d2495cb7"
