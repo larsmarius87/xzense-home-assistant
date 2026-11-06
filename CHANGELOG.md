@@ -1,6 +1,13 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.2** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.3** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.3 – Dashboardknapper og GitHub Release (06.11.2026)
+
+- Rettet dashboardkortet slik at `Start fyring`, `Legg inn ved` og `Avslutt fyring` fungerer når Home Assistant viser `unknown` for en knapp som ikke har vært brukt ennå.
+- `unavailable` og manglende knappentiteter forblir blokkert. Sensorer og andre kontroller beholder eksisterende sperre for `unknown`.
+- Lagt til automatiske regresjonstester for knappetilstander i tillegg til tidligere enhetskoblingstester.
+- Overgang til versjonsnummererte GitHub Releases med norsk og engelsk utgivelsesbeskrivelse. Uendret Bluetooth-kode og kontrollkommandoer.
 
 ## 0.5.28.2 – Batterivisning begrenset til 100 % (06.11.2026)
 
