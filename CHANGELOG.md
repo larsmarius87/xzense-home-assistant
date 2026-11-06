@@ -1,6 +1,14 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.3** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.4** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.4 – Fjerning av gammelt domene og ressursadresse (06.11.2026)
+
+- Den aktive integrasjonen bruker nå bare domenet `xzense`; all kode for gammel kompatibilitetssperre ved oppstart er fjernet.
+- Dashboardressursen er flyttet til `/api/xzense/xzense-card.js`. Gamle ressursadresser virker ikke lenger og må endres manuelt under Home Assistants Ressurser, gjerne med `?v=0.5.28.4` for å tvinge ny nedlasting.
+- Tidligere lagringsnøkler for fyringsøkter og diagnostikkcache erstattes med `xzense.timing_*` og `xzense.cache_*`. **Ingen migrering av lagret historikk eller cache.**
+- Bluetooth-protokoll, kommandoer og tilstandssperrer beholdes uendret.
+- Byggtester bekrefter at det gamle domenet ikke forekommer i aktive Python-moduler. Norsk og engelsk Release Notes dokumenterer bruddet.
 
 ## 0.5.28.3 – Dashboardknapper og GitHub Release (06.11.2026)
 
