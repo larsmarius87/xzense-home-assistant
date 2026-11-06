@@ -1,6 +1,13 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.1** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.2** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.2 – Batterivisning begrenset til 100 % (06.11.2026)
+
+- Batterisensoren viser maksimalt 100 % dersom kontrollpanelet rapporterer en høyere råverdi i GLOBAL `0x04`.
+- Den originale GLOBAL-verdien blir ikke endret og er fortsatt tilgjengelig i diagnostikken.
+- Ingen endringer i Bluetooth-styring, dashboardkort, andre sensorer eller kontrollfunksjoner.
+- Versjonsnummer oppdatert i HACS-integrasjonens manifest og interne versjonskonstant.
 
 ## 0.5.28.1 – Dashboard auto-discovery (04.11.2026)
 
