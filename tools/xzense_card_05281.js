@@ -1,4 +1,4 @@
-/* Xzense panel card 0.5.28.3. No external libraries or Home Assistant plugins. */
+/* Xzense panel card 0.5.28.5. No external libraries or Home Assistant plugins. */
 const XZ_FIELDS = [
   {key:'device_state_localized',name:'Driftsstatus',domain:'sensor',tab:'main'},
   {key:'chimney_temperature',name:'Pipetemperatur',domain:'sensor',tab:'main'},
@@ -212,7 +212,7 @@ class XzenseCard extends HTMLElement {
     const devices=xzDevices(this._registry);
     const mustChoose=devices.length>1&&!xzDeviceId(this._registry,this._config.device);
     const missing=XZ_FIELDS.filter(f=>f.tab===this._tab&&!this._entity(f.key)).length;
-    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div>${this._batteryIndicator()}</div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${mustChoose?'<div class="tip">Flere Xzense-enheter funnet. Velg riktig enhet i kortredigeringen.</div>':''}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Kontroller enhetsvalg under <strong>Rediger kort</strong> eller velg en entitet manuelt.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.28.3 · automatisk entitetskobling</div></ha-card>`;
+    this.shadowRoot.innerHTML=`<style>${XZ_STYLES}</style><ha-card class="root"><div class="head"><div><div class="head-title">${xzEsc(this._config.title||'Xzense')}</div><div class="sub">${this._hass?'Panelstyring via Home Assistant':'Laster Home Assistant…'}</div></div>${this._batteryIndicator()}</div><div class="tabs">${XZ_TABS.map(t=>this._tabButton(t)).join('')}</div><div class="panel">${contents[this._tab]()}${mustChoose?'<div class="tip">Flere Xzense-enheter funnet. Velg riktig enhet i kortredigeringen.</div>':''}${missing?`<div class="tip">${missing} felt mangler entitetskobling i denne fanen. Kontroller enhetsvalg under <strong>Rediger kort</strong> eller velg en entitet manuelt.</div>`:''}${this._lastProblem?`<div class="warn">${xzEsc(this._lastProblem)}</div>`:''}</div><div class="footer">Xzense-kort 0.5.28.5 · automatisk entitetskobling</div></ha-card>`;
     this.shadowRoot.querySelectorAll('[data-tab]').forEach(n=>n.addEventListener('click',()=>{this._tab=n.dataset.tab;this._lastProblem='';this._render()}));
     this.shadowRoot.querySelectorAll('[data-action]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.action)));
     this.shadowRoot.querySelectorAll('[data-toggle]').forEach(n=>n.addEventListener('click',()=>this._doAction(n.dataset.toggle)));
@@ -266,4 +266,4 @@ if(!customElements.get('xzense-card'))customElements.define('xzense-card',Xzense
 if(!customElements.get('xzense-card-editor'))customElements.define('xzense-card-editor',XzenseCardEditor);
 window.customCards=window.customCards||[];
 if(!window.customCards.some(c=>c.type==='xzense-card'))window.customCards.push({type:'xzense-card',name:'Xzense Kontrollpanel',description:'Xzense med automatisk enhets- og entitetskobling',preview:true});
-console.info('%c Xzense Dashboard 0.5.28.3','color:#1976d2;font-weight:bold');
+console.info('%c Xzense Dashboard 0.5.28.5','color:#1976d2;font-weight:bold');
