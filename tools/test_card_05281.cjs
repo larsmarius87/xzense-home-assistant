@@ -86,6 +86,19 @@ async function settle() {
   assert.equal(card._entity('boost'),'switch.renamed_boost');
   assert.equal(card._entity('user_fan_speed'),'number.some_value');
   assert.equal(card._entity('pressure'),null);
+  // ButtonEntity can legitimately report unknown before the first press.
+  one.states['button.another_name'].state='unknown';
+  assert.equal(card._ready('start_fire'),true,'Unknown button is pressable');
+  one.states['button.another_name'].state='unavailable';
+  assert.equal(card._ready('start_fire'),false,'Unavailable button is blocked');
+  one.states['button.another_name'].state='unknown';
+  one.states['sensor.my_renamed_temp'].state='unknown';
+  assert.equal(card._ready('chimney_temperature'),false,'Unknown numeric sensor is not ready');
+  one.states['sensor.my_renamed_temp'].state='1';
+  delete one.states['button.another_name'];
+  assert.equal(card._ready('start_fire'),false,'Missing button is blocked');
+  one.states['button.another_name']={state:'unknown',attributes:{}};
+
   assert.deepEqual(one.calls,['config/entity_registry/list','config/device_registry/list']);
   // A new card should share the same registry lookup for the same connection.
   const another=new Card();
@@ -117,5 +130,5 @@ async function settle() {
   multiple.setConfig({type:'custom:xzense-card',device:'invalid',
     entities:{chimney_temperature:'sensor.manual_override'}});
   assert.equal(multiple._entity('chimney_temperature'),'sensor.manual_override');
-  console.log('Xzense 0.5.28.1 auto-discovery tests passed');
+  console.log('Xzense 0.5.28.3 entity discovery and button-state tests passed');
 })().catch(e => {console.error(e);process.exitCode=1;});
