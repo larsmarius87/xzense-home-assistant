@@ -1,6 +1,12 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.4** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.5** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.5 – Korrigert kortversjon og offentlig publisering (06.11.2026)
+
+- Fullfører oppryddingen fra 0.5.28.4 og viser nå riktig versjon **0.5.28.5** også i dashboardkortets bunntekst og nettleserkonsoll.
+- Ny ressursadresse for kortet er `/api/xzense/xzense-card.js?v=0.5.28.5`; gamle ressursadresser er fjernet.
+- Ingen endringer i BLE-protokollen eller betjeningslogikken. Se Release Notes for viktig informasjon om eldre lagrede fyringsdata.
 
 ## 0.5.28.4 – Fjerning av gammelt domene og ressursadresse (06.11.2026)
 
