@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.3 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.4 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -11,23 +11,28 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
-OLD_DOMAIN = "xzense_full_preview"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.3"
+VERSION = "0.5.28.4"
 
 
 def build():
     if not ARCHIVE.is_file():
         raise RuntimeError("Missing corrected 0.5.27 source ZIP")
-    old = ROOT / "custom_components" / OLD_DOMAIN
-    if old.exists():
-        shutil.rmtree(old)
     if APP.exists():
         shutil.rmtree(APP)
     APP.mkdir(parents=True)
-    prefix = f"custom_components/{OLD_DOMAIN}/"
     with zipfile.ZipFile(ARCHIVE) as z:
+        # Identify the 0.5.27 source folder without retaining its retired
+        # integration domain as a constant or in generated code.
+        source_domains = {
+            name.split("/")[1] for name in z.namelist()
+            if name.startswith("custom_components/") and name.count("/") >= 2
+        }
+        if len(source_domains) != 1:
+            raise RuntimeError(f"Expected one source integration, got {source_domains}")
+        source_domain = next(iter(source_domains))
+        prefix = f"custom_components/{source_domain}/"
         for name in sorted(z.namelist()):
             if not name.startswith(prefix) or name.endswith("/"):
                 continue
@@ -43,7 +48,7 @@ def build():
 
     manifest_path = APP / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
-    if manifest.get("domain") != OLD_DOMAIN:
+    if manifest.get("domain") != source_domain:
         raise RuntimeError(f"Wrong source domain {manifest.get('domain')}")
     manifest.update({
         "domain": NEW_DOMAIN,
@@ -57,29 +62,27 @@ def build():
 
     const_path = APP / "const.py"
     c = const_path.read_text()
-    if 'DOMAIN = "xzense_full_preview"' not in c:
+    original_domain_line = f'DOMAIN = "{source_domain}"'
+    if original_domain_line not in c:
         raise RuntimeError("Source domain constant changed: stop build")
-    c = c.replace('DOMAIN = "xzense_full_preview"', 'DOMAIN = "xzense"')
+    c = c.replace(original_domain_line, f'DOMAIN = "{NEW_DOMAIN}"')
     c = c.replace('"0.5.27"', f'"{VERSION}"').replace("'0.5.27'", f"'{VERSION}'")
     const_path.write_text(c)
 
     init = APP / "__init__.py"
     s = init.read_text()
-    # Existing dashboards keep their old resource URL, while new installs use /api/xzense.
-    s = s.replace(
-        'StaticPathConfig(\n                "/api/xzense_full_preview/xzense-card.js",',
-        'StaticPathConfig(\n                "/api/xzense_full_preview/xzense-card.js",'
-    )
-    # In 0.5.28 DOMAIN is xzense. The old side-by-side guard checks
-    # hass.data["xzense"], which is the current integration itself.
-    # Only the old domains count as competing integrations.
-    self_guard = 'hass.data.get("xzense") or hass.data.get("xzense_preview")'
-    if self_guard not in s:
-        raise RuntimeError("Self-blocking guard not found in source; review required")
-    s = s.replace(self_guard, 'hass.data.get("xzense_full_preview") or hass.data.get("xzense_preview")')
-    if self_guard in s:
-        raise RuntimeError("Self-blocking guard not fixed")
-    init.write_text(s.replace('Xzense Alpha', 'Xzense'))
+    old_path = f"/api/{source_domain}/xzense-card.js"
+    new_path = f"/api/{NEW_DOMAIN}/xzense-card.js"
+    if old_path not in s:
+        raise RuntimeError("Source dashboard static path not found")
+    s = s.replace(old_path, new_path)
+    # Remove the obsolete side-by-side compatibility guard entirely.
+    guard_begin = s.find("    # This is a side-by-side development integration.")
+    guard_end = s.find("    await client.async_initialize_timing()", guard_begin)
+    if guard_begin == -1 or guard_end == -1:
+        raise RuntimeError("Legacy integration guard location changed")
+    s = s[:guard_begin] + s[guard_end:]
+    init.write_text(s.replace("Xzense Alpha", "Xzense"))
 
     # Keep the 0.5.27 entity icons, and apply the two agreed native button
     # icons. These are integration entity icons, not just dashboard artwork.
@@ -125,15 +128,16 @@ def build():
 
 
     for p in APP.rglob("*.py"):
-        if p.name not in ("client.py", "__init__.py"):
-            s = p.read_text()
-            s = s.replace("Xzense Alpha", "Xzense")
-            p.write_text(s)
+        s = p.read_text()
+        s = s.replace("Xzense Alpha", "Xzense")
+        if source_domain in s:
+            raise RuntimeError(f"Legacy domain remains in {p.name}")
+        p.write_text(s)
     # The dashboard card is authored separately from the source ZIP, and its
     # registry-based auto-linking must never be lost during rebuilding.
     source_card = ROOT / "tools" / "xzense_card_05281.js"
     if not source_card.is_file():
-        raise RuntimeError("Missing 0.5.28.1 dashboard card")
+        raise RuntimeError("Missing dashboard card source")
     js = source_card.read_text(encoding="utf-8")
     for required in ("config/entity_registry/list", "config/device_registry/list",
                      "unique_id.endsWith('_'+key)", "xz-device"):
@@ -141,11 +145,16 @@ def build():
             raise RuntimeError(f"Dashboard auto-link check failed: {required}")
     (APP / "www" / "xzense-card.js").write_text(js, encoding="utf-8")
 
-    # Keep OLD_DOMAIN storage namespaces in client.py to preserve saved state and fire durations.
-    if f"{OLD_DOMAIN}.timing_" not in (APP / "client.py").read_text():
-        raise RuntimeError("Stored timing namespace changed unexpectedly")
-    if f"{OLD_DOMAIN}.cache_" not in (APP / "client.py").read_text():
-        raise RuntimeError("Stored sensor cache namespace changed unexpectedly")
+    # Retire legacy storage namespaces and use only the current integration
+    # domain. Previous fire-duration history and cached values are not migrated.
+    client_path = APP / "client.py"
+    client_source = client_path.read_text()
+    for suffix in ("timing_", "cache_"):
+        old_namespace = f"{source_domain}.{suffix}"
+        if old_namespace not in client_source:
+            raise RuntimeError(f"Expected storage key missing: {suffix}")
+        client_source = client_source.replace(old_namespace, f"{NEW_DOMAIN}.{suffix}")
+    client_path.write_text(client_source)
 
     # Clamp the exposed battery sensor only; keep raw GLOBAL 0x04 unchanged.
     sensor_path = APP / "sensor.py"
@@ -180,8 +189,9 @@ def build():
     )
     assert manifest["domain"] == APP.name
     assert manifest["version"] == VERSION
-    assert not old.exists()
-    print("Built Xzense 0.5.28.3 as HACS custom_components/xzense")
+    assert source_domain not in (APP / "__init__.py").read_text()
+    assert source_domain not in (APP / "client.py").read_text()
+    print("Built Xzense 0.5.28.4 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
