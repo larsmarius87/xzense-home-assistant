@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.1 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.2 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -14,7 +14,7 @@ ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 OLD_DOMAIN = "xzense_full_preview"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.1"
+VERSION = "0.5.28.2"
 
 
 def build():
@@ -60,7 +60,7 @@ def build():
     if 'DOMAIN = "xzense_full_preview"' not in c:
         raise RuntimeError("Source domain constant changed: stop build")
     c = c.replace('DOMAIN = "xzense_full_preview"', 'DOMAIN = "xzense"')
-    c = c.replace('"0.5.27"', '"0.5.28"').replace("'0.5.27'", "'0.5.28'")
+    c = c.replace('"0.5.27"', f'"{VERSION}"').replace("'0.5.27'", f"'{VERSION}'")
     const_path.write_text(c)
 
     init = APP / "__init__.py"
@@ -147,6 +147,18 @@ def build():
     if f"{OLD_DOMAIN}.cache_" not in (APP / "client.py").read_text():
         raise RuntimeError("Stored sensor cache namespace changed unexpectedly")
 
+    # Clamp the exposed battery sensor only; keep raw GLOBAL 0x04 unchanged.
+    sensor_path = APP / "sensor.py"
+    sensor_source = sensor_path.read_text(encoding="utf-8")
+    battery_line = 'SensorDescription("battery", "Panel battery", lambda s: s.globals.get(0x04),'
+    new_battery_line = (
+        'SensorDescription("battery", "Panel battery", '
+        'lambda s: min(100, s.globals[0x04]) if 0x04 in s.globals else None,'
+    )
+    if sensor_source.count(battery_line) != 1:
+        raise RuntimeError("Battery sensor definition changed; review clamp")
+    sensor_path.write_text(sensor_source.replace(battery_line, new_battery_line), encoding="utf-8")
+
     # Short Norwegian label for last successful Bluetooth status synchronization.
     nb_path = APP / "translations" / "nb.json"
     nb = json.loads(nb_path.read_text(encoding="utf-8"))
@@ -169,7 +181,7 @@ def build():
     assert manifest["domain"] == APP.name
     assert manifest["version"] == VERSION
     assert not old.exists()
-    print("Built Xzense 0.5.28.1 as HACS custom_components/xzense")
+    print("Built Xzense 0.5.28.2 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
