@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.6 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.7 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.6"
+VERSION = "0.5.28.7"
 
 
 def build():
@@ -185,6 +185,54 @@ def build():
         client_source = client_source.replace(old_namespace, f"{NEW_DOMAIN}.{suffix}")
     client_path.write_text(client_source)
 
+    # Fail closed on user_fan_speed (GLOBAL 0x50): request a *new* STATUS
+    # immediately before the write and reject Boost (state 3).
+    # Never treat a cached STATUS or a prior successful read as current.
+    client_path = APP / "client.py"
+    client_source = client_path.read_text()
+    anchor = "    async def async_execute_feature(self, feature_key: str, value: object | None = None) -> None:"
+    if client_source.count(anchor) != 1:
+        raise RuntimeError("Cannot locate unique feature write entry point")
+    helper = '''    async def _async_check_fan_speed_write_allowed(self) -> None:
+        """Read a new controller STATUS before writing fan setpoint 0x50.
+
+        The status sequence number must advance after our STATUS request;
+        a cached or earlier live STATUS is insufficient.
+        """
+        if not self._client or not self._client.is_connected or self.state.session_id is None:
+            raise HomeAssistantError("Xzense is not connected; fan speed was not changed")
+        previous = self.state.status_response_count
+        try:
+            await self._send_status_request(self._client, self.state.session_id)
+            deadline = time.monotonic() + SNAPSHOT_WAIT_SECONDS
+            while self.state.status_response_count <= previous:
+                if not self._client.is_connected:
+                    raise HomeAssistantError("Xzense disconnected before fan speed validation")
+                if time.monotonic() >= deadline:
+                    raise HomeAssistantError("No fresh Xzense status; fan speed was not changed")
+                await asyncio.sleep(0.05)
+        except HomeAssistantError:
+            raise
+        except Exception as err:
+            raise HomeAssistantError("Could not verify Xzense status; fan speed was not changed") from err
+        if self.state.status is None:
+            raise HomeAssistantError("No valid Xzense status; fan speed was not changed")
+        if self.state.status.device_state == 3:
+            raise HomeAssistantError("Viftehastighet kan ikke endres mens Boost er aktiv")
+
+'''
+    client_source = client_source.replace(anchor, helper + anchor)
+    write_anchor = '            frame = build_global_request(self.state.session_id, feature.global_id, raw_value)'
+    if client_source.count(write_anchor) != 1:
+        raise RuntimeError("Cannot locate unique GLOBAL write")
+    client_source = client_source.replace(
+        write_anchor,
+        '            if feature_key == "user_fan_speed":\\n'
+        '                await self._async_check_fan_speed_write_allowed()\\n'
+        + write_anchor
+    )
+    client_path.write_text(client_source, encoding="utf-8")
+
     # Clamp the exposed battery sensor only; keep raw GLOBAL 0x04 unchanged.
     sensor_path = APP / "sensor.py"
     sensor_source = sensor_path.read_text(encoding="utf-8")
@@ -220,7 +268,7 @@ def build():
     assert manifest["version"] == VERSION
     assert source_domain not in (APP / "__init__.py").read_text()
     assert source_domain not in (APP / "client.py").read_text()
-    print("Built Xzense 0.5.28.6 as HACS custom_components/xzense")
+    print("Built Xzense 0.5.28.7 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
