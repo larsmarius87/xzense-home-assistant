@@ -40,11 +40,11 @@ async def main():
     # The physical Boost control dispatch is separate from the GLOBAL 0x50 guard.
     control=next(n for n in cls.body if isinstance(n,ast.AsyncFunctionDef) and n.name=="async_control_feature")
     control_text=ast.unparse(control)
-    assert 'feature_key == "boost"' in control_text
+    assert "feature_key == 'boost'" in control_text
     assert 'await self.async_set_boost(bool(value))' in control_text
     writer=next(n for n in cls.body if isinstance(n,ast.AsyncFunctionDef) and n.name=="async_execute_feature")
     writer_text=ast.unparse(writer)
-    assert 'feature_key == "user_fan_speed"' in writer_text
+    assert "feature_key == 'user_fan_speed'" in writer_text
     assert 'await self._async_check_fan_speed_write_allowed()' in writer_text
     print("Boost fan-speed guard tests passed (boost blocked, normal allowed, stale/disconnected blocked, Boost switch independent).")
 asyncio.run(main())
