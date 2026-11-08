@@ -24,16 +24,13 @@ from .const import (
     CONF_BURNOUT_NOTIFY_TARGET,
     DEFAULT_NAME,
     DOMAIN,
-    SERVICE_UUID,
     normalize_pin,
 )
 
 
 def _looks_like_xzense(info: BluetoothServiceInfoBleak) -> bool:
-    name = (info.name or "").lower()
-    return "xzense" in name or SERVICE_UUID.lower() in {
-        uuid.lower() for uuid in info.service_uuids
-    }
+    name = (info.name or "").strip().lower()
+    return name.startswith("xzense")
 
 
 class XzenseConfigFlow(ConfigFlow, domain=DOMAIN):
