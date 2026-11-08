@@ -1,6 +1,14 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.5** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.6** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.6 – Bluetooth-oppdagelse filtrert etter enhetsnavn (08.11.2026)
+
+- Fikset feil der alle enheter med delt Dialog/Renesas DSPS-service-UUID kunne foreslås som Xzense.
+- Automatisk oppdagelse krever nå navn som starter med `Xzense`. Samme filter brukes i listen over oppdagede enheter.
+- Manuell registrering med Bluetooth-adresse og PIN er fortsatt tilgjengelig.
+- Regresjonstestene avviser fremmede og navnløse DSPS-enheter og godtar Xzense-navn.
+- Dashboardkortet merkes `0.5.28.6`; ingen endringer i kommunikasjon eller kontrollkommandoer.
 
 ## 0.5.28.5 – Korrigert kortversjon og offentlig publisering (06.11.2026)
 
