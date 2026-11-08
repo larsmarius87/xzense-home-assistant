@@ -1726,6 +1726,33 @@ class XzenseClient:
             except Exception:
                 _LOGGER.debug("Immediate STATUS after BOOST failed", exc_info=True)
 
+    async def _async_check_fan_speed_write_allowed(self) -> None:
+        """Read a new controller STATUS before writing fan setpoint 0x50.
+
+        The status sequence number must advance after our STATUS request;
+        a cached or earlier live STATUS is insufficient.
+        """
+        if not self._client or not self._client.is_connected or self.state.session_id is None:
+            raise HomeAssistantError("Xzense is not connected; fan speed was not changed")
+        previous = self.state.status_response_count
+        try:
+            await self._send_status_request(self._client, self.state.session_id)
+            deadline = time.monotonic() + SNAPSHOT_WAIT_SECONDS
+            while self.state.status_response_count <= previous:
+                if not self._client.is_connected:
+                    raise HomeAssistantError("Xzense disconnected before fan speed validation")
+                if time.monotonic() >= deadline:
+                    raise HomeAssistantError("No fresh Xzense status; fan speed was not changed")
+                await asyncio.sleep(0.05)
+        except HomeAssistantError:
+            raise
+        except Exception as err:
+            raise HomeAssistantError("Could not verify Xzense status; fan speed was not changed") from err
+        if self.state.status is None:
+            raise HomeAssistantError("No valid Xzense status; fan speed was not changed")
+        if self.state.status.device_state == 3:
+            raise HomeAssistantError("Viftehastighet kan ikke endres mens Boost er aktiv")
+
     async def async_execute_feature(self, feature_key: str, value: object | None = None) -> None:
         """Execute a verified control; candidate features remain write-locked."""
         feature = FEATURE_BY_KEY.get(feature_key)
@@ -1752,6 +1779,8 @@ class XzenseClient:
                                          rs009_41=self.rs009_41_motor)
                 except ValueError as err:
                     raise HomeAssistantError(str(err)) from err
+            if feature_key == "user_fan_speed":
+                await self._async_check_fan_speed_write_allowed()
             frame = build_global_request(self.state.session_id, feature.global_id, raw_value)
             self.state.global_write_request_count += 1
             self.state.last_global_write_id = feature.global_id
