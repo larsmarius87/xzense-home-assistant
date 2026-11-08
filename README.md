@@ -4,7 +4,7 @@
 
 An unofficial Home Assistant integration for **Exodraft Xzense**, providing extensive monitoring, control and configuration over Bluetooth Low Energy (BLE). Alongside the functions available in the official app, it exposes additional settings, sensors and diagnostics directly in Home Assistant.
 
-**Current HACS test version: 0.5.28.7** · Integration name: **Xzense** · Domain and folder: `xzense`
+**Current HACS test version: 0.5.28.8** · Integration name: **Xzense** · Domain and folder: `xzense`
 
 > **Development release:** This integration is under active development. Some controls are based on firmware analysis and have not been fully verified on a physical controller. It is not affiliated with or supported by Exodraft.
 
@@ -26,8 +26,6 @@ An unofficial Home Assistant integration for **Exodraft Xzense**, providing exte
 
 **Entity icons:** Start firing `mdi:fire`, stop firing `mdi:fire-off`, refuel `mdi:forest`, Boost `mdi:turbine` and RS009-41 motor type `mdi:engine-outline`. The Norwegian sensor label for the last successful Bluetooth synchronization is **Sist BT-synk**.
 
-**Boost fan-speed protection:** Writing the normal fan-speed setpoint (GLOBAL `0x50`) is blocked when a fresh controller status reports Boost. The Boost switch (`0x08`) still works and can turn Boost off.
-
 **Bluetooth discovery:** Automatic setup now requires an advertised device name starting with `Xzense`. Other products using the shared DSPS service UUID are no longer suggested. Manual setup by Bluetooth address and PIN is still available.
 
 ### Installation with HACS
@@ -41,7 +39,7 @@ An unofficial Home Assistant integration for **Exodraft Xzense**, providing exte
 
 This repository currently publishes the HACS test integration from its **`HACS` branch**, with code installed to `custom_components/xzense/`. For a fresh installation you do not need to rename any folders or manually copy integration Python files.
 
-**Optional dashboard card:** The bundled Xzense card **automatically discovers its sensors and controls through the Home Assistant entity and device registries**, even after entity renaming. With multiple Xzense devices, select the target device in the card editor; manual entity overrides remain available. Add a card using `type: custom:xzense-card`. The dashboard resource must be registered separately (the HACS integration is not an independent frontend plugin). The bundled JavaScript is served at `/api/xzense/xzense-card.js`. Update the existing Lovelace resource URL to `/api/xzense/xzense-card.js?v=0.5.28.7` (JavaScript module). Older resource URLs have been removed.
+**Optional dashboard card:** The bundled Xzense card **automatically discovers its sensors and controls through the Home Assistant entity and device registries**, even after entity renaming. With multiple Xzense devices, select the target device in the card editor; manual entity overrides remain available. Add a card using `type: custom:xzense-card`. The dashboard resource must be registered separately (the HACS integration is not an independent frontend plugin). The bundled JavaScript is served at `/api/xzense/xzense-card.js`. Update the existing Lovelace resource URL to `/api/xzense/xzense-card.js?v=0.5.28.8` (JavaScript module). Older resource URLs have been removed.
 
 **Dashboard buttons:** Start firing, refuel and stop firing now work when Home Assistant reports a button state of `unknown` before its first use. Truly unavailable buttons remain disabled.
 
@@ -49,7 +47,7 @@ This repository currently publishes the HACS test integration from its **`HACS` 
 
 ### Current status and limitations
 
-- Version **0.5.28.7** is intended for HACS testing. The HACS layout and Python syntax are checked automatically.
+- Version **0.5.28.8** is intended for HACS testing. The HACS layout and Python syntax are checked automatically.
 - The main features are based on the corrected **0.5.27** codebase, with native entity icon fixes and the shorter integration name.
 - Some Bluetooth writes and advanced controller settings still require live testing.
 - A Home Assistant firing-session history is planned, not implemented.
@@ -67,9 +65,7 @@ For stability and safety, make a Home Assistant backup before experimental updat
 
 En uoffisiell Home Assistant-integrasjon for **Exodraft Xzense** med omfattende overvåking, styring og konfigurasjon via Bluetooth Low Energy (BLE). I tillegg til funksjonene fra originalappen gir den tilgang til flere innstillinger, sensorer og diagnostikk direkte i Home Assistant.
 
-**Gjeldende HACS-testversjon: 0.5.28.7** · Integrasjonsnavn: **Xzense** · Domene og mappe: `xzense`
-
-**Viftehastighet under Boost:** Skriving til normal viftehastighet (`0x50`) er sperret når en fersk status rapporterer Boost. Boost-knappen (`0x08`) kan fortsatt brukes til å avslutte Boost.
+**Gjeldende HACS-testversjon: 0.5.28.8** · Integrasjonsnavn: **Xzense** · Domene og mappe: `xzense`
 
 **Bluetooth-oppdagelse:** Automatisk oppsett krever nå annonsert enhetsnavn som starter med `Xzense`. Andre produkter med delt DSPS-UUID foreslås ikke. Manuell registrering med Bluetooth-adresse og PIN er mulig.
 
@@ -102,7 +98,7 @@ En uoffisiell Home Assistant-integrasjon for **Exodraft Xzense** med omfattende 
 
 Integrasjonen publiseres foreløpig fra **`HACS`-grenen** og installeres i `custom_components/xzense/`. Ved nyinstallasjon trenger du ikke endre mappenavn eller kopiere Python-filer manuelt.
 
-**Valgfritt dashboardkort:** Xzense-kortet **finner sensorer og kontroller automatisk via Home Assistants enhets- og entitetsregister**, også når entitetene har fått egne navn. Har du flere Xzense-enheter, velger du riktig enhet i kortredigeringen. Manuell overstyring er fortsatt mulig. Legg til kortet med `type: custom:xzense-card`. Dashboardressursen må registreres separat (HACS-integrasjonen er ikke en egen frontendutvidelse). Det innebygde JavaScript-kortet serveres på `/api/xzense/xzense-card.js`. Endre eksisterende Lovelace-ressurs til `/api/xzense/xzense-card.js?v=0.5.28.7` (JavaScript-modul). Gamle ressursadresser er fjernet.
+**Valgfritt dashboardkort:** Xzense-kortet **finner sensorer og kontroller automatisk via Home Assistants enhets- og entitetsregister**, også når entitetene har fått egne navn. Har du flere Xzense-enheter, velger du riktig enhet i kortredigeringen. Manuell overstyring er fortsatt mulig. Legg til kortet med `type: custom:xzense-card`. Dashboardressursen må registreres separat (HACS-integrasjonen er ikke en egen frontendutvidelse). Det innebygde JavaScript-kortet serveres på `/api/xzense/xzense-card.js`. Endre eksisterende Lovelace-ressurs til `/api/xzense/xzense-card.js?v=0.5.28.8` (JavaScript-modul). Gamle ressursadresser er fjernet.
 
 **Dashboardknapper:** Start fyring, Legg inn ved og Avslutt fyring fungerer nå også når Home Assistant viser `unknown` før knappen har vært brukt. Faktisk utilgjengelige knapper er fortsatt deaktivert.
 
@@ -110,7 +106,7 @@ Integrasjonen publiseres foreløpig fra **`HACS`-grenen** og installeres i `cust
 
 ### Status og begrensninger
 
-- **0.5.28.7** er en HACS-testversjon. Mappestruktur og Python-syntaks blir kontrollert automatisk.
+- **0.5.28.8** er en HACS-testversjon. Mappestruktur og Python-syntaks blir kontrollert automatisk.
 - Funksjonaliteten bygger på korrigert **0.5.27**, med oppdaterte integrasjonsikoner og kortere integrasjonsnavn.
 - Enkelte Bluetooth-skrivekommandoer og avanserte innstillinger trenger fortsatt fysisk testing.
 - Egen fyringslogg i Home Assistant er planlagt, men ikke implementert.
