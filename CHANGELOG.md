@@ -1,6 +1,15 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.6** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.7** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.7 – Skrivesperre for viftehastighet under Boost (08.11.2026)
+
+- Endringer i normal viftehastighet (`0x50`) avvises når en ny statusrespons viser Boost (driftstilstand 3).
+- Før skriving ber integrasjonen om en ny STATUS-respons. Skriving avvises hvis status uteblir eller Bluetooth er frakoblet.
+- Sperren gjelder alle skrivemåter via HA, inkludert automasjoner og dashboard.
+- Boost av/på bruker fortsatt sin egen kommando (`0x08`), uten denne sperren.
+- Andre innstillinger, inkludert Boost-hastighet `0x4F`, er uendret.
+- Automatiske regresjonstester for sperren og håndtering av manglende status.
 
 ## 0.5.28.6 – Bluetooth-oppdagelse filtrert etter enhetsnavn (08.11.2026)
 
