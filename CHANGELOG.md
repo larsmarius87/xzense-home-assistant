@@ -1,6 +1,13 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.7** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.8** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.8 – Tilbakeføring av Boost-skrivesperren (08.11.2026)
+
+- Tilbakeført ekstra statuskontroll og skrivesperre for viftehastighet (`0x50`) fra 0.5.28.7.
+- Skriving til `0x50` fungerer igjen som i 0.5.28.6; Boost-kommandoen (`0x08`) er uendret.
+- Årsaken til at Boost avsluttes er ennå ikke fastslått. Mulig sammenheng med Boost-stopptemperatur 60 °C og faktisk pipetemperatur 140 °C.
+- Øvrige feilrettinger, inkludert Bluetooth-oppdagelse fra 0.5.28.6, er beholdt.
 
 ## 0.5.28.7 – Skrivesperre for viftehastighet under Boost (08.11.2026)
 
