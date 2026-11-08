@@ -227,8 +227,8 @@ def build():
         raise RuntimeError("Cannot locate unique GLOBAL write")
     client_source = client_source.replace(
         write_anchor,
-        '            if feature_key == "user_fan_speed":\\n'
-        '                await self._async_check_fan_speed_write_allowed()\\n'
+        '            if feature_key == "user_fan_speed":\n'
+        '                await self._async_check_fan_speed_write_allowed()\n'
         + write_anchor
     )
     client_path.write_text(client_source, encoding="utf-8")
