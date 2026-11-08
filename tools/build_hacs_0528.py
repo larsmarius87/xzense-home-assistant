@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.5 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.6 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.5"
+VERSION = "0.5.28.6"
 
 
 def build():
@@ -105,6 +105,35 @@ def build():
         raise RuntimeError("Xzense button constructor changed")
     buttons.write_text(b.replace(needle, replacement, 1))
 
+    # The DSPS service UUID is shared with unrelated BLE products.
+    # Only advertisements carrying a recognizable Xzense name may trigger
+    # an automatic config flow; preserve the explicit address + PIN flow.
+    bluetooth_entries = manifest.get("bluetooth", [])
+    if not any(entry.get("local_name") == "Xzense*" for entry in bluetooth_entries):
+        raise RuntimeError("Expected named Xzense Bluetooth discovery entry")
+    manifest["bluetooth"] = [{"local_name": "Xzense*", "connectable": True}]
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\\n")
+
+    flow_path = APP / "config_flow.py"
+    flow_source = flow_path.read_text(encoding="utf-8")
+    old_filter = (
+        '    name = (info.name or "").lower()\\n'
+        '    return "xzense" in name or SERVICE_UUID.lower() in {\\n'
+        '        uuid.lower() for uuid in info.service_uuids\\n'
+        '    }'
+    )
+    new_filter = (
+        '    name = (info.name or "").strip().lower()\\n'
+        '    return name.startswith("xzense")'
+    )
+    if flow_source.count(old_filter) != 1:
+        raise RuntimeError("Expected Xzense discovery filter not found")
+    flow_source = flow_source.replace(old_filter, new_filter)
+    if "    SERVICE_UUID,\\n" not in flow_source:
+        raise RuntimeError("Expected legacy shared DSPS import not found")
+    flow_source = flow_source.replace("    SERVICE_UUID,\\n", "")
+    flow_path.write_text(flow_source, encoding="utf-8")
+
     # Bluetooth interval entities use direct number input in HA Devices & Services.
     # Do not change dashboard card controls or any other numeric entities.
     number_path = APP / "number.py"
@@ -191,7 +220,7 @@ def build():
     assert manifest["version"] == VERSION
     assert source_domain not in (APP / "__init__.py").read_text()
     assert source_domain not in (APP / "client.py").read_text()
-    print("Built Xzense 0.5.28.5 as HACS custom_components/xzense")
+    print("Built Xzense 0.5.28.6 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
