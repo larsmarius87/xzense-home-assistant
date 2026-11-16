@@ -1,4 +1,4 @@
-name: Build and release Xzense 0.5.28.8
+name: Build and release Xzense 0.5.28.9
 on:
   push:
     branches:
@@ -9,6 +9,7 @@ on:
       - tools/xzense_card_05281.js
       - tools/test_card_05281.cjs
       - tools/test_bluetooth_discovery.py
+      - tools/test_xzense_duplicate_discovery.py
   workflow_dispatch:
 permissions:
   contents: write
@@ -35,7 +36,7 @@ jobs:
           app=dirs[0]
           manifest=json.loads((app/'manifest.json').read_text())
           assert manifest['domain']==app.name=='xzense', manifest
-          assert manifest['version']=='0.5.28.8'
+          assert manifest['version']=='0.5.28.9'
           assert (app/'__init__.py').is_file()
           assert (app/'config_flow.py').is_file()
           assert (app/'translations'/'nb.json').is_file()
@@ -46,7 +47,7 @@ jobs:
               assert '_attr_mode = NumberMode.BOX' in section, class_name
               assert '_attr_mode = NumberMode.SLIDER' not in section, class_name
           const=(app/'const.py').read_text()
-          assert 'VERSION = "0.5.28.8"' in const
+          assert 'VERSION = "0.5.28.9"' in const
           sensor=(app/'sensor.py').read_text()
           assert "lambda s: min(100, s.globals[0x04]) if 0x04 in s.globals else None" in sensor
           # Regression check of values; raw GLOBAL dictionary must remain intact.
@@ -62,15 +63,19 @@ jobs:
               data=file.read_text()
               assert 'full_preview' not in data, file
           assert 'full_preview' not in (app/'__init__.py').read_text()
-          assert 'Xzense-kort 0.5.28.8' in (app/'www'/'xzense-card.js').read_text()
-          assert 'Xzense Dashboard 0.5.28.8' in (app/'www'/'xzense-card.js').read_text()
-          assert Path('docs/releases/0.5.28.8.md').is_file()
-          notes=Path('docs/releases/0.5.28.8.md').read_text()
+          assert 'Xzense-kort 0.5.28.9' in (app/'www'/'xzense-card.js').read_text()
+          assert 'Xzense Dashboard 0.5.28.9' in (app/'www'/'xzense-card.js').read_text()
+          assert Path('docs/releases/0.5.28.9.md').is_file()
+          notes=Path('docs/releases/0.5.28.9.md').read_text()
           assert '## Norsk' in notes and '## English' in notes
-          assert '0.5.28.8' in notes
+          assert '0.5.28.9' in notes
           discovery=json.loads((app/'manifest.json').read_text())['bluetooth']
           assert discovery==[{'local_name':'Xzense*','connectable':True}]
           assert 'SERVICE_UUID,' not in (app/'config_flow.py').read_text()
+          config_flow=(app/'config_flow.py').read_text()
+          assert '_matches_configured_panel(' in config_flow
+          assert 'self._async_current_entries()' in config_flow
+          assert 'return self.async_abort(reason="already_configured")' in config_flow
           client=(app/'client.py').read_text()
           assert '_async_check_fan_speed_write_allowed' not in client
           assert 'frame = build_global_request(self.state.session_id, feature.global_id, raw_value)' in client
@@ -82,6 +87,8 @@ jobs:
           PY
       - name: Validate Bluetooth discovery against unrelated DSPS advertisements
         run: python tools/test_bluetooth_discovery.py
+      - name: Validate duplicate Xzense discovery prevention
+        run: python tools/test_xzense_duplicate_discovery.py
       - name: Validate dashboard JavaScript
         run: |
           node --check custom_components/xzense/www/xzense-card.js
@@ -96,7 +103,7 @@ jobs:
           find custom_components/xzense -type d -name __pycache__ -prune -exec rm -rf {} +
           git add -A custom_components/ hacs.json
           if ! git diff --cached --quiet; then
-            git commit -m "build: publish Xzense 0.5.28.8 HACS layout"
+            git commit -m "build: publish Xzense 0.5.28.9 HACS layout"
             git push origin HEAD:HACS
           fi
       - name: Publish versioned GitHub release
@@ -104,7 +111,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          VERSION="0.5.28.8"
+          VERSION="0.5.28.9"
           # The build commit (if any) is HEAD; attach the tag to tested files.
           TARGET="$(git rev-parse HEAD)"
           if gh release view "$VERSION" --repo "${{ github.repository }}" >/dev/null 2>&1; then
