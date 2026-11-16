@@ -50,7 +50,8 @@ class FlowAbort(Exception):
     pass
 
 # Execute the actual automatic Bluetooth flow with fake HA plumbing.
-scope = {"_looks_like_xzense": lambda info: info.name.lower().startswith("xzense"),
+scope = {"BluetoothServiceInfoBleak": object, "ConfigFlowResult": object, "DEFAULT_NAME": "Xzense",
+         "_looks_like_xzense": lambda info: info.name.lower().startswith("xzense"),
          "_matches_configured_panel": matches,
          "_LOGGER": SimpleNamespace(debug=lambda *args: None)}
 exec(compile(ast.fix_missing_locations(ast.Module(body=[bluetooth], type_ignores=[])),
