@@ -136,15 +136,15 @@ def build():
     # A controller can be advertised under more than one Bluetooth address.
     # Avoid repeated *automatic* discoveries for a configured panel with the
     # same advertised name. Do not touch the explicit manual-address setup.
-    existing_anchor = 'from __future__ import annotations\\n'
+    existing_anchor = 'from __future__ import annotations\n'
     if flow_source.count(existing_anchor) != 1:
         raise RuntimeError("Config flow import anchor missing")
     flow_source = flow_source.replace(
         existing_anchor,
-        existing_anchor + '\\nimport logging\\n',
+        existing_anchor + '\nimport logging\n',
         1,
     )
-    filter_anchor = '\\n\\nclass XzenseConfigFlow(ConfigFlow, domain=DOMAIN):'
+    filter_anchor = '\n\nclass XzenseConfigFlow(ConfigFlow, domain=DOMAIN):'
     if flow_source.count(filter_anchor) != 1:
         raise RuntimeError("Config flow class anchor missing")
     helper = '''
@@ -183,7 +183,7 @@ def _matches_configured_panel(
             return True
     return False
 '''
-    flow_source = flow_source.replace(filter_anchor, '\\n' + helper + filter_anchor, 1)
+    flow_source = flow_source.replace(filter_anchor, '\n' + helper + filter_anchor, 1)
     bluetooth_anchor = '''        await self.async_set_unique_id(discovery_info.address)
         self._abort_if_unique_id_configured()
         self._discovery = discovery_info'''
