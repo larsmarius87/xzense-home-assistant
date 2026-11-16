@@ -1,4 +1,4 @@
-"""Build Xzense 0.5.28.8 HACS integration from corrected 0.5.27.
+"""Build Xzense 0.5.28.9 HACS integration from corrected 0.5.27.
 
 Only HACS development branch. No changes to the original ZIP or to main.
 """
@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "xzense-alpha-0.5.27-source.zip"
 NEW_DOMAIN = "xzense"
 APP = ROOT / "custom_components" / NEW_DOMAIN
-VERSION = "0.5.28.8"
+VERSION = "0.5.28.9"
 
 
 def build():
@@ -132,6 +132,101 @@ def build():
     if "    SERVICE_UUID,\n" not in flow_source:
         raise RuntimeError("Expected legacy shared DSPS import not found")
     flow_source = flow_source.replace("    SERVICE_UUID,\n", "")
+
+    # A controller can be advertised under more than one Bluetooth address.
+    # Avoid repeated *automatic* discoveries for a configured panel with the
+    # same advertised name. Do not touch the explicit manual-address setup.
+    existing_anchor = 'from __future__ import annotations\\n'
+    if flow_source.count(existing_anchor) != 1:
+        raise RuntimeError("Config flow import anchor missing")
+    flow_source = flow_source.replace(
+        existing_anchor,
+        existing_anchor + '\\nimport logging\\n',
+        1,
+    )
+    filter_anchor = '\\n\\nclass XzenseConfigFlow(ConfigFlow, domain=DOMAIN):'
+    if flow_source.count(filter_anchor) != 1:
+        raise RuntimeError("Config flow class anchor missing")
+    helper = '''
+_LOGGER = logging.getLogger(__name__)
+
+
+def _normalized_panel_name(name: str | None) -> str:
+    """Ignore superficial spacing and capitalization in advertised names."""
+    return " ".join((name or "").split()).casefold()
+
+
+def _matches_configured_panel(
+    discovery_name: str | None,
+    discovery_address: str,
+    entries: list[ConfigEntry],
+) -> bool:
+    """Match a configured panel by Bluetooth address OR Xzense panel name.
+
+    Name matching is deliberately only used for automatic discovery, to
+    suppress rotating-address duplicates without disallowing manual setup.
+    """
+    normalized_name = _normalized_panel_name(discovery_name)
+    normalized_address = discovery_address.strip().casefold()
+    for entry in entries:
+        saved_address = entry.data.get(CONF_ADDRESS)
+        if isinstance(saved_address, str) and saved_address.strip().casefold() == normalized_address:
+            return True
+        # Use the original discovered name in entry.data, not a user-edited
+        # Home Assistant entry title.
+        saved_name = entry.data.get(CONF_NAME)
+        if (
+            normalized_name
+            and isinstance(saved_name, str)
+            and _normalized_panel_name(saved_name) == normalized_name
+        ):
+            return True
+    return False
+'''
+    flow_source = flow_source.replace(filter_anchor, '\\n' + helper + filter_anchor, 1)
+    bluetooth_anchor = '''        await self.async_set_unique_id(discovery_info.address)
+        self._abort_if_unique_id_configured()
+        self._discovery = discovery_info'''
+    if flow_source.count(bluetooth_anchor) != 1:
+        raise RuntimeError("Auto-discovery guard anchor missing")
+    bluetooth_replacement = '''        # Duplicate advertisements may have a different BLE address even
+        # when the physical panel is already installed.
+        if _matches_configured_panel(
+            discovery_info.name,
+            discovery_info.address,
+            self._async_current_entries(),
+        ):
+            _LOGGER.debug(
+                "Ignoring already configured Xzense discovery: %s (%s)",
+                discovery_info.name,
+                discovery_info.address,
+            )
+            return self.async_abort(reason="already_configured")
+
+        await self.async_set_unique_id(discovery_info.address)
+        self._abort_if_unique_id_configured()
+        self._discovery = discovery_info'''
+    flow_source = flow_source.replace(bluetooth_anchor, bluetooth_replacement, 1)
+    confirmation_anchor = '''            else:
+                return self.async_create_entry(
+                    title=self._discovery.name or DEFAULT_NAME,'''
+    if flow_source.count(confirmation_anchor) != 1:
+        raise RuntimeError("Discovery confirmation anchor missing")
+    flow_source = flow_source.replace(
+        confirmation_anchor,
+        '''            else:
+                # Recheck if an entry was created while the PIN dialog was open.
+                if _matches_configured_panel(
+                    self._discovery.name,
+                    self._discovery.address,
+                    self._async_current_entries(),
+                ):
+                    return self.async_abort(reason="already_configured")
+                return self.async_create_entry(
+                    title=self._discovery.name or DEFAULT_NAME,''',
+        1,
+    )
+
     flow_path.write_text(flow_source, encoding="utf-8")
 
     # Bluetooth interval entities use direct number input in HA Devices & Services.
@@ -220,7 +315,7 @@ def build():
     assert manifest["version"] == VERSION
     assert source_domain not in (APP / "__init__.py").read_text()
     assert source_domain not in (APP / "client.py").read_text()
-    print("Built Xzense 0.5.28.8 as HACS custom_components/xzense")
+    print("Built Xzense 0.5.28.9 as HACS custom_components/xzense")
     print("HACS integration + automatic registry-linked dashboard card ready for testing.")
 
 
