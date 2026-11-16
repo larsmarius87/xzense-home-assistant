@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from typing import Any
 
 import voluptuous as vol
@@ -33,6 +35,42 @@ def _looks_like_xzense(info: BluetoothServiceInfoBleak) -> bool:
     return name.startswith("xzense")
 
 
+_LOGGER = logging.getLogger(__name__)
+
+
+def _normalized_panel_name(name: str | None) -> str:
+    """Ignore superficial spacing and capitalization in advertised names."""
+    return " ".join((name or "").split()).casefold()
+
+
+def _matches_configured_panel(
+    discovery_name: str | None,
+    discovery_address: str,
+    entries: list[ConfigEntry],
+) -> bool:
+    """Match a configured panel by Bluetooth address OR Xzense panel name.
+
+    Name matching is deliberately only used for automatic discovery, to
+    suppress rotating-address duplicates without disallowing manual setup.
+    """
+    normalized_name = _normalized_panel_name(discovery_name)
+    normalized_address = discovery_address.strip().casefold()
+    for entry in entries:
+        saved_address = entry.data.get(CONF_ADDRESS)
+        if isinstance(saved_address, str) and saved_address.strip().casefold() == normalized_address:
+            return True
+        # Use the original discovered name in entry.data, not a user-edited
+        # Home Assistant entry title.
+        saved_name = entry.data.get(CONF_NAME)
+        if (
+            normalized_name
+            and isinstance(saved_name, str)
+            and _normalized_panel_name(saved_name) == normalized_name
+        ):
+            return True
+    return False
+
+
 class XzenseConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle Xzense setup."""
 
@@ -55,6 +93,20 @@ class XzenseConfigFlow(ConfigFlow, domain=DOMAIN):
         if not _looks_like_xzense(discovery_info):
             return self.async_abort(reason="not_supported")
 
+        # Duplicate advertisements may have a different BLE address even
+        # when the physical panel is already installed.
+        if _matches_configured_panel(
+            discovery_info.name,
+            discovery_info.address,
+            self._async_current_entries(),
+        ):
+            _LOGGER.debug(
+                "Ignoring already configured Xzense discovery: %s (%s)",
+                discovery_info.name,
+                discovery_info.address,
+            )
+            return self.async_abort(reason="already_configured")
+
         await self.async_set_unique_id(discovery_info.address)
         self._abort_if_unique_id_configured()
         self._discovery = discovery_info
@@ -76,6 +128,13 @@ class XzenseConfigFlow(ConfigFlow, domain=DOMAIN):
             if pin is None:
                 errors[CONF_PIN] = "invalid_pin"
             else:
+                # Recheck if an entry was created while the PIN dialog was open.
+                if _matches_configured_panel(
+                    self._discovery.name,
+                    self._discovery.address,
+                    self._async_current_entries(),
+                ):
+                    return self.async_abort(reason="already_configured")
                 return self.async_create_entry(
                     title=self._discovery.name or DEFAULT_NAME,
                     data={
