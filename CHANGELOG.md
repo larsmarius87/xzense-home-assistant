@@ -1,6 +1,15 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.8** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.9** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+
+## 0.5.28.9 – Stopp gjentatt automatisk oppdagelse av Xzense (16.11.2026)
+
+- Automatisk Bluetooth-oppdagelse sammenligner annonsert MAC og navn med registrerte Xzense-konfigurasjoner. Samme normaliserte navn (uavhengig av store/små bokstaver og ekstra mellomrom) blokkeres selv om MAC er ulik.
+- Bruker opprinnelig lagret panelnavn, ikke manuelt tilpasset visningsnavn i Home Assistant.
+- Ny sjekk før PIN-bekreftelse hindrer duplikat dersom panelet blir lagt til mens et oppsett allerede står åpent.
+- Manuell registrering med MAC og PIN er fortsatt mulig for flere ekte paneler med samme navn. Andre panelnavn oppdages som før.
+- Bluetooth-transport, proxyvalg, entiteter og eksisterende konfigurasjoner er uendret.
+- Nye regresjonstester, norsk/engelsk Release Notes og justert kortversjon.
 
 ## 0.5.28.8 – Tilbakeføring av Boost-skrivesperren (08.11.2026)
 
