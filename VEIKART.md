@@ -1,15 +1,15 @@
 # Xzense development roadmap / Veikart
 
-**Current HACS development version / Gjeldende HACS-versjon: 0.5.28**
+**Current Marketplace development version / Gjeldende Marketplace-versjon: 0.5.28.9**
 
 This page describes future work; it is not a list of completed features. / Denne siden beskriver planlagt arbeid, ikke ferdige funksjoner.
 
 ## English
 
-### Available in the 0.5.28 HACS test
+### Available in the 0.5.28 Marketplace test
 
 - Integration name and domain: **Xzense / `xzense`**
-- HACS repository layout and automated syntax/structure checks
+- Marketplace repository layout and automated syntax/structure checks
 - Native entity icons for Start, Stop, Refuel, Boost and RS009-41 motor type
 - Norwegian last successful Bluetooth synchronization sensor label: **Sist BT-synk**
 - Existing BLE controls and multi-proxy fallback from corrected 0.5.27
@@ -19,7 +19,7 @@ This page describes future work; it is not a list of completed features. / Denne
 1. Validate long-term BLE stability and physical operation of 0.5.28.
 2. Review and verify advanced write commands and status-dependent controls before describing them as fully tested.
 3. Check translations, icons, entity naming and diagnostic availability for regressions.
-4. Continue to improve tests and release notes for HACS installations.
+4. Continue to improve tests and release notes for Marketplace installations.
 
 ### Planned later
 
@@ -28,10 +28,10 @@ This page describes future work; it is not a list of completed features. / Denne
 
 ## Norsk
 
-### På plass i HACS-testen 0.5.28
+### På plass i Marketplace-testen 0.5.28
 
 - Integrasjonsnavn og domene: **Xzense / `xzense`**
-- HACS-mappestruktur og automatiske kontroller av syntaks og struktur
+- Marketplace-mappestruktur og automatiske kontroller av syntaks og struktur
 - Egne entitetsikoner for Start fyring, Avslutt fyring, Legg inn ved, Boost og Viftetype RS009-41
 - Kortere norsk sensornavn: **Sist BT-synk**
 - Eksisterende Bluetooth-styring og automatisk proxy-reservevalg fra korrigert 0.5.27
@@ -41,7 +41,7 @@ This page describes future work; it is not a list of completed features. / Denne
 1. Teste Bluetooth-stabilitet og funksjoner over tid på fysisk enhet.
 2. Verifisere avanserte skrivekommandoer og tilstandsavhengig styring før de omtales som ferdig testet.
 3. Kontrollere oversettelser, ikoner, entitetsnavn og diagnostikk mot tidligere rettelser.
-4. Forbedre automatiske tester og versjonsinformasjon for HACS.
+4. Forbedre automatiske tester og versjonsinformasjon for Marketplace.
 
 ### Senere
 
