@@ -1,6 +1,6 @@
 # Xzense – komplett endringslogg
 
-> **HACS-grenen:** Gjeldende HACS-testversjon er **0.5.28.9** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
+> **Marketplace-distribusjon:** Gjeldende Marketplace-testversjon er **0.5.28.9** med domene `xzense`. Eldre korrigert 0.5.27 ZIP finnes på `main`. Domenemigrering er ennå ikke fullført eller verifisert. Historiske observasjoner nedenfor kan være overstyrt av nyere firmwarekartlegging.
 
 ## 0.5.28.9 – Stopp gjentatt automatisk oppdagelse av Xzense (16.11.2026)
 
@@ -61,7 +61,7 @@
 - Batterisensoren viser maksimalt 100 % dersom kontrollpanelet rapporterer en høyere råverdi i GLOBAL `0x04`.
 - Den originale GLOBAL-verdien blir ikke endret og er fortsatt tilgjengelig i diagnostikken.
 - Ingen endringer i Bluetooth-styring, dashboardkort, andre sensorer eller kontrollfunksjoner.
-- Versjonsnummer oppdatert i HACS-integrasjonens manifest og interne versjonskonstant.
+- Versjonsnummer oppdatert i Marketplace-integrasjonens manifest og interne versjonskonstant.
 
 ## 0.5.28.1 – Dashboard auto-discovery (04.11.2026)
 
@@ -72,7 +72,7 @@
 - Oppdatert versjon i integrasjonens manifest og konstant; Bluetooth-kode og styringsprotokoll er uendret.
 - Automatiske JavaScript-tester dekker navneendringer, valg mellom flere enheter og manuelle overstyringer.
 
-## 0.5.28 – HACS-strukturtest (04.11.2026)
+## 0.5.28 – Marketplace-strukturtest (04.11.2026)
 
 - Integrasjonskoden er lagt i `custom_components/xzense/`, med `manifest.json` som bruker domene `xzense` og navnet Xzense.
 - `hacs.json` er lagt i repositoryets rot, og tidligere Xzense-ikon er beholdt i `custom_components/xzense/brand/icon.png`.
