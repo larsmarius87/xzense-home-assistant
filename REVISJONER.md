@@ -2,7 +2,7 @@
 
 Oppdatert 4. november 2026. **Nyeste testbygg: 0.5.27 korrigert (egen gren).** Arkivet omfatter også 20 kildepakker fra 0.1.0–0.4.4.
 
-0.5.27-filen finnes i utviklingsgrenen `xzense-0.5.27-alpha`, ikke på `main`. Det er fortsatt manuell ZIP-installasjon, ikke HACS. 0.5.25 RC1 beholdes som sist langtidsbekreftet stabil referanse.
+0.5.27-filen finnes i utviklingsgrenen `xzense-0.5.27-alpha`, ikke på `main`. Det er fortsatt manuell ZIP-installasjon, ikke Marketplace. 0.5.25 RC1 beholdes som sist langtidsbekreftet stabil referanse.
 
 Dette er en historisk oversikt over **eksisterende ZIP-filer i GitHub-repoet**, ikke en liste over generelt støttede eller anbefalte installasjoner. ZIP-ene er kildearkiver som inneholder komplette integrasjonsfiler for aktuell revisjon. Se også [README](README.md), [CHANGELOG](CHANGELOG.md) og [installasjon for 0.5.27](INSTALLASJON_0.5.27.md).
 
